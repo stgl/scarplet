@@ -9,10 +9,9 @@ class CalculationMixin(object):
         PAD_DX = 2
         PAD_DY = 2
 
-        z = self._griddata
-        z_pad = self._pad_boundary(PAD_DX, PAD_DY)
-        slope_x = (z_pad[1:-1, 2:] - z_pad[1:-1, :-2])/(2*dx)
-        slope_y = (z_pad[2, 1:-1] - z_pad[:-2, 1:-1])/(2*dx)
+        grid = self._pad_boundary(PAD_DX, PAD_DY)
+        slope_x = (grid[1:-1, 2:] - grid[1:-1, :-2])/(2*dx)
+        slope_y = (grid[2, 1:-1] - grid[:-2, 1:-1])/(2*dx)
 
         return slope_x, slope_y
     
@@ -20,7 +19,12 @@ class CalculationMixin(object):
     
     def _calculate_directional_laplacian(self, dx, alpha):
 
+    def _detrend_grid(self, dx):
+        
+
     def _pad_boundary(self, dx, dy):
+
+        return padded_grid
 
 class GDALMixin(object):
     pass
@@ -31,8 +35,8 @@ class GeorefInfo(object):
 #class GeographicMixin(object):
 #    pass
 
-class BaseGrid(GDALMixin):
+class BaseSpatialGrid(GDALMixin):
     pass
 
-class DEMGrid(BaseGrid, CalculationMixin):
+class DEMGrid(BaseSpatialGrid, CalculationMixin):
     pass
