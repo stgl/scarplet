@@ -32,15 +32,14 @@ class CalculationMixin(object):
 
     def _pad_boundary(self, dx, dy):
         
-        pad_x = np.zeros(self.ny, np.round(dx/2))
+        pad_x = np.zeros((self.ny, np.round(dx/2)))
         self._griddata = np.hstack([pad_x, self._griddata, pad_x]) 
         
-        self.nx += dx 
-        self.ny += dy
+        self.nx += 2*np.round(dx/2) 
+        self.ny += 2*np.round(dy/2) 
         
-        pad_y = np.zeros(np.round(dy/2), self.nx)
+        pad_y = np.zeros((np.round(dy/2), self.nx))
         self._griddata = np.vstack([pad_y, self._griddata, pad_y]) 
-
 
 class GDALMixin(object):
     pass
