@@ -5,6 +5,7 @@ import numpy as np
 from osgeo import gdal, gdal_const
 
 class CalculationMixin(object):
+
     def _caclulate_slope(self):
         PAD_DX = 2
         PAD_DY = 2
@@ -26,7 +27,7 @@ class CalculationMixin(object):
         d2z_dx2 = np.diff(self._griddata, 1, 1)/self.dx**2
         d2z_dy2 = np.diff(self._griddata, 2, 1)/self.dy**2
 
-        del2z = d2z_dx2*np.cos(alpha)**2 - 2*d2z_dxdy*np.sin(alpha)*np.cos(alpha) + d2z_dy2*np.sin(alpha)
+        del2z = d2z_dx2*np.cos(alpha)**2 - 2*d2z_dxdy*np.sin(alpha)*np.cos(alpha) + d2z_dy2*np.sin(alpha)**2
         
         return del2z
 
