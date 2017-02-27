@@ -20,7 +20,6 @@ class CalculationMixin(object):
         return self._calculate_directional_laplacian(0)
 
     def _calculate_directional_laplacian(self, alpha):
-        
         dz_dx = np.diff(self._griddata, 1, 2)/self.dx
         d2z_dxdy = np.diff(dz_dx, 1, 1)/self.dx
         
@@ -32,7 +31,6 @@ class CalculationMixin(object):
         return del2z
 
     def _pad_boundary(self, dx, dy):
-        
         pad_x = np.zeros((self.ny, np.round(dx/2)))
         self._griddata = np.hstack([pad_x, self._griddata, pad_x]) 
         
