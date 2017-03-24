@@ -25,8 +25,7 @@ class CalculationMethodsTestCase(unittest.TestCase):
         padgrid = np.vstack([pad_y, np.hstack([pad_x, self.dem._griddata, pad_x]), pad_y]])
         self.dem._pad_boundary(dx, dy)
         
-        assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly 
-                                                (dx = 2, dy = 2)')
+        assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly (dx = 2, dy = 2)')
         
         dx = 5
         dy = 5
@@ -37,5 +36,4 @@ class CalculationMethodsTestCase(unittest.TestCase):
         padgrid = np.vstack([pad_y, np.hstack([pad_x, self.dem._griddata, pad_x]), pad_y]])
         self.dem._pad_boundary(dx, dy)
         
-        assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly 
-                                                (dx = 5, dy = 5)')
+        assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly (dx = 5, dy = 5)')
