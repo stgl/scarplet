@@ -16,17 +16,6 @@ class CalculationMethodsTestCase(unittest.TestCase):
         del2z = self.dem._calculate_lapalacian(alpha)
 
     def test_pad_boundary(self):
-        dx = 4
-        dy = 4
-        grid = self.dem._griddata
-
-        pad_x = np.zeros((self.ny, dx/2))
-        pad_y = np.zeros((self.nx + dx, dy/2))
-        padgrid = np.vstack([pad_y, np.hstack([pad_x, self.dem._griddata, pad_x]), pad_y]])
-        self.dem._pad_boundary(dx, dy)
-        
-        assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly (dx = 2, dy = 2)')
-        
         dx = 5
         dy = 5
         grid = self.dem._griddata
@@ -36,4 +25,4 @@ class CalculationMethodsTestCase(unittest.TestCase):
         padgrid = np.vstack([pad_y, np.hstack([pad_x, self.dem._griddata, pad_x]), pad_y]])
         self.dem._pad_boundary(dx, dy)
         
-        assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly (dx = 5, dy = 5)')
+        assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly')
