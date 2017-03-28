@@ -1,4 +1,6 @@
 import unittest
+import matplotlib
+import matplotplib.pyplot as plt
 import numpy as np
 import filecmp
 
@@ -45,6 +47,11 @@ class BaseSpatialGridTestCase(unittest.TestCase):
     def setUp(self):
 
         self.dem = BaseSpatialGrid(TESTDATA_FILENAME)
+
+    @image_comparison(baseline_images=['plot'], extensions=['png'])
+    def test_plot(self):
+
+        self.plot()
 
     def test_save(self):
         
