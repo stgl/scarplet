@@ -38,6 +38,7 @@ class CalculationMixin(object):
         dx = self._georef_info.dx
         dy = self._georef_info.dy       
         z = self._griddata
+        z[np.isnan(z)] = 0
         
         dz_dx = np.diff(z, 1, 2)/dx
         d2z_dxdy = np.diff(dz_dx, 1, 1)/dx
@@ -64,6 +65,7 @@ class CalculationMixin(object):
         
         pad_y = np.zeros((dy, nx))
         z_pad = np.vstack([pad_y, z_pad, pad_y]) 
+        
         return z_pad 
 
 
