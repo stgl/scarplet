@@ -41,11 +41,20 @@ class CalculationMixin(object):
         nan_idx = np.isnan(z)
         z[nan_idx] = 0
         
-        dz_dx = np.diff(z, 1, 2)/dx
-        d2z_dxdy = np.diff(dz_dx, 1, 1)/dx
+        dz_dx = np.diff(z, 1, 1)/dx
+        d2z_dxdy = np.diff(dz_dx, 1, 0)/dx
+        pad_x = np.zeros((d2z_dxdy.shape[0], 1))
+        d2z_dxdy = np.hstack([pad_x, d2z_dxdy])
+        pad_y = np.zeros((1, d2z_dxdy.shape[1]))
+        d2z_dxdy = np.vstack([pad_y, d2z_dxdy])
         
-        d2z_dx2 = np.diff(z, 1, 1)/dx**2
-        d2z_dy2 = np.diff(z, 2, 1)/dy**2
+        d2z_dx2 = np.diff(z, 2, 1)/dx**2
+        pad_x = np.zeros((d2z_dx2.shape[0], 1))
+        d2z_dx2 = np.hstack([pad_x, d2z_dx2, pad_x])
+
+        d2z_dy2 = np.diff(z, 2, 0)/dy**2
+        pad_y = np.zeros((1, d2z_dy2.shape[1]))
+        d2z_dy2 = np.vstack([pad_y, d2z_dy2, pad_y])
 
         del2z = d2z_dx2*np.cos(alpha)**2 - 2*d2z_dxdy*np.sin(alpha)*np.cos(alpha) + d2z_dy2*np.sin(alpha)**2
         del2z[nan_idx] = np.NAN 
