@@ -49,10 +49,10 @@ class BaseSpatialGridTestCase(unittest.TestCase):
 
         self.dem = BaseSpatialGrid(TESTDATA_FILENAME)
 
-    @image_comparison(baseline_images=['plot'], extensions=['png'])
+    @image_comparison(baseline_images=['plot_gist_earth'], extensions=['png'])
     def test_plot(self):
 
-        self.plot()
+        self.plot(cmap='gist_earth')
 
     def test_save(self):
         
