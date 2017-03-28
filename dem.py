@@ -67,6 +67,8 @@ class BaseSpatialGrid(GDALMixin):
     
 
     dtype = gdalconst.GDT_Float32
+    
+    _georef_info = GeorefInfo()
 
     def save(self, filename):
 
@@ -123,3 +125,17 @@ class BaseSpatialGrid(GDALMixin):
 
 class DEMGrid(BaseSpatialGrid, CalculationMixin):
     pass
+
+
+class GeorefInfo(object):
+
+
+    def __init__(self):
+        self.geo_transform = 0
+        self.projection = 0
+        self,xllcenter = 0
+        self.yllcenter = 0
+        self.dx = 0
+        self.nx = 0
+        self.ny = 0
+
