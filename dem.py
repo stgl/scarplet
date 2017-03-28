@@ -23,6 +23,7 @@ class CalculationMixin(object):
         PAD_DY = 2
 
         z_pad = self._pad_boundary(PAD_DX, PAD_DY)
+        z_pad[np.isnan(z_pad)] = 0
         slope_x = (z_pad[1:-1, 2:] - z_pad[1:-1, :-2])/(2*dx)
         slope_y = (z_pad[2, 1:-1] - z_pad[:-2, 1:-1])/(2*dx)
 
@@ -61,11 +62,7 @@ class CalculationMixin(object):
         
         nx += 2*dx 
         
-        print(nx) 
-
         pad_y = np.zeros((dy, nx))
-        print(pad_y.shape)
-        print(z_pad.shape)
         z_pad = np.vstack([pad_y, z_pad, pad_y]) 
         return z_pad 
 
@@ -102,7 +99,7 @@ class BaseSpatialGrid(GDALMixin):
         
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        ax.imshow(self._griddata, origin='lower', **kwargs)
+        ax.imshow(self._griddata, origin='upper', **kwargs)
 
     def save(self, filename):
 
