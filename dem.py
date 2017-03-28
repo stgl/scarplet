@@ -2,7 +2,7 @@
 
 import os, sys
 import matplotlib
-import matplotplib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 from osgeo import gdal, gdalconst
 import osr
