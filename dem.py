@@ -7,6 +7,8 @@ import numpy as np
 from osgeo import gdal, gdalconst
 import osr
 
+sys.setrecursionlimit(10000)
+
 GDAL_DRIVER_NAME = 'GTiff'
 
 class CalculationMixin(object):
@@ -72,11 +74,11 @@ class BaseSpatialGrid(GDALMixin):
     
     _georef_info = GeorefInfo()
 
-    def plot(self):
+    def plot(self, **kwargs):
         
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        ax.imshow(self._griddata, origin='lower', cmap = 'terrain')
+        ax.imshow(self._griddata, origin='lower', **kwargs)
 
     def save(self, filename):
 
@@ -133,8 +135,7 @@ class BaseSpatialGrid(GDALMixin):
 
 
 class DEMGrid(BaseSpatialGrid, CalculationMixin):
-    pass
-
+    pass 
 
 class GeorefInfo(object):
 
