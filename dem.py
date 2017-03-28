@@ -114,9 +114,9 @@ class BaseSpatialGrid(GDALMixin):
         ny = gdal_dataset.RasterYSize
 
         return_object._georef_info.geo_transform = geo_transform
-        return_object._georef_info.dx = return_object.georef_info.geo_transform[1]
-        return_object._georef_info.xllcenter = return_object.georef_info.geo_transform[0] + return_object.georef_info.dx
-        return_object._georef_info.yllcenter = return_object.georef_info.geo_transform[3] - return_object.georef_info.dy
+        return_object._georef_info.dx = return_object._georef_info.geo_transform[1]
+        return_object._georef_info.xllcenter = return_object._georef_info.geo_transform[0] + return_object._georef_info.dx
+        return_object._georef_info.yllcenter = return_object._georef_info.geo_transform[3] - return_object._georef_info.dy
         return_object._georef_info.nx = nx 
         return_object._georef_info.ny = ny
 
@@ -136,6 +136,7 @@ class GeorefInfo(object):
         self,xllcenter = 0
         self.yllcenter = 0
         self.dx = 0
+        self.dy = 0
         self.nx = 0
         self.ny = 0
 
