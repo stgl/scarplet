@@ -134,8 +134,9 @@ class BaseSpatialGrid(GDALMixin):
         return return_object
 
 
-class DEMGrid(BaseSpatialGrid, CalculationMixin):
-    pass 
+class DEMGrid(CalculationMixin, BaseSpatialGrid):
+    pass
+
 
 class GeorefInfo(object):
 
