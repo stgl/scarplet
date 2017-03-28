@@ -1,6 +1,7 @@
 import unittest
 import matplotlib
 import matplotplib.pyplot as plt
+from matplotlib.testing.decorators import image_comparison
 import numpy as np
 import filecmp
 
