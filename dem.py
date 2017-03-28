@@ -1,6 +1,8 @@
 """ Classes for loading digital elevation models as numeric grids """
 
 import os, sys
+import matplotlib
+import matplotplib.pyplot as plt
 import numpy as np
 from osgeo import gdal, gdalconst
 import osr
@@ -69,6 +71,12 @@ class BaseSpatialGrid(GDALMixin):
     dtype = gdalconst.GDT_Float32
     
     _georef_info = GeorefInfo()
+
+    def plot(self, filename):
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+        ax.imshow(self._griddata, cmap = 'terrain')
 
     def save(self, filename):
 
