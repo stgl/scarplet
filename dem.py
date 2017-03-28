@@ -14,14 +14,17 @@ GDAL_DRIVER_NAME = 'GTiff'
 class CalculationMixin(object):
 
 
-    def _caclulate_slope(self):
+    def _calculate_slope(self):
         
+        dx = self._georef_info.dx
+        dy = self._georef_info.dy
+
         PAD_DX = 2
         PAD_DY = 2
 
         z_pad = self._pad_boundary(PAD_DX, PAD_DY)
-        slope_x = (z_pad[1:-1, 2:] - z_pad[1:-1, :-2])/(2*self.dx)
-        slope_y = (z_pad[2, 1:-1] - z_pad[:-2, 1:-1])/(2*self.dx)
+        slope_x = (z_pad[1:-1, 2:] - z_pad[1:-1, :-2])/(2*dx)
+        slope_y = (z_pad[2, 1:-1] - z_pad[:-2, 1:-1])/(2*dx)
 
         return slope_x, slope_y
     
@@ -30,12 +33,16 @@ class CalculationMixin(object):
         return self._calculate_directional_laplacian(0)
 
     def _calculate_directional_laplacian(self, alpha):
+ 
+        dx = self._georef_info.dx
+        dy = self._georef_info.dy       
+        z = self._griddata
         
-        dz_dx = np.diff(self._griddata, 1, 2)/self.dx
-        d2z_dxdy = np.diff(dz_dx, 1, 1)/self.dx
+        dz_dx = np.diff(z, 1, 2)/dx
+        d2z_dxdy = np.diff(dz_dx, 1, 1)/dx
         
-        d2z_dx2 = np.diff(self._griddata, 1, 1)/self.dx**2
-        d2z_dy2 = np.diff(self._griddata, 2, 1)/self.dy**2
+        d2z_dx2 = np.diff(z, 1, 1)/dx**2
+        d2z_dy2 = np.diff(z, 2, 1)/dy**2
 
         del2z = d2z_dx2*np.cos(alpha)**2 - 2*d2z_dxdy*np.sin(alpha)*np.cos(alpha) + d2z_dy2*np.sin(alpha)**2
         
@@ -43,16 +50,24 @@ class CalculationMixin(object):
 
     def _pad_boundary(self, dx, dy):
 
-        pad_x = np.zeros((self.ny, np.round(dx/2)))
-        self._griddata = np.hstack([pad_x, self._griddata, pad_x]) 
+        dx = np.round(dx/2)
+        dy = np.round(dy/2)
+
+        nx = self._georef_info.nx
+        ny = self._georef_info.ny
+
+        pad_x = np.zeros((ny, dx))
+        z_pad = np.hstack([pad_x, self._griddata, pad_x]) 
         
-        self.nx += 2*np.round(dx/2) 
-        self.ny += 2*np.round(dy/2) 
-        self.nx += 2*np.round(dx/2) 
-        self.ny += 2*np.round(dy/2) 
+        nx += 2*dx 
         
-        pad_y = np.zeros((np.round(dy/2), self.nx))
-        self._griddata = np.vstack([pad_y, self._griddata, pad_y]) 
+        print(nx) 
+
+        pad_y = np.zeros((dy, nx))
+        print(pad_y.shape)
+        print(z_pad.shape)
+        z_pad = np.vstack([pad_y, z_pad, pad_y]) 
+        return z_pad 
 
 
 class GDALMixin(object):
@@ -60,8 +75,17 @@ class GDALMixin(object):
 
 
 class GeorefInfo(object):
-    pass
 
+
+    def __init__(self):
+        self.geo_transform = 0
+        self.projection = 0
+        self.xllcenter = 0
+        self.yllcenter = 0
+        self.dx = 0
+        self.dy = 0
+        self.nx = 0
+        self.ny = 0
 
 #class GeographicMixin(object):
 #    pass
@@ -127,7 +151,7 @@ class BaseSpatialGrid(GDALMixin):
         return_object._georef_info.dx = return_object._georef_info.geo_transform[1]
         return_object._georef_info.dy = return_object._georef_info.geo_transform[5]
         return_object._georef_info.xllcenter = return_object._georef_info.geo_transform[0] + return_object._georef_info.dx
-        return_object._georef_info.yllcenter = return_object._georef_info.geo_transform[3] - return_object._georef_info.dy
+        return_object._georef_info.yllcenter = return_object._georef_info.geo_transform[3] - (return_object._georef_info.ny+1)*np.abs(return_object._georef_info.dy)
         return_object._georef_info.nx = nx 
         return_object._georef_info.ny = ny
 
@@ -136,17 +160,3 @@ class BaseSpatialGrid(GDALMixin):
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     pass
-
-
-class GeorefInfo(object):
-
-
-    def __init__(self):
-        self.geo_transform = 0
-        self.projection = 0
-        self,xllcenter = 0
-        self.yllcenter = 0
-        self.dx = 0
-        self.dy = 0
-        self.nx = 0
-        self.ny = 0
