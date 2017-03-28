@@ -76,7 +76,7 @@ class BaseSpatialGrid(GDALMixin):
         
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        ax.imshow(self._griddata, cmap = 'terrain')
+        ax.imshow(self._griddata, origin='lower', cmap = 'terrain')
 
     def save(self, filename):
 
