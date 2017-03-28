@@ -23,10 +23,10 @@ class CalculationMixin(object):
         PAD_DY = 2
 
         z_pad = self._pad_boundary(PAD_DX, PAD_DY)
-        z_pad[np.isnan(z_pad)] = 0
+        
         slope_x = (z_pad[1:-1, 2:] - z_pad[1:-1, :-2])/(2*dx)
         slope_y = (z_pad[2, 1:-1] - z_pad[:-2, 1:-1])/(2*dx)
-
+        
         return slope_x, slope_y
     
     def _calculate_laplacian(self):
@@ -38,7 +38,8 @@ class CalculationMixin(object):
         dx = self._georef_info.dx
         dy = self._georef_info.dy       
         z = self._griddata
-        z[np.isnan(z)] = 0
+        nan_idx = np.isnan(z)
+        z[nan_idx] = 0
         
         dz_dx = np.diff(z, 1, 2)/dx
         d2z_dxdy = np.diff(dz_dx, 1, 1)/dx
@@ -47,7 +48,8 @@ class CalculationMixin(object):
         d2z_dy2 = np.diff(z, 2, 1)/dy**2
 
         del2z = d2z_dx2*np.cos(alpha)**2 - 2*d2z_dxdy*np.sin(alpha)*np.cos(alpha) + d2z_dy2*np.sin(alpha)**2
-        
+        del2z[nan_idx] = np.NAN 
+
         return del2z
 
     def _pad_boundary(self, dx, dy):
