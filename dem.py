@@ -5,6 +5,7 @@ import numpy as np
 from osgeo import gdal, gdalconst
 import osr
 
+GDAL_DRIVER_NAME = 'GTiff'
 
 class CalculationMixin(object):
 
@@ -63,7 +64,9 @@ class GeorefInfo(object):
 
 
 class BaseSpatialGrid(GDALMixin):
+    
 
+    dtype = gdalconst.GDT_Float32
 
     def save(self, filename):
 
@@ -96,8 +99,8 @@ class BaseSpatialGrid(GDALMixin):
 
         gdal_dataset = gdal.Open(filename)
         band = gdal_dataset.GetRasterBand(1)
-        nodata = gdal_dataset.GetNoDataValue()
-        return_object._griddata = band.ReadAsArray(cls.dtype)
+        nodata = band.GetNoDataValue()
+        return_object._griddata = band.ReadAsArray() 
 
         if nodata is not None:
             nodata_index = np.where(return_object._griddata == nodata)
@@ -117,5 +120,6 @@ class BaseSpatialGrid(GDALMixin):
 
         return return_object
 
-class DEMGrid(BaseGrid, CalculationMixin):
+
+class DEMGrid(BaseSpatialGrid, CalculationMixin):
     pass
