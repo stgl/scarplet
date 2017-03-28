@@ -1,21 +1,32 @@
 import unittest
 import numpy as np
+import filecmp
+
+TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'data/big_basin.tif')
+
 
 class CalculationMethodsTestCase(unittest.TestCase):
+    
+    
     def setUp(self):
-        self.dem = DEMGrid()
+        
+        self.dem = DEMGrid(TESTDATA_FILENAME)
 
     def test_calculate_slope(self):
+
         sx, sy = self.dem._calculate_slope()
 
     def test_calculate_laplacian(self):
+
         del2z = self.dem._calculate_lapalacian()
     
     def test_calculate_directional_laplacian(self):
+        
         alpha = np.pi/4
         del2z = self.dem._calculate_lapalacian(alpha)
 
     def test_pad_boundary(self):
+        
         dx = 5
         dy = 5
         grid = self.dem._griddata
@@ -26,3 +37,22 @@ class CalculationMethodsTestCase(unittest.TestCase):
         self.dem._pad_boundary(dx, dy)
         
         assertEqual(self.dem.grid, padgrid, 'Grid padded incorrectly')
+
+
+class BaseSpatialGridTestCase(unittest.TestCase):
+
+
+    def setUp(self):
+
+        self.dem = BaseSpatialGrid(TESTDATA_FILENAME)
+
+    def test_save(self):
+        
+        os.remove('test.tif')
+        self.save('test.tif')
+        
+        this_file = os.path.join(os.path.dirname(__file__), 'test.tif')
+        test_file = TESTDATA_FILENAME
+
+        self.assertTrue(filecmp.cmp(this_file, test_file, shallow=False), 'GeoTIFF saved incorrectly')
+
