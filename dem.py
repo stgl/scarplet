@@ -72,7 +72,7 @@ class BaseSpatialGrid(GDALMixin):
     
     _georef_info = GeorefInfo()
 
-    def plot(self, filename):
+    def plot(self):
         
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
