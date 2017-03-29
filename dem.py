@@ -23,6 +23,7 @@ class CalculationMixin(object):
         PAD_DY = 2
 
         self._pad_boundary(PAD_DX, PAD_DY)
+        z_pad = self._griddata
         
         slope_x = (z_pad[1:-1, 2:] - z_pad[1:-1, :-2])/(2*dx)
         slope_y = (z_pad[2, 1:-1] - z_pad[:-2, 1:-1])/(2*dx)
@@ -122,7 +123,7 @@ class BaseSpatialGrid(GDALMixin):
         ax = fig.add_subplot(1,1,1)
         ax.imshow(self._griddata, origin='upper', **kwargs)
 
-    def save(self, filename):
+    def save(self, filename): #TODO: make this a class method?
 
         ncols = self._georef_info.nx
         nrows = self._georef_info.ny
@@ -136,7 +137,7 @@ class BaseSpatialGrid(GDALMixin):
         y_origin = self._georef_info.yllcenter
 
         driver = gdal.GetDriverByName(GDAL_DRIVER_NAME)
-        out_raster = driver.Create(filename, ncols, nrows, 1, dtype)
+        out_raster = driver.Create(filename, ncols, nrows, 1, self.dtype)
         out_raster.SetGeoTransform(self._georef_info.geo_transform)
         out_band = out_raster.GetRasterBand(1)
         out_band.WriteArray(self._griddata)
@@ -144,7 +145,7 @@ class BaseSpatialGrid(GDALMixin):
         out_raster.SetProjection(self._georef_info.projection)
         out_band.FlushCache()
 
-    def load(self, filename):
+    def load(self, filename): #TODO: make this a class method?
 
         gdal_dataset = gdal.Open(filename)
         band = gdal_dataset.GetRasterBand(1)
@@ -163,10 +164,10 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.geo_transform = geo_transform
         self._georef_info.dx = self._georef_info.geo_transform[1]
         self._georef_info.dy = self._georef_info.geo_transform[5]
-        self._georef_info.xllcenter = self._georef_info.geo_transform[0] + self._georef_info.dx
-        self._georef_info.yllcenter = self._georef_info.geo_transform[3] - (self._georef_info.ny+1)*np.abs(self._georef_info.dy)
         self._georef_info.nx = nx 
         self._georef_info.ny = ny
+        self._georef_info.xllcenter = self._georef_info.geo_transform[0] + self._georef_info.dx
+        self._georef_info.yllcenter = self._georef_info.geo_transform[3] - (self._georef_info.ny+1)*np.abs(self._georef_info.dy)
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     pass
