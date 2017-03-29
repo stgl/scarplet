@@ -158,10 +158,12 @@ class BaseSpatialGrid(GDALMixin):
                 self._griddata[nodata_index] = np.NAN
 
         geo_transform = gdal_dataset.GetGeoTransform()
+        projection = gdal_dataset.GetProjection()
         nx = gdal_dataset.RasterXSize
         ny = gdal_dataset.RasterYSize
 
         self._georef_info.geo_transform = geo_transform
+        self._georef_info.projection = projection
         self._georef_info.dx = self._georef_info.geo_transform[1]
         self._georef_info.dy = self._georef_info.geo_transform[5]
         self._georef_info.nx = nx 
