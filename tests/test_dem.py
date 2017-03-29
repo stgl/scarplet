@@ -59,10 +59,10 @@ class BaseSpatialGridTestCase(unittest.TestCase):
 
     def test_save(self):
         
-        self.dem.save('test.tif')
-        
-        this_file = os.path.join(os.path.dirname(__file__), 'test.tif')
+        this_file = os.path.join(os.path.dirname(__file__), 'data/big_basin_test.tif')
         test_file = TESTDATA_FILENAME
+        
+        self.dem.save(this_file)
 
         self.assertTrue(filecmp.cmp(this_file, test_file, shallow=False), 'GeoTIFF saved incorrectly')
 
