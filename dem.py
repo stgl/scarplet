@@ -129,13 +129,11 @@ class BaseSpatialGrid(GDALMixin):
 
         driver = gdal.GetDriverByName(GDAL_DRIVER_NAME)
         out_raster = driver.Create(filename, ncols, nrows, 1, dtype)
-        out_raster.SetGeoTransform((x_origin, dx, 0, y_origin, dy))
+        out_raster.SetGeoTransform(self._georef_info.geo_transform)
         out_band = out_raster.GetRasterBand(1)
         out_band.WriteArray(self._griddata)
 
-        srs = osr.SpatialReference()
-        srs.ImportFromEPSG(EPSG_CODE)
-        out_raster.SetProjection(srs.ExportToWkt())
+        out_raster.SetProjection(self._georef_info.projection)
         out_band.FlushCache()
 
     @classmethod
