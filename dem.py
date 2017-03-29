@@ -108,6 +108,9 @@ class BaseSpatialGrid(GDALMixin):
     
     _georef_info = GeorefInfo()
 
+    def __init__(self, filename):
+        self.load(filename)
+
     def plot(self, **kwargs):
         
         fig = plt.figure()
@@ -136,34 +139,30 @@ class BaseSpatialGrid(GDALMixin):
         out_raster.SetProjection(self._georef_info.projection)
         out_band.FlushCache()
 
-    @classmethod
-    def load(cls, filename):
-
-        return_object = cls()
+    def load(self, filename):
 
         gdal_dataset = gdal.Open(filename)
         band = gdal_dataset.GetRasterBand(1)
         nodata = band.GetNoDataValue()
-        return_object._griddata = band.ReadAsArray() 
+        self._griddata = band.ReadAsArray() 
 
         if nodata is not None:
-            nodata_index = np.where(return_object._griddata == nodata)
-            if cls.dtype is not np.uint8:
-                return_object._griddata[nodata_index] = np.NAN
+            nodata_index = np.where(self._griddata == nodata)
+            if self.dtype is not np.uint8:
+                self._griddata[nodata_index] = np.NAN
 
         geo_transform = gdal_dataset.GetGeoTransform()
         nx = gdal_dataset.RasterXSize
         ny = gdal_dataset.RasterYSize
 
-        return_object._georef_info.geo_transform = geo_transform
-        return_object._georef_info.dx = return_object._georef_info.geo_transform[1]
-        return_object._georef_info.dy = return_object._georef_info.geo_transform[5]
-        return_object._georef_info.xllcenter = return_object._georef_info.geo_transform[0] + return_object._georef_info.dx
-        return_object._georef_info.yllcenter = return_object._georef_info.geo_transform[3] - (return_object._georef_info.ny+1)*np.abs(return_object._georef_info.dy)
-        return_object._georef_info.nx = nx 
-        return_object._georef_info.ny = ny
+        self._georef_info.geo_transform = geo_transform
+        self._georef_info.dx = self._georef_info.geo_transform[1]
+        self._georef_info.dy = self._georef_info.geo_transform[5]
+        self._georef_info.xllcenter = self._georef_info.geo_transform[0] + self._georef_info.dx
+        self._georef_info.yllcenter = self._georef_info.geo_transform[3] - (self._georef_info.ny+1)*np.abs(self._georef_info.dy)
+        self._georef_info.nx = nx 
+        self._georef_info.ny = ny
 
-        return return_object
 
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
