@@ -34,8 +34,8 @@ class CalculationMethodsTestCase(unittest.TestCase):
         dy = 5
         grid = self.dem._griddata
 
-        pad_x = np.zeros((self.ny, np.round(dx/2))
-        pad_y = np.zeros((self.nx + 2*np.round(dx/2), np.round(dy/2)))
+        pad_x = np.zeros((self._georef_info.ny, np.round(dx/2))
+        pad_y = np.zeros((self._georef_info.nx + 2*np.round(dx/2), np.round(dy/2)))
         padgrid = np.vstack([pad_y, np.hstack([pad_x, self.dem._griddata, pad_x]), pad_y]])
         self.dem._pad_boundary(dx, dy)
         
