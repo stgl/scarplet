@@ -62,6 +62,24 @@ class CalculationMixin(object):
 
         return del2z
 
+    def _estimate_curvature_noiselevel(self):
+        
+        from scipy import ndimage
+
+        angles = np.linspace(0, np.pi, num=180)
+
+        m = {}
+        sd = {}
+
+        for alpha in angles:
+            del2z = self._calculate_directional_laplacian(alpha)
+            lowpass = ndimage.gaussian_filter(del2z, 3)
+            highpass = del2z - lowpass
+            m[alpha] = np.nanmean(highpass)
+            sd[alpha] = np.nanstd(highpass)
+
+        return m, sd
+
     def _pad_boundary(self, dx, dy):
 
         dx = np.round(dx/2)
