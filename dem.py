@@ -88,14 +88,14 @@ class GeorefInfo(object):
 
 
     def __init__(self):
-        self.geo_transform = 0
-        self.projection = 0
-        self.xllcenter = 0
-        self.yllcenter = 0
-        self.dx = 0
-        self.dy = 0
-        self.nx = 0
-        self.ny = 0
+        self.geo_transform = None
+        self.projection = None
+        self.xllcenter = None
+        self.yllcenter = None
+        self.dx = None
+        self.dy = None
+        self.nx = None 
+        self.ny = None
 
 #class GeographicMixin(object):
 #    pass
@@ -162,8 +162,6 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.yllcenter = self._georef_info.geo_transform[3] - (self._georef_info.ny+1)*np.abs(self._georef_info.dy)
         self._georef_info.nx = nx 
         self._georef_info.ny = ny
-
-
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     pass
