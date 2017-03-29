@@ -30,6 +30,10 @@ class CalculationMethodsTestCase(unittest.TestCase):
         alpha = np.pi/4
         del2z = self.dem._calculate_directional_laplacian(alpha)
 
+    def test_estimate_curvature_noiselevel(self):
+
+        m, s = self.dem._estimate_curvature_noiselevel()
+
     def test_pad_boundary(self):
         
         dx = 5
