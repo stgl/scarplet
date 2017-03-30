@@ -61,7 +61,8 @@ class BaseSpatialGridTestCase(unittest.TestCase):
 
         self.dem.plot(cmap='gist_earth')
 
-    def test_save(self):
+    #@unittest.expectedFailure
+    def test_save(self): # known failure: datatype different in saved test file
         
         this_file = os.path.join(os.path.dirname(__file__), 'data/big_basin_test.tif')
         test_file = TESTDATA_FILENAME
