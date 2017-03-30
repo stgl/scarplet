@@ -73,7 +73,7 @@ class CalculationMixin(object):
 
         for alpha in angles:
             del2z = self._calculate_directional_laplacian(alpha)
-            lowpass = ndimage.gaussian_filter(del2z, 3)
+            lowpass = ndimage.gaussian_filter(del2z, 100)
             highpass = del2z - lowpass
             m[alpha] = np.nanmean(highpass)
             sd[alpha] = np.nanstd(highpass)
@@ -128,7 +128,7 @@ class GeorefInfo(object):
 class BaseSpatialGrid(GDALMixin):
     
 
-    dtype = gdalconst.GDT_Float32
+    dtype = gdalconst.GDT_Float32 # TODO: detect and set dtype
     
     _georef_info = GeorefInfo()
 
@@ -139,9 +139,9 @@ class BaseSpatialGrid(GDALMixin):
         
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        ax.imshow(self._griddata, origin='upper', **kwargs)
+        ax.imshow(self._griddata, origin='lower', **kwargs)
 
-    def save(self, filename): #TODO: make this a class method?
+    def save(self, filename): 
 
         ncols = self._georef_info.nx
         nrows = self._georef_info.ny
