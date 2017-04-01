@@ -29,8 +29,11 @@ def calculate_best_fit_parameters(dem, template_function, **kwargs):
                 snr = snr/noiselevel
 
             best_snr = (best_snr > snr)*best_snr + (best_snr < snr)*snr
+            best_amplitude = (best_snr > snr)*best_amplitude + (best_snr < snr)*this_amplitude
             best_alpha = (best_snr > snr)*best_alpha + (best_snr < snr)*this_alpha
             best_age = (best_snr > snr)*best_age + (best_snr < snr)*this_age
+
+    return best_amplitude, best_age, best_alpha, best_snr 
 
 def match_template(data, template_function, template_args):
     
