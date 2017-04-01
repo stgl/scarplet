@@ -32,3 +32,25 @@ def calculate_best_fit_parameters(dem, template_function, **kwargs):
             best_alpha = (best_snr > snr)*best_alpha + (best_snr < snr)*this_alpha
             best_age = (best_snr > snr)*best_age + (best_snr < snr)*this_age
 
+def match_template(data, template_function, template_args):
+    
+    template = template_function(template_args)
+
+    if data.ndim < template.ndim:
+        raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
+    if np.any(np.less(data.shape, template.shape)):
+        raise ValueError("Size of template must be less than or equal to size of data matrix")
+
+    pad_width = tuple((wid, wid) for wid in template.shape)
+
+    data = np.pad(data, pad_width=pad_width, mode='symmetric')
+
+    xcorr = signal.fftconvolve(data, template)
+    template_power = sum(np.ravel(template)**2)
+    
+    amplitude = xcorr/template_power
+    #error =
+    #snr = (amplitude**2)*template_power/error
+
+    return amplitude
+    #return amplitude, snr
