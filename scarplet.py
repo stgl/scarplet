@@ -49,9 +49,9 @@ def match_template(data, template_function, template_args):
     data = np.pad(data, pad_width=pad_width, mode='symmetric')
 
     xcorr = signal.fftconvolve(data, template)
-    template_power = sum(np.ravel(template)**2)
+    template_sum = sum(np.ravel(template)**2)
     
-    amplitude = xcorr/template_power
+    amplitude = xcorr/template_sum
     #error =
     #snr = (amplitude**2)*template_power/error
 
