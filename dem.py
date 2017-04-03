@@ -13,6 +13,9 @@ GDAL_DRIVER_NAME = 'GTiff'
 
 class CalculationMixin(object):
 
+    def __init__(self):
+        
+        pass
 
     def _calculate_slope(self):
         
@@ -112,6 +115,7 @@ class GeorefInfo(object):
 
 
     def __init__(self):
+
         self.geo_transform = None
         self.projection = None
         self.xllcenter = None
@@ -133,6 +137,7 @@ class BaseSpatialGrid(GDALMixin):
     _georef_info = GeorefInfo()
 
     def __init__(self, filename):
+
         self.load(filename)
 
     def plot(self, **kwargs):
