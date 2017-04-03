@@ -1,2 +1,2 @@
 # scarplet-python
-Wavelet-based detection of fault scarps in ALSM data
+Python framework for template matching to detect fault scarps in ALSM data

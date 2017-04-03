@@ -85,19 +85,21 @@ class CalculationMixin(object):
 
     def _pad_boundary(self, dx, dy):
 
-        dx = np.round(dx/2)
-        dy = np.round(dy/2)
+        #dx = np.round(dx/2)
+        #dy = np.round(dy/2)
 
-        nx = self._georef_info.nx
-        ny = self._georef_info.ny
+        #nx = self._georef_info.nx
+        #ny = self._georef_info.ny
 
-        pad_x = np.zeros((ny, dx))
-        z_pad = np.hstack([pad_x, self._griddata, pad_x]) 
-        
-        nx += 2*dx 
-        
-        pad_y = np.zeros((dy, nx))
-        z_pad = np.vstack([pad_y, z_pad, pad_y]) 
+        #pad_x = np.zeros((ny, dx))
+        #z_pad = np.hstack([pad_x, self._griddata, pad_x]) 
+        #
+        #nx += 2*dx 
+        #
+        #pad_y = np.zeros((dy, nx))
+        #z_pad = np.vstack([pad_y, z_pad, pad_y]) 
+
+        self._griddata = np.pad(self._griddata, pad_width=(dy, dx), mode='constant')
 
         nx, ny = self._griddata.shape
         
