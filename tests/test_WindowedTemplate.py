@@ -33,7 +33,7 @@ def generate_synthetic_scarp(a, b, kt, nx, ny, de=1, sig2=0, theta=0):
     
 
     z = -math.erf(yrot/(2*np.sqrt(kt))) + b*yrot
-    z = z + sig2*np.random((ny, nx))
+    z = z + sig2*np.random.randn(ny, nx)
 
     synthetic = dem.DEMGrid()
     geo_tranform = (0, de, 0, 0, 0, -de) 
