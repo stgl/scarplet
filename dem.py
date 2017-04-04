@@ -197,4 +197,10 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.yllcenter = self._georef_info.geo_transform[3] - (self._georef_info.ny+1)*np.abs(self._georef_info.dy)
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
-    pass
+    
+    def __init__(self):
+        pass
+    
+    def plot(self, **kwargs):
+        
+        self.plot(cmap='gray')
