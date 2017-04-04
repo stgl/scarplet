@@ -9,13 +9,12 @@ from scipy import signal
 
 eps = np.spacing(1)
 
-@profile
+
 def calculate_best_fit_parameters(dem, Template, **kwargs):
     
     template_args = parse_args(**kwargs)
     template_args['nx'] = dem._georef_info.nx
     template_args['ny'] = dem._georef_info.ny
-
 
     age_max = 1 
     age_min = 0
@@ -39,6 +38,7 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
 
             template_args['alpha'] = this_alpha
             template_args['age'] = this_age
+            template = template_function(template_args)
             template = Template(template_args).template()
 
             curv = dem._calculate_directional_laplacian(this_alpha)
@@ -79,12 +79,15 @@ def match_template(data, template):
     amp = xcorr/template_sum
     
     n = np.sum(M) + eps
-    error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
-    snr = (amp**2)*template_sum/error
+    T1 = template_sum*amp**2
+    T2 = -2*xcorr
+    T3 = fftshift(ifft2(fc2*fm2))
+    error = (1/n)*(T1 + T2 + T3) + eps
+    #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
+    snr = T1/error
     error = np.real(error)
     snr = np.real(snr)
 
-    #return amp
     return amp, snr
 
 def parse_args(**kwargs):
