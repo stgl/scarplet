@@ -1,46 +1,49 @@
 
+import dem
 import unittest
-import math
 import numpy as np
+from scipy.special import erf
 from osgeo import gdal, osr, ogr
-
 
 DEFAULT_EPSG = 32610 # UTM 10N
 
+
 class WindowedTemplateTestCase(unittest.TestCase):
-
-
-
+    pass    
 
 
 class ScarpTestCase(unittest.TestCase):
-
+    pass
 
 class MorletTestCase(unittest.TestCase):
+    pass
 
 
-
-
-def generate_synthetic_scarp(a, b, kt, nx, ny, de=1, sig2=0, theta=0):
+def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
     """ Generate DEM of synthetic scarp for testing """
     
-    x = np.linspace(-nx/2, nx/2, num=nx)
-    y = np.linspace(-ny/2, ny/2, num=ny)
-    xv, yv = np.meshgrid(x, y)
+    nx = 2*x_max/de
+    ny = 2*y_max/de
+    x = np.linspace(-x_max, x_max, num=nx)
+    y = np.linspace(-y_max, y_max, num=ny)
+    x, y = np.meshgrid(x, y)
     
-    xrot = xv*np.cos(theta) + yv*np.sin(theta)
-    yrot = -xv*np.sin(theta) + yv*np.cos(theta)
-    
+    xrot = x*np.cos(theta) + y*np.sin(theta)
+    yrot = -x*np.sin(theta) + y*np.cos(theta)
 
-    z = -math.erf(yrot/(2*np.sqrt(kt))) + b*yrot
+    z = -erf(yrot/(2*np.sqrt(kt))) + b*yrot
     z = z + sig2*np.random.randn(ny, nx)
 
+    return set_up_grid(z, nx, ny, de) 
+
+def set_up_grid(data, nx, ny, de):
+
     synthetic = dem.DEMGrid()
-    geo_tranform = (0, de, 0, 0, 0, -de) 
+    geo_transform = (0, de, 0, 0, 0, -de) 
     projection = osr.SpatialReference()
     projection.ImportFromEPSG(DEFAULT_EPSG)
 
-    synthetic._griddata = z
+    synthetic._griddata = data 
     synthetic._georef_info.geo_transform = geo_transform
     synthetic._georef_info.projection = projection
     synthetic._georef_info.dx = de 
@@ -51,5 +54,3 @@ def generate_synthetic_scarp(a, b, kt, nx, ny, de=1, sig2=0, theta=0):
     synthetic._georef_info.yllcenter = 0 
 
     return synthetic
-
-
