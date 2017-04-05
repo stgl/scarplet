@@ -1,9 +1,14 @@
 """ Class for windowed template matching over a spatial grid """
 
+import dem
+from osgeo import osr, ogr, gdal
+
+DEFAULT_EPSG = 32610 # UTM 10N
+
 import math
 import numpy as np
 from scipy.signal import convolve2d
-from scipy.special import erfinv
+from scipy.special import erf, erfinv
 
 import matplotlib.pyplot as plt
 
@@ -34,18 +39,19 @@ class Scarp(WindowedTemplate):
     name = "Vertical Scarp"
 
     def __init__(self, d, kt, alpha, nx, ny, de):
+
         self.d = d
         self.kt = kt
         self.alpha = alpha
         self.nx = nx
         self.ny = ny
         self.de = de
+        
+        frac = 0.9
+        self.c = abs(2*np.sqrt(self.kt)*erfinv(frac))
 
     def template(self):
 
-        frac = 0.9
-        c = abs(2*np.sqrt(self.kt)*erfinv(frac))
-        
         x = self.de*np.linspace(1, self.nx, num=self.nx)
         y = self.de*np.linspace(1, self.ny, num=self.ny)
         x = x - np.mean(x)
@@ -57,16 +63,31 @@ class Scarp(WindowedTemplate):
 
         W = (-xr/(2*self.kt**(3/2)*np.sqrt(np.pi)))*np.exp(-xr**2/(4*self.kt))
 
-        mask = (abs(xr) < c) & (abs(yr) < self.d)
+        mask = (abs(xr) < self.c) & (abs(yr) < self.d)
         W = W*mask
+        #W = W.T
 
-        fig = plt.figure()
-        plt.subplot(2,1,1)
-        plt.imshow(W, cmap='bwr')
-        plt.subplot(2,1,2)
-        plt.plot(W[self.nx/2, ::])
+        return W
 
-        return W, mask
+    def window_limits(self):
+
+        x4 = self.d*np.cos(self.alpha-np.pi/2)
+        y4 = self.d*np.sin(self.alpha-np.pi/2)
+        x1 = self.d*np.cos(self.alpha)
+        y1 = self.d*np.sin(self.alpha)
+        an_y = abs((x4 - x1) + 2*self.c*np.cos(self.alpha-np.pi/2))
+        an_x = abs((y1 - y4) + 2*self.c*np.sin(self.alpha-np.pi/2))
+
+        x = self.de*np.linspace(1, self.nx, num=self.nx)
+        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = x - np.mean(x)
+        y = y - np.mean(y)
+
+        X, Y = np.meshgrid(x, y)
+        mask = ((X < (min(x) + an_x)) | (X > (max(x) - an_x)) | (Y < (min(y) + an_y)) | (Y > (max(y) - an_y)))
+
+        return mask
+
 
 class Channel(WindowedTemplate):
     
@@ -96,4 +117,38 @@ class Morlet(WindowedTemplate):
         pass
 
 
+def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
+    """ Generate DEM of synthetic scarp for testing """
+    
+    nx = 2*x_max/de
+    ny = 2*y_max/de
+    x = np.linspace(-x_max, x_max, num=nx)
+    y = np.linspace(-y_max, y_max, num=ny)
+    x, y = np.meshgrid(x, y)
+    
+    xrot = x*np.cos(theta) + y*np.sin(theta)
+    yrot = -x*np.sin(theta) + y*np.cos(theta)
 
+    z = -erf(yrot/(2*np.sqrt(kt))) + b*yrot
+    z = z + sig2*np.random.randn(ny, nx)
+
+    return set_up_grid(z, nx, ny, de) 
+
+def set_up_grid(data, nx, ny, de):
+
+    synthetic = dem.DEMGrid()
+    geo_transform = (0, de, 0, 0, 0, -de) 
+    projection = osr.SpatialReference()
+    projection.ImportFromEPSG(DEFAULT_EPSG)
+
+    synthetic._griddata = data 
+    synthetic._georef_info.geo_transform = geo_transform
+    synthetic._georef_info.projection = projection
+    synthetic._georef_info.dx = de 
+    synthetic._georef_info.dy = de 
+    synthetic._georef_info.nx = nx 
+    synthetic._georef_info.ny = ny
+    synthetic._georef_info.xllcenter = 0 
+    synthetic._georef_info.yllcenter = 0 
+
+    return synthetic
