@@ -4,7 +4,7 @@ grid """
 import dem
 import WindowedTemplate as wt
 import numpy as np
-from numpy.fft import fft2, ifft2, fftshift
+from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 from scipy import signal
 
 eps = np.spacing(1)
