@@ -9,7 +9,7 @@ from scipy import signal
 
 eps = np.spacing(1)
 
-
+@profile
 def calculate_best_fit_parameters(dem, Template, **kwargs):
     
     template_args = parse_args(**kwargs)
@@ -38,12 +38,15 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
 
             template_args['alpha'] = this_alpha
             template_args['age'] = this_age
-            template = template_function(template_args)
-            template = Template(template_args).template()
+            t = Template(template_args)
+            template = t.template()
 
             curv = dem._calculate_directional_laplacian(this_alpha)
             
             amp, snr = match_template(curv, template)
+            mask = t.window_limits()
+            amp[mask] = 0 
+            snr[mask] = 0
 
             best_snr = (best_snr > snr)*best_snr + (best_snr < snr)*snr
             best_amp = (best_snr > snr)*best_amp + (best_snr < snr)*amp
@@ -84,8 +87,8 @@ def match_template(data, template):
     T3 = fftshift(ifft2(fc2*fm2))
     error = (1/n)*(T1 + T2 + T3) + eps
     #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
-    snr = T1/error
     error = np.real(error)
+    snr = T1/error
     snr = np.real(snr)
 
     return amp, snr
