@@ -4,10 +4,11 @@ grid """
 import dem
 import WindowedTemplate as wt
 import numpy as np
+import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
-from scipy import signal
 
 eps = np.spacing(1)
+pyfftw.interfaces.cache.enable()
 
 @profile
 def calculate_best_fit_parameters(dem, Template, **kwargs):
