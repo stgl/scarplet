@@ -10,6 +10,21 @@ from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 eps = np.spacing(1)
 pyfftw.interfaces.cache.enable()
 
+def calculate_amplitude(dem, Template, d, age, alpha):
+    ny, nx = dem._griddata.shape
+    de = dem._georef_info.dx
+    t = Template(d, age, alpha, nx, ny, de)
+    template = t.template()
+
+    curv = dem._calculate_directional_laplacian(alpha)
+    
+    amp, snr = match_template(curv, template)
+    mask = t.window_limits()
+    amp[mask] = 0 
+    snr[mask] = 0 
+
+    return amp, snr
+
 @profile
 def calculate_best_fit_parameters(dem, Template, **kwargs):
     
@@ -17,7 +32,7 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
     template_args['nx'] = dem._georef_info.nx
     template_args['ny'] = dem._georef_info.ny
 
-    age_max = 1 
+    age_max = 3.5 
     age_min = 0
     age_stepsize = 0.1
     ang_stepsize = 1
@@ -55,6 +70,8 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             best_age = (best_snr > snr)*best_age + (best_snr < snr)*this_age
             
     return best_amp, best_age, best_alpha, best_snr 
+
+
 
 @profile
 def match_template(data, template):
