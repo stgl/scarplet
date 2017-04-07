@@ -34,10 +34,11 @@ def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
     z = -erf(yrot/(2*np.sqrt(kt))) + b*yrot
     z = z + sig2*np.random.randn(ny, nx)
 
-    return set_up_grid(z, nx, ny, de) 
+    return set_up_grid(z, de) 
 
-def set_up_grid(data, nx, ny, de):
+def set_up_grid(data, de):
 
+    ny, nx = data.shape
     synthetic = dem.DEMGrid()
     geo_transform = (0, de, 0, 0, 0, -de) 
     projection = osr.SpatialReference()
