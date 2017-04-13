@@ -25,7 +25,7 @@ def calculate_amplitude(dem, Template, d, age, alpha):
 
     return amp, snr
 
-@profile
+#@profile
 def calculate_best_fit_parameters(dem, Template, **kwargs):
     
     template_args = parse_args(**kwargs)
@@ -71,9 +71,22 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             
     return best_amp, best_age, best_alpha, best_snr 
 
+def compare_fits(grids):
+    s = grids[0].amplitude.shape
+    best_snr = np.zeros(s)
+    best_amp = np.zeros(s)
+    best_age = np.zeros(s)
+    best_alpha = np.zeros(s)
 
+    for fit in grids:
+        best_snr = (best_snr > fit.snr)*best_snr + (best_snr < fit.snr)*fit.snr
+        best_amp = (best_snr > fit.snr)*best_amp + (best_snr < fit.snr)*fit.amplitude
+        best_alpha = (best_snr > fit.snr)*best_alpha + (best_snr < fit.snr)*fit.alpha
+        best_age = (best_snr > fit.snr)*best_age + (best_snr < fit.snr)*fit.age
 
-@profile
+    return best_amp, best_age, best_alpha, best_snr
+
+#@profile
 def match_template(data, template):
     
     #template = template_function(template_args)
@@ -113,3 +126,13 @@ def match_template(data, template):
 
 def parse_args(**kwargs):
     pass
+
+
+class TemplateFit(object):
+    def __init__(d, age, alpha, amplitude, snr):
+        self.d = d
+        self.age = age
+        self.alpha = alpha
+        self.amplitude = amplitude
+        self.snr = snr
+
