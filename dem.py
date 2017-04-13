@@ -208,3 +208,17 @@ class Hillshade(BaseSpatialGrid):
 
         plt.imshow(self._griddata, alpha=1, cmap='gray')
 
+class ParameterGrid(BaseSpatialGrid):
+
+    def __init__(self, d, name='', units=''):
+    
+        self.d = d
+        self.name = name
+        self.units = units
+
+    def plot(self, alpha, colormap):
+
+        plt.imshow(self._griddata, alpha=alpha, cmap=colormap)
+        cb = plt.colorbar(orientation='horizontal', extend='both')
+        label = self.name + ' [' + self.units + ']'
+        cb.set_label(label)
