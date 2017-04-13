@@ -204,9 +204,15 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
 
 class Hillshade(BaseSpatialGrid):
     
-    def plot(self);
+    def __init__(self, dem, az=315, elev=45):
+        
+        self._georef_info = dem._georef_info 
+        ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
+        self._hillshade = ls.hillshade(dem._griddata, vert_exag=1, dx=self._georef_info.dx, dy=self._georef_info.dy)
 
-        plt.imshow(self._griddata, alpha=1, cmap='gray')
+    def plot(self, az=315, elev=45);
+        
+        plt.imshow(self._hillshade, alpha=1, cmap='gray')
 
 class ParameterGrid(BaseSpatialGrid):
 
