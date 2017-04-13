@@ -210,7 +210,7 @@ class Hillshade(BaseSpatialGrid):
         ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
         self._hillshade = ls.hillshade(dem._griddata, vert_exag=1, dx=self._georef_info.dx, dy=self._georef_info.dy)
 
-    def plot(self, az=315, elev=45);
+    def plot(self, az=315, elev=45):
         
         plt.imshow(self._hillshade, alpha=1, cmap='gray')
 
