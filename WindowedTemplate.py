@@ -16,7 +16,12 @@ class WindowedTemplate(object):
     
     
     def __init__(self):
-        pass
+        
+        self.d = None
+        self.alpha = None
+        self.nx = None
+        self.ny = None
+        self.de = None
 
     def parse_args(self, **kwargs):
         
@@ -31,6 +36,24 @@ class WindowedTemplate(object):
     def template(self):
         pass
 
+    def get_window_limits(self):
+
+        x4 = self.d*np.cos(self.alpha-np.pi/2)
+        y4 = self.d*np.sin(self.alpha-np.pi/2)
+        x1 = self.d*np.cos(self.alpha)
+        y1 = self.d*np.sin(self.alpha)
+        an_y = abs((x4 - x1) + 2*self.c*np.cos(self.alpha-np.pi/2))
+        an_x = abs((y1 - y4) + 2*self.c*np.sin(self.alpha-np.pi/2))
+
+        x = self.de*np.linspace(1, self.nx, num=self.nx)
+        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = x - np.mean(x)
+        y = y - np.mean(y)
+
+        X, Y = np.meshgrid(x, y)
+        mask = ((X < (min(x) + an_x)) | (X > (max(x) - an_x)) | (Y < (min(y) + an_y)) | (Y > (max(y) - an_y)))
+
+        return mask
     
 
 class Scarp(WindowedTemplate):
@@ -70,24 +93,7 @@ class Scarp(WindowedTemplate):
         return W
 
 
-    def get_window_limits(self):
 
-        x4 = self.d*np.cos(self.alpha-np.pi/2)
-        y4 = self.d*np.sin(self.alpha-np.pi/2)
-        x1 = self.d*np.cos(self.alpha)
-        y1 = self.d*np.sin(self.alpha)
-        an_y = abs((x4 - x1) + 2*self.c*np.cos(self.alpha-np.pi/2))
-        an_x = abs((y1 - y4) + 2*self.c*np.sin(self.alpha-np.pi/2))
-
-        x = self.de*np.linspace(1, self.nx, num=self.nx)
-        y = self.de*np.linspace(1, self.ny, num=self.ny)
-        x = x - np.mean(x)
-        y = y - np.mean(y)
-
-        X, Y = np.meshgrid(x, y)
-        mask = ((X < (min(x) + an_x)) | (X > (max(x) - an_x)) | (Y < (min(y) + an_y)) | (Y > (max(y) - an_y)))
-
-        return mask
 
 
 class Channel(WindowedTemplate):
