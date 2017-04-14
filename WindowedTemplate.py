@@ -69,7 +69,8 @@ class Scarp(WindowedTemplate):
 
         return W
 
-    def window_limits(self):
+
+    def get_window_limits(self):
 
         x4 = self.d*np.cos(self.alpha-np.pi/2)
         y4 = self.d*np.sin(self.alpha-np.pi/2)

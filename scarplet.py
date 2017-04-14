@@ -60,7 +60,7 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             curv = dem._calculate_directional_laplacian(this_alpha)
             
             amp, snr = match_template(curv, template)
-            mask = t.window_limits()
+            mask = t.get_window_limits()
             amp[mask] = 0 
             snr[mask] = 0
 
@@ -72,6 +72,7 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
     return best_amp, best_age, best_alpha, best_snr 
 
 def compare_fits(grids):
+
     s = grids[0].amplitude.shape
     best_snr = np.zeros(s)
     best_amp = np.zeros(s)
@@ -129,7 +130,9 @@ def parse_args(**kwargs):
 
 
 class TemplateFit(object):
+
     def __init__(d, age, alpha, amplitude, snr):
+    
         self.d = d
         self.age = age
         self.alpha = alpha
