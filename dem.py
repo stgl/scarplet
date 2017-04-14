@@ -71,15 +71,15 @@ class CalculationMixin(object):
 
         angles = np.linspace(0, np.pi, num=180)
 
-        m = {}
-        sd = {}
+        m = [] 
+        sd = []
 
         for alpha in angles:
             del2z = self._calculate_directional_laplacian(alpha)
             lowpass = ndimage.gaussian_filter(del2z, 100)
             highpass = del2z - lowpass
-            m[alpha] = np.nanmean(highpass)
-            sd[alpha] = np.nanstd(highpass)
+            m.append(np.nanmean(highpass))
+            sd.append(np.nanstd(highpass))
 
         return m, sd
 
@@ -138,9 +138,12 @@ class BaseSpatialGrid(GDALMixin):
     
     _georef_info = GeorefInfo()
 
-    def __init__(self, filename):
-
-        self.load(filename)
+    def __init__(self, filename=None):
+        if filename is not None:
+            self.load(filename)
+        else:
+            self._georef_info = _georef_info
+            self._griddata = np.empty((0,0))
 
     def plot(self, **kwargs):
         
@@ -198,9 +201,14 @@ class BaseSpatialGrid(GDALMixin):
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     
-    def __init__(self, filename):
+    def __init__(self, filename=None):
 
-        self.load(filename)
+        if filename is not None:
+            self.load(filename)
+        else:
+            self._georef_info = _georef_info
+            self._griddata = np.empty((0,0))
+
 
 class Hillshade(BaseSpatialGrid):
     
@@ -214,7 +222,8 @@ class Hillshade(BaseSpatialGrid):
   
         ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
         self._hillshade = ls.hillshade(self._griddata, vert_exag=1, dx=self._georef_info.dx, dy=self._georef_info.dy)      
-        plt.imshow(self._hillshade, alpha=1, cmap='gray')
+        plt.imshow(self._hillshade, alpha=1, cmap='gray', origin='lower')
+        plt.show()
 
 class ParameterGrid(BaseSpatialGrid):
 
@@ -225,9 +234,9 @@ class ParameterGrid(BaseSpatialGrid):
         self.name = name
         self.units = units
 
-    def plot(self, alpha, colormap):
+    def plot(self, alpha=0.5, colormap='viridis'):
 
         plt.imshow(self._griddata, alpha=alpha, cmap=colormap)
-        cb = plt.colorbar(orientation='horizontal', extend='both')
+        cb = plt.colorbar(orientation='horizontal', extend='both', origin='lower')
         label = self.name + ' [' + self.units + ']'
         cb.set_label(label)
