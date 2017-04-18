@@ -115,7 +115,6 @@ class GDALMixin(object):
 
 class GeorefInfo(object):
 
-
     def __init__(self):
 
         self.geo_transform = None
@@ -139,6 +138,7 @@ class BaseSpatialGrid(GDALMixin):
     _georef_info = GeorefInfo()
 
     def __init__(self, filename=None):
+
         if filename is not None:
             self.load(filename)
         else:

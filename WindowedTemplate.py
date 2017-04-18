@@ -93,9 +93,6 @@ class Scarp(WindowedTemplate):
         return W
 
 
-
-
-
 class Channel(WindowedTemplate):
     
     
