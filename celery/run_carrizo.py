@@ -17,4 +17,6 @@ compare_callback = tasks.compare_fits.s()
 
 res = chord(template_fits)(compare_callback)
 
+scarplet.save_results(carrizo, res, base_dir='results/')
 
+res.forget()
