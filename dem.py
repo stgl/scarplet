@@ -233,6 +233,7 @@ class ParameterGrid(BaseSpatialGrid):
 
     def __init__(self, dem, data, d, name='', units=''):
         
+        self._georef_info = dem._georef_info
         self._griddata = data
         self.d = d
         self.name = name
