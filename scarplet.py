@@ -128,6 +128,19 @@ def match_template(data, template):
 def parse_args(**kwargs):
     pass
 
+def save_results(dem, results, base_dir=''):
+
+    labels = {'amplitude' : 'm',
+            'morphologic age' : 'm^2',
+            'orientation' : 'deg.',
+            'signal-to-noise ratio' : ''}
+
+    for p in labels:
+        grid = dem.ParameterGrid(dem, results, d, name=p, units=labels[p])
+        filename = '_'.join(p.split(' ')) + '_' + dem.label + '.tif'
+        filename = base_dir + filename
+        grid.save(filename)
+
 
 class TemplateFit(object):
 
