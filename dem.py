@@ -174,6 +174,8 @@ class BaseSpatialGrid(GDALMixin):
         out_band.FlushCache()
 
     def load(self, filename): #TODO: make this a class method?
+        
+        self.label = filename.split('_')[0]
 
         gdal_dataset = gdal.Open(filename)
         band = gdal_dataset.GetRasterBand(1)
@@ -206,6 +208,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
         if filename is not None:
             self.load(filename)
         else:
+            self.label = ''
             self._georef_info = _georef_info
             self._griddata = np.empty((0,0))
 
@@ -225,9 +228,10 @@ class Hillshade(BaseSpatialGrid):
         plt.imshow(self._hillshade, alpha=1, cmap='gray', origin='lower')
         plt.show()
 
+
 class ParameterGrid(BaseSpatialGrid):
 
-    def __init__(self, data, d, name='', units=''):
+    def __init__(self, dem, data, d, name='', units=''):
         
         self._griddata = data
         self.d = d
