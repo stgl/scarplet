@@ -19,7 +19,7 @@ def calculate_amplitude(dem, Template, d, age, alpha):
     curv = dem._calculate_directional_laplacian(alpha)
     
     amp, snr = match_template(curv, template)
-    mask = t.window_limits()
+    mask = t.get_window_limits()
     amp[mask] = 0 
     snr[mask] = 0 
 
@@ -28,9 +28,9 @@ def calculate_amplitude(dem, Template, d, age, alpha):
 #@profile
 def calculate_best_fit_parameters(dem, Template, **kwargs):
     
-    template_args = parse_args(**kwargs)
-    template_args['nx'] = dem._georef_info.nx
-    template_args['ny'] = dem._georef_info.ny
+    #args = parse_args(**kwargs)
+    d = 100
+    de = 1
 
     age_max = 3.5 
     age_min = 0
@@ -42,6 +42,7 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
     orientations = np.linspace(-np.pi/2, np.pi/2, num_angles)
     ages = np.linspace(age_min, age_max, num_ages)
 
+    ny, nx = dem._griddata.shape
     best_amp = np.zeros((ny, nx))
     best_age = np.zeros((ny, nx))
     best_alpha = np.zeros((ny, nx))
@@ -52,9 +53,10 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             
             this_age = 10**this_age
 
-            template_args['alpha'] = this_alpha
-            template_args['age'] = this_age
-            t = Template(template_args)
+            #args['kt'] = this_age
+            #args['alpha'] = this_alpha
+            #t = Template(args)
+            t = Template(d, this_age, this_alpha, nx, ny, de)
             template = t.template()
 
             curv = dem._calculate_directional_laplacian(this_alpha)
@@ -117,16 +119,13 @@ def match_template(data, template):
     T1 = template_sum*amp**2
     T2 = -2*xcorr
     T3 = fftshift(ifft2(fc2*fm2))
-    error = (1/n)*(T1 + T2 + T3) + eps
+    error = (1/n)*(T1 + T2 + T3) + eps # avoid small-magnitude dvision
     #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
     error = np.real(error)
     snr = T1/error
     snr = np.real(snr)
 
     return amp, snr
-
-def parse_args(**kwargs):
-    pass
 
 def save_results(dem, results, base_dir=''):
 
