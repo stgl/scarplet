@@ -3,14 +3,13 @@
 import dem
 from osgeo import osr, ogr, gdal
 
-DEFAULT_EPSG = 32610 # UTM 10N
-
 import math
 import numpy as np
 from scipy.signal import convolve2d
 from scipy.special import erf, erfinv
-
 import matplotlib.pyplot as plt
+
+DEFAULT_EPSG = 32610 # UTM 10N
 
 class WindowedTemplate(object):
     
@@ -130,6 +129,7 @@ def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
     y = np.linspace(-y_max, y_max, num=ny)
     x, y = np.meshgrid(x, y)
     
+    theta = np.pi/2 - theta
     xrot = x*np.cos(theta) + y*np.sin(theta)
     yrot = -x*np.sin(theta) + y*np.cos(theta)
 
