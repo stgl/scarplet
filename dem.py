@@ -201,7 +201,10 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.xllcenter = self._georef_info.geo_transform[0] + self._georef_info.dx
         self._georef_info.yllcenter = self._georef_info.geo_transform[3] - (self._georef_info.ny+1)*np.abs(self._georef_info.dy)
 
+
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
+    
+    _georef_info = GeorefInfo()
     
     def __init__(self, filename=None):
 
@@ -209,7 +212,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self.load(filename)
         else:
             self.label = ''
-            self._georef_info = _georef_info
+            self._georef_info = GeorefInfo() 
             self._griddata = np.empty((0,0))
 
 
