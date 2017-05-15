@@ -24,9 +24,10 @@ def download_directory(url, working_dir='data/'):
         os.mkdir(dir_name)
         file_names = list_files_from_url(url)
         for fn in file_names:
-            urllib.urlretrieve(os.path.join(url, fn), os.path.join(dir_name, fn))
+            if not os.path.exists(os.path.join(dir_name, fn)):
+                urllib.urlretrieve(os.path.join(url, fn), os.path.join(dir_name, fn))
 
-def find_matching_files(dataset_name, nx=10, ny=10):
+def find_matching_files(dataset_name, nx, ny, working_dir='data/'):
     """
     Find matching filenames by NCAL survey naming conventions.
     Survey data are named by the convention:
@@ -45,14 +46,18 @@ def find_matching_files(dataset_name, nx=10, ny=10):
     lly = int(s[1][0:4])*1000
 
     code = 'fg'
-    matching_names = [form_dataset_name(code, llx + dx*1000, lly + dy*1000) 
-                     for dx in range(1,nx) for dy in range(1,ny)]
+    names = [form_dataset_name(code, llx + dx*1000, lly + dy*1000) 
+                     for dx in range(-nx,nx) for dy in range(-ny,ny)]
     
+    # TODO: find a Pythonic way to do this
+    matching_names = []
+    for fn in names:
+        if os.path.exists(os.path.join(working_dir, fn)):
+            matching_names.append(fn)
+
     return matching_names
 
 def form_dataset_name(code, llx, lly):
-    llx = llx 
-    lly = lly
     return code + str(llx / 1000) + '_' + str(lly / 1000)
 
 def merge_grids_from_names(filenames, outfilename='merged.tif', nodata_value='-9999'):
@@ -116,13 +121,14 @@ if __name__ == "__main__":
     for fn in dataset_names[0:500]:
         download_directory(os.path.join(base_url, fn))
 
-    num_total = 500
-    num_tiles = 25 
-    for offset in xrange(0, num_total, num_tiles): 
-        print("Merging rasters (" + str(offset/num_tiles + 1) + "/" + str(num_total/num_tiles) + ")")
-        # TODO: add working dir as parameter
-        # TODO: add file parameter, don't hard-code ArcInfo grid file
-        files_to_merge = ['data/' + dataset_names[offset+i] + 'w001001.adf' for i in range(num_tiles)]
-        merge_grids_from_names(files_to_merge)
-        # TODO: get gdal_merge argv working and remove this hack
-        os.rename('out.tif', 'merged_' + str(offset/num_tiles + 1) + '.tif') 
+    print("Merging rasters ...")
+    # TODO: add working dir as parameter
+    # TODO: add file parameter, don't hard-code ArcInfo grid file
+    #files_to_merge = ['data/' + dataset_names[offset+i] + 'w001001.adf' for i in range(num_tiles)]
+    base_filename = dataset_names[0]
+    files_to_merge = find_matching_files(base_filename, nx=20, ny=20)
+    print("Base raster: " + base_filename)
+    print("Merging " + str(len(files_to_merge)) + " files")
+    files_to_merge = ['data/' + fn + '/w001001.adf' for fn in files_to_merge]
+    merge_grids_from_names(files_to_merge)
+    # TODO: get gdal_merge argv working and remove this hack
