@@ -17,7 +17,7 @@ import gdal_merge
 
 #def download(filename):
 
-def download_directory(url, working_dir='data/'):
+def download_directory(url, working_dir='/media/rmsare/data/ot_data/'):
     s = url.split('/')
     dir_name = working_dir + s[-2]
     if not os.path.exists(dir_name):
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     
     print("Downloading rasters...")
     dataset_names = list_folders_from_url(base_url)
-    for fn in dataset_names[0:500]:
+    for fn in dataset_names[0:50]:
         download_directory(os.path.join(base_url, fn))
 
     print("Merging rasters ...")
@@ -129,6 +129,7 @@ if __name__ == "__main__":
     files_to_merge = find_matching_files(base_filename, nx=20, ny=20)
     print("Base raster: " + base_filename)
     print("Merging " + str(len(files_to_merge)) + " files")
-    files_to_merge = ['data/' + fn + '/w001001.adf' for fn in files_to_merge]
+    dest_dir = '/media/rmsare/data/ot_data/'
+    files_to_merge = [dest_dir + fn + '/w001001.adf' for fn in files_to_merge]
     merge_grids_from_names(files_to_merge)
     # TODO: get gdal_merge argv working and remove this hack
