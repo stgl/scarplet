@@ -1,8 +1,9 @@
 """
-Tools for downloading and stitching DEM rasters from OpenTopography holding
+Tools for downloading and stitching DEM rasters from OpenTopography holdings
 """
 
-import os, sys
+import os, sys, shutil
+import numpy as np
 
 import requests
 import urllib
@@ -12,10 +13,10 @@ from bs4 import BeautifulSoup
 
 from osgeo import gdal, ogr, osr
 
+from copy import copy
+
 sys.path.append('/usr/bin')
 import gdal_merge
-
-#def download(filename):
 
 def download_directory(url, working_dir='/media/rmsare/data/ot_data/'):
     s = url.split('/')
@@ -27,7 +28,7 @@ def download_directory(url, working_dir='/media/rmsare/data/ot_data/'):
             if not os.path.exists(os.path.join(dir_name, fn)):
                 urllib.urlretrieve(os.path.join(url, fn), os.path.join(dir_name, fn))
 
-def find_matching_files(dataset_name, nx, ny, working_dir='data/'):
+def find_matching_files(dataset_name, nx, ny, working_dir='/media/rmsare/data/ot_data/'):
     """
     Find matching filenames by NCAL survey naming conventions.
     Survey data are named by the convention:
@@ -50,21 +51,24 @@ def find_matching_files(dataset_name, nx, ny, working_dir='data/'):
                      for dx in range(-nx,nx) for dy in range(-ny,ny)]
     
     # TODO: find a Pythonic way to do this
-    matching_names = []
+    matching_files = []
     for fn in names:
         if os.path.exists(os.path.join(working_dir, fn)):
-            matching_names.append(fn)
+            matching_files.append(file_info(fn))
 
-    return matching_names
+    return matching_files_
 
 def form_dataset_name(code, llx, lly):
     return code + str(llx / 1000) + '_' + str(lly / 1000)
 
-def merge_grids_from_names(filenames, outfilename='merged.tif', nodata_value='-9999'):
+def merge_grids(filenames, outfilename='merged.tif', nodata_value='-9999'):
     # TODO: fix gdal_merge argv
     #sys.argv = ['-o', outfilename, '-init', nodata_value, '-a_nodata', nodata_value] + filenames
+    #sys.argv = [f.filename for f in files]
     sys.argv = filenames
     gdal_merge.main()
+    for f in files:
+        f.processed = True
 
 def list_files_from_url(url):
     url = url.replace(' ', '%20')
@@ -103,6 +107,8 @@ class file_info:
         f = gdal.Open(filename)
 
         self.filename = filename
+        self.processed = False
+
         self.xsize = f.RasterXSize
         self.ysize = f.RasterYSize
         self.projection = f.GetProjection()
@@ -118,18 +124,33 @@ if __name__ == "__main__":
     
     print("Downloading rasters...")
     dataset_names = list_folders_from_url(base_url)
-    for fn in dataset_names[0:50]:
+    for fn in dataset_names[0:200]:
         download_directory(os.path.join(base_url, fn))
 
     print("Merging rasters ...")
-    # TODO: add working dir as parameter
-    # TODO: add file parameter, don't hard-code ArcInfo grid file
-    #files_to_merge = ['data/' + dataset_names[offset+i] + 'w001001.adf' for i in range(num_tiles)]
     base_filename = dataset_names[0]
-    files_to_merge = find_matching_files(base_filename, nx=20, ny=20)
-    print("Base raster: " + base_filename)
-    print("Merging " + str(len(files_to_merge)) + " files")
-    dest_dir = '/media/rmsare/data/ot_data/'
-    files_to_merge = [dest_dir + fn + '/w001001.adf' for fn in files_to_merge]
-    merge_grids_from_names(files_to_merge)
-    # TODO: get gdal_merge argv working and remove this hack
+    last_merged = []
+    for i in xrange(10):
+        # TODO: flag processed files in array
+        files_to_merge = find_matching_files(base_filename, nx=10, ny=10)
+        files_to_merge = [x for x in files_to_merge if x not in last_merged]
+        
+        print("Base raster: " + base_filename)
+        print("Merging " + str(len(files_to_merge)) + " files")
+                
+        print("Merging:")
+        print(files_to_merge)
+        
+        # TODO: add file parameter, don't hard-code ArcInfo grid file
+        dest_dir = '/media/rmsare/data/ot_data/'
+        grid_files = [dest_dir + f.filename + '/w001001.adf' for f in files_to_merge]
+        merge_grids(grid_files)
+        
+        # TODO: fix gdal_merge and remove this workaround
+        shutil.move('out.tif', base_filename.strip('/') + '_merged.tif')
+        last_merged = copy(files_to_merge)
+        # XXX: bug here - what if base_filename alternates between two files?
+
+        last_base_filename = copy(base_filename)
+        base_filename = files_to_merge[-1] 
+        #delete_files(files_to_merge)
