@@ -18,7 +18,14 @@ from copy import copy
 sys.path.append('/usr/bin')
 import gdal_merge
 
+def combine_all_overlapping_grids(data_dir):
+    pass
+
 def download_directory(url, working_dir='/media/rmsare/data/ot_data/'):
+    """
+    Download all files in a remote directory. Does not descend into 
+    subdirectories.
+    """
     s = url.split('/')
     dir_name = working_dir + s[-1]
 
@@ -30,9 +37,12 @@ def download_directory(url, working_dir='/media/rmsare/data/ot_data/'):
             if not os.path.exists(os.path.join(dir_name, fn)):
                 urllib.urlretrieve(os.path.join(url, fn), os.path.join(dir_name, fn))
 
+def download_directory_recursive(utl, working_dir='/media/rmsare/data/arra_data/'):
+    pass
+
 def find_matching_files(base_file, datasets, nx, ny, working_dir='/media/rmsare/data/ot_data/'):
     """
-    Find matching filenames by NCAL survey naming conventions.
+    Find matching filenames by EarthScope survey naming conventions.
     Survey data are named by the convention:
 
     ccXXX_YYYY.fmt
@@ -58,6 +68,11 @@ def find_matching_files(base_file, datasets, nx, ny, working_dir='/media/rmsare/
     return matching_files
 
 def expand_to_contiguous_grids(base_file, nrows, ncols):
+    """
+    Find all contiguous grids within nrows, cols of a central grid.
+
+    Assumes grids are saved in a projection with bounding box information.
+    """
 
     contiguous_grids = []
     for i in xrange(-nrows/2, nrows/2):
@@ -71,12 +86,16 @@ def expand_to_contiguous_grids(base_file, nrows, ncols):
     return contiguous_grids
 
 def form_dataset_name(code, llx, lly, working_dir='/media/rmsare/data/ot_data/'):
+    """
+    Form valid dataset directory using OpenTopography bulk raster naming convention
+    for EarthScope data.
+    """
+
     return working_dir + code + str(llx / 1000) + '_' + str(lly / 1000)
 
 def merge_grids(files, outfilename='merged.tif', nodata_value='-9999', working_dir='/media/rmsare/data/merged_data/'):
     # TODO: fix gdal_merge argv
     #sys.argv = ['-o', outfilename, '-init', nodata_value, '-a_nodata', nodata_value] + filenames
-    #sys.argv = [f.filename for f in files]
     #print("Merging:")
     #print([f.filename.split('/')[-1] for f in files])
 
@@ -88,6 +107,11 @@ def merge_grids(files, outfilename='merged.tif', nodata_value='-9999', working_d
         f.processed = True
 
 def list_files_from_url(url):
+    """
+    List all files and folders from a remote directory. Ignores hidden files.
+
+    Assumes the URL returns an HTML directory listing.
+    """
     url = url.replace(' ', '%20')
     request = Request(url)
     page = requests.get(url).text 
@@ -99,11 +123,17 @@ def list_files_from_url(url):
         fn = link.get('href')
         if fn[0] != '.':
             file_names.append(fn)
-    
 
     return file_names
 
 def list_folders_from_url(url):
+    """
+    List all folders from a remote directory. Ignores all files and hidden 
+    files and folders.
+
+    Assumes the URL returns an HTML directory listing.
+    """
+
     request = Request(url)
     page = requests.get(url).text 
     soup = BeautifulSoup(page, 'html.parser')
@@ -125,14 +155,16 @@ def sort_by_utm_northing(files):
     Geographically northernmost grids come first.
     """
 
-    NE = np.array([(f.lly, -f.llx) for f in files], dtype=[('y', '>i4'), ('x', '>i4')])
-    idx = np.argsort(NE, order=('y', 'x'))[::-1]
+    NE = np.array([(f.lly, -f.llx) for f in files], dtype=[('y', '>i4'), ('-x', '>i4')])
+    idx = np.argsort(NE, order=('y', '-x'))[::-1]
 
     return files[idx]
 
 class file_info:
-    """ A class holding information abotu a GDAL file.
-        Designed after gdal_merge.py """
+    """ 
+    A class holding information about a GDAL file.
+    Designed after gdal_merge.py 
+    """
 
     def __init__(self, filename):
         f = gdal.Open(filename)
@@ -154,34 +186,34 @@ class file_info:
 
 if __name__ == "__main__":
     base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/NCAL/NCAL_be/'
+    #base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/SoCAL/SoCAL_be/'
+        
+    dest_dir = '/media/rmsare/data/ot_data/'
+    working_dir = '/media/rmsare/data/merged_data/'
     
     dataset_names = list_folders_from_url(base_url)
-    nfiles = 1000 
+    # Delete dupes from OT holdings
+    dataset_names = [n for n in dataset_names if '_1' not in n]
+            
+    nfiles = len(dataset_names)
+    #nfiles = 1000
     print("Processing {:d}/{:d} files".format(nfiles, len(dataset_names)))
     dataset_names = dataset_names[0:nfiles]
     
     print("Downloading rasters...")
     for fn in dataset_names:
         download_directory(os.path.join(base_url, fn))
-    
-    dest_dir = '/media/rmsare/data/ot_data/'
-    working_dir = '/media/rmsare/data/merged_data/'
+
     datasets = np.array([file_info(dest_dir + fn) for fn in dataset_names])
     datasets = sort_by_utm_northing(datasets)
 
-    nrows = 30 
-    ncols = 30 
+    nrows = 10 
+    ncols = 8 
     max_ngrids = 50
-    #base_files = find_base_files(datasets)
     base_file = datasets[0]
     processed = np.array([x.processed for x in datasets])
 
-    #while (not processed).any():
-    #for base_file in base_files:
     while not processed.all():
-        #for i in xrange(n_subgrids):
-            #base_idx = np.where([d == base_file for d in datasets])
-            #base_file = datasets[base_idx + i*subgrid_size]
         base_file = datasets[np.logical_not(processed)][0]
         files_to_merge = expand_to_contiguous_grids(base_file, nrows, ncols)
         files_to_merge = [f for f in files_to_merge if not f.processed]
@@ -192,7 +224,7 @@ if __name__ == "__main__":
         print("Base raster: " + base_file.filename)
                 
         merged_filename = working_dir + base_file.filename.split('/')[-1] + '_merged.tif'
-        if not os.path.exists(merged_filename):
+        if not os.path.exists(merged_filename) and len(files_to_merge) > 1:
             print("Merging " + str(len(files_to_merge)) + " files")
             merge_grids(files_to_merge)
             print("Saving merged file...")
@@ -200,7 +232,7 @@ if __name__ == "__main__":
         else:
             for f in files_to_merge:
                 f.processed = True
-            print("Merged file exists. Moving on...")
+            print("Merged file exists or no unprocessed files to merge. Moving on to next grid...")
         
         # XXX: bug here - what if base_filename alternates between two files?
         base_file.processed = True
