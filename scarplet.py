@@ -1,9 +1,10 @@
 """ Functions for determinig best-fit template parameters by convolution with a
 grid """
 
-import dem
+from dem import ParameterGrid
 import WindowedTemplate as wt
 import numpy as np
+import matplotlib.pyplot as plt
 import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
@@ -11,6 +12,7 @@ eps = np.spacing(1)
 pyfftw.interfaces.cache.enable()
 
 def calculate_amplitude(dem, Template, d, age, alpha):
+
     ny, nx = dem._griddata.shape
     de = dem._georef_info.dx
     t = Template(d, age, alpha, nx, ny, de)
@@ -70,7 +72,12 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             best_amp = (best_snr > snr)*best_amp + (best_snr < snr)*amp
             best_alpha = (best_snr > snr)*best_alpha + (best_snr < snr)*this_alpha
             best_age = (best_snr > snr)*best_age + (best_snr < snr)*this_age
-            
+
+    best_snr = ParameterGrid(dem, best_snr, grids[0].d, name='SNR')
+    best_amp = ParameterGrid(dem, best_amp, grids[0].d, name='Amplitude', units='m')
+    best_age = ParameterGrid(dem, best_age, grids[0].d, name='Morphologic age', units='m^2')
+    best_alpha = ParameterGrid(dem, best_alpha, grids[0].d, name='Orientation', units='deg.'))
+
     return best_amp, best_age, best_alpha, best_snr 
 
 def compare_fits(grids):
@@ -86,6 +93,11 @@ def compare_fits(grids):
         best_amp = (best_snr > fit.snr)*best_amp + (best_snr < fit.snr)*fit.amplitude
         best_alpha = (best_snr > fit.snr)*best_alpha + (best_snr < fit.snr)*fit.alpha
         best_age = (best_snr > fit.snr)*best_age + (best_snr < fit.snr)*fit.age
+
+    best_snr = ParameterGrid(dem, best_snr, grids[0].d, name='SNR')
+    best_amp = ParameterGrid(dem, best_amp, grids[0].d, name='Amplitude', units='m')
+    best_age = ParameterGrid(dem, best_age, grids[0].d, name='Morphologic age', units='m^2')
+    best_alpha = ParameterGrid(dem, best_alpha, grids[0].d, name='Orientation', units='deg.'))
 
     return best_amp, best_age, best_alpha, best_snr
 
@@ -127,20 +139,35 @@ def match_template(data, template):
 
     return amp, snr
 
-def save_results(dem, results, base_dir=''):
+def plot_results(dem, amp, age, alpha, snr):
+   
+    results = [amp, age, alpha, snr]
+    
+    fig = plt.figure()
 
-    labels = {'amplitude' : 'm',
-            'morphologic age' : 'm^2',
-            'orientation' : 'deg.',
-            'signal-to-noise ratio' : ''}
+    for i, data in enumerate(results):
+        fig.add_subplot(2,2,i)
+        data.plot()
 
-    for p in labels:
-        grid = dem.ParameterGrid(dem, results, d, name=p, units=labels[p])
-        filename = '_'.join(p.split(' ')) + '_' + dem.label + '.tif'
+    plt.show()
+
+def save_results(dem, amp, age, alpha, snr, base_dir=''):
+    
+    results = [amp, age, alpha, snr] # as ParameterGrid objects
+
+    labels = {'Amplitude' : 'm',
+            'Morphologic age' : 'm^2',
+            'Orientation' : 'deg.',
+            'Signal-to-noise ratio' : ''}
+    
+    for data, param in zip(results, labels):
+        #grid = ParameterGrid(dem, data, d, name=param, units=labels[param])
+        filename = '_'.join(param.split(' ')) + '_' + dem.label + '.tif'
         filename = base_dir + filename
-        grid.save(filename)
+        data.save(filename)
 
 
+# XXX: necessary?
 class TemplateFit(object):
 
     def __init__(d, age, alpha, amplitude, snr):
