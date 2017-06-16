@@ -89,10 +89,10 @@ def compare_fits(grids):
     best_alpha = np.zeros(s)
 
     for fit in grids:
-        best_snr = (best_snr > fit.snr)*best_snr + (best_snr < fit.snr)*fit.snr
         best_amp = (best_snr > fit.snr)*best_amp + (best_snr < fit.snr)*fit.amplitude
-        best_alpha = (best_snr > fit.snr)*best_alpha + (best_snr < fit.snr)*fit.alpha
         best_age = (best_snr > fit.snr)*best_age + (best_snr < fit.snr)*fit.age
+        best_alpha = (best_snr > fit.snr)*best_alpha + (best_snr < fit.snr)*fit.alpha
+        best_snr = (best_snr > fit.snr)*best_snr + (best_snr < fit.snr)*fit.snr
 
     best_snr = ParameterGrid(dem, best_snr, grids[0].d, name='SNR')
     best_amp = ParameterGrid(dem, best_amp, grids[0].d, name='Amplitude', units='m')
