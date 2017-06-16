@@ -34,9 +34,9 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
     d = 10
     de = 1
 
-    age_max = 2 
-    age_min = 0.25
-    age_stepsize = 0.25
+    age_max = 3.5 
+    age_min = 0
+    age_stepsize = 0.1
     ang_stepsize = 1
 
     num_angles = 180/ang_stepsize + 1
@@ -68,10 +68,10 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             this_amp[mask] = 0 
             this_snr[mask] = 0
 
-            best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
             best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
-            best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
             best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
+            best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
+            best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
 
     best_snr = ParameterGrid(dem, best_snr, d, name='SNR')
     best_amp = ParameterGrid(dem, best_amp, d, name='Amplitude', units='m')
