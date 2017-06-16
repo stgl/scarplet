@@ -73,10 +73,10 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             best_alpha = (best_snr > snr)*best_alpha + (best_snr < snr)*this_alpha
             best_age = (best_snr > snr)*best_age + (best_snr < snr)*this_age
 
-    best_snr = ParameterGrid(dem, best_snr, grids[0].d, name='SNR')
-    best_amp = ParameterGrid(dem, best_amp, grids[0].d, name='Amplitude', units='m')
-    best_age = ParameterGrid(dem, best_age, grids[0].d, name='Morphologic age', units='m^2')
-    best_alpha = ParameterGrid(dem, best_alpha, grids[0].d, name='Orientation', units='deg.'))
+    best_snr = ParameterGrid(dem, best_snr, d, name='SNR')
+    best_amp = ParameterGrid(dem, best_amp, d, name='Amplitude', units='m')
+    best_age = ParameterGrid(dem, best_age, d, name='Morphologic age', units='m^2')
+    best_alpha = ParameterGrid(dem, best_alpha, d, name='Orientation', units='deg.')
 
     return best_amp, best_age, best_alpha, best_snr 
 
@@ -97,7 +97,7 @@ def compare_fits(grids):
     best_snr = ParameterGrid(dem, best_snr, grids[0].d, name='SNR')
     best_amp = ParameterGrid(dem, best_amp, grids[0].d, name='Amplitude', units='m')
     best_age = ParameterGrid(dem, best_age, grids[0].d, name='Morphologic age', units='m^2')
-    best_alpha = ParameterGrid(dem, best_alpha, grids[0].d, name='Orientation', units='deg.'))
+    best_alpha = ParameterGrid(dem, best_alpha, grids[0].d, name='Orientation', units='deg.')
 
     return best_amp, best_age, best_alpha, best_snr
 
@@ -146,7 +146,7 @@ def plot_results(dem, amp, age, alpha, snr):
     fig = plt.figure()
 
     for i, data in enumerate(results):
-        fig.add_subplot(2,2,i)
+        fig.add_subplot(2,2,i+1)
         data.plot()
 
     plt.show()
