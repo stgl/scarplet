@@ -21,6 +21,26 @@ import gdal_merge
 def combine_all_overlapping_grids(data_dir):
     pass
 
+def download_datasets(base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/NCAL/NCAL_be/', 
+                    dest_dir='/media/rmsare/data/ot_data/', 
+                    nfiles=None):
+    dataset_names = list_folders_from_url(base_url)
+    # Delete dupes from OT holdings
+    dataset_names = [n for n in dataset_names if '_1' not in n]
+           
+    if nfiles is None:
+        nfiles = len(dataset_names)
+    #nfiles = 1000
+    print("Processing {:d}/{:d} files".format(nfiles, len(dataset_names)))
+    dataset_names = dataset_names[0:nfiles]
+    
+    #print("Downloading rasters...")
+    #for fn in dataset_names:
+    #    download_directory(os.path.join(base_url, fn))
+
+    datasets = np.array([file_info(dest_dir + fn) for fn in dataset_names])
+
+    return datasets
 def download_directory(url, working_dir='/media/rmsare/data/ot_data/'):
     """
     Download all files in a remote directory. Does not descend into 
@@ -49,7 +69,7 @@ def find_matching_files(base_file, datasets, nx, ny, working_dir='/media/rmsare/
 
     where:  - "cc" is a data code ('u' for unfiltered, 'fg' for filtered ground 
               returns only, etc)
-            - "XXX" and "YYYY" are the most siginificant digits of the data's
+            - "XXX" and "YYYY" are the most siginificant digits of the dataset's
               lower left corner (XXX000, YYYY000) in UTM 10N coordinate system
 
     directories for gridded data use the convention "ccXXX_YYYY/"
@@ -104,7 +124,7 @@ def merge_grids(files, outfilename='merged.tif', nodata_value='-9999', working_d
     gdal_merge.main()
     
     for f in files:
-        f.processed = True
+        f.times_processed += 1
 
 def list_files_from_url(url):
     """
@@ -149,10 +169,10 @@ def list_folders_from_url(url):
 
 def sort_by_utm_northing(files):
     """
-    Sorts list of grid files by lower left UTM northing coordinate 
+    Sorts list of grid files by lower left UTM coordinates 
     in descending order.
 
-    Geographically northernmost grids come first.
+    Geographically northeasternmost grids come first.
     """
 
     NE = np.array([(f.lly, -f.llx) for f in files], dtype=[('y', '>i4'), ('-x', '>i4')])
@@ -170,7 +190,7 @@ class file_info:
         f = gdal.Open(filename)
 
         self.filename = filename
-        self.processed = False
+        self.times_processed = 0
 
         self.xsize = f.RasterXSize
         self.ysize = f.RasterYSize
@@ -184,41 +204,21 @@ class file_info:
         self.llx = self.lrx
         self.lly = self.uly
 
-if __name__ == "__main__":
-    base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/NCAL/NCAL_be/'
+def merge_datasets(datasets,
+          nrows=10,
+          ncols=8,
+          dest_dir='/media/rmsare/data/ot_data/',
+          working_dir='/media/rmsare/data/merged_data/'):
+
     #base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/SoCAL/SoCAL_be/'
-        
-    dest_dir = '/media/rmsare/data/ot_data/'
-    working_dir = '/media/rmsare/data/merged_data/'
-    
-    dataset_names = list_folders_from_url(base_url)
-    # Delete dupes from OT holdings
-    dataset_names = [n for n in dataset_names if '_1' not in n]
-            
-    nfiles = len(dataset_names)
-    #nfiles = 1000
-    print("Processing {:d}/{:d} files".format(nfiles, len(dataset_names)))
-    dataset_names = dataset_names[0:nfiles]
-    
-    print("Downloading rasters...")
-    for fn in dataset_names:
-        download_directory(os.path.join(base_url, fn))
 
-    datasets = np.array([file_info(dest_dir + fn) for fn in dataset_names])
-    datasets = sort_by_utm_northing(datasets)
-
-    nrows = 10 
-    ncols = 8 
-    max_ngrids = 50
     base_file = datasets[0]
-    processed = np.array([x.processed for x in datasets])
+    processed = np.array([x.times_processed >= 2 for x in datasets])
 
     while not processed.all():
         base_file = datasets[np.logical_not(processed)][0]
         files_to_merge = expand_to_contiguous_grids(base_file, nrows, ncols)
-        files_to_merge = [f for f in files_to_merge if not f.processed]
-        #if len(files_to_merge) > max_ngrids:
-        #    files_to_merge = files_to_merge[0:max_ngrids]
+        files_to_merge = [f for f in files_to_merge if f.times_processed < 2]
         
         print("Merging rasters...")
         print("Base raster: " + base_file.filename)
@@ -231,10 +231,15 @@ if __name__ == "__main__":
             shutil.move('out.tif', merged_filename)
         else:
             for f in files_to_merge:
-                f.processed = True
+                f.times_processed += 1
             print("Merged file exists or no unprocessed files to merge. Moving on to next grid...")
         
         # XXX: bug here - what if base_filename alternates between two files?
-        base_file.processed = True
-        processed = np.array([x.processed for x in datasets])
+        base_file.times_processed += 1
+        processed = np.array([x.times_processed >= 2 for x in datasets])
         #delete_files(files_to_merge)
+
+if __name__ == "__main__":
+    datasets = download_datasets()
+    datasets = sort_by_utm_northing(datasets)
+    merge_datasets(datasets)
