@@ -31,12 +31,12 @@ def calculate_amplitude(dem, Template, d, age, alpha):
 def calculate_best_fit_parameters(dem, Template, **kwargs):
     
     #args = parse_args(**kwargs)
-    d = 100
+    d = 10
     de = 1
 
-    age_max = 3.5 
-    age_min = 0
-    age_stepsize = 0.1
+    age_max = 2 
+    age_min = 0.25
+    age_stepsize = 0.25
     ang_stepsize = 1
 
     num_angles = 180/ang_stepsize + 1
@@ -63,15 +63,15 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
 
             curv = dem._calculate_directional_laplacian(this_alpha)
             
-            amp, snr = match_template(curv, template)
+            this_amp, this_snr = match_template(curv, template)
             mask = t.get_window_limits()
-            amp[mask] = 0 
-            snr[mask] = 0
+            this_amp[mask] = 0 
+            this_snr[mask] = 0
 
-            best_snr = (best_snr > snr)*best_snr + (best_snr < snr)*snr
-            best_amp = (best_snr > snr)*best_amp + (best_snr < snr)*amp
-            best_alpha = (best_snr > snr)*best_alpha + (best_snr < snr)*this_alpha
-            best_age = (best_snr > snr)*best_age + (best_snr < snr)*this_age
+            best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
+            best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
+            best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
+            best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
 
     best_snr = ParameterGrid(dem, best_snr, d, name='SNR')
     best_amp = ParameterGrid(dem, best_amp, d, name='Amplitude', units='m')
@@ -128,8 +128,8 @@ def match_template(data, template):
     amp = xcorr/template_sum
     
     n = np.sum(M) + eps
-    T1 = template_sum*amp**2
-    T2 = -2*xcorr
+    T1 = template_sum*(amp**2)
+    T2 = -2*amp*xcorr
     T3 = fftshift(ifft2(fc2*fm2))
     error = (1/n)*(T1 + T2 + T3) + eps # avoid small-magnitude dvision
     #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
