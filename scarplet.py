@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
+from progressbar import ProgressBar, Bar, Percentage
+
+
 eps = np.spacing(1)
 pyfftw.interfaces.cache.enable()
 
@@ -31,13 +34,13 @@ def calculate_amplitude(dem, Template, d, age, alpha):
 def calculate_best_fit_parameters(dem, Template, **kwargs):
     
     #args = parse_args(**kwargs)
-    d = 10
+    d = 100
     de = 1
 
-    age_max = 3.5 
+    age_max = 3 
     age_min = 0
-    age_stepsize = 0.1
-    ang_stepsize = 1
+    age_stepsize = 0.5
+    ang_stepsize = 2
 
     num_angles = 180/ang_stepsize + 1
     num_ages = (age_max - age_min)/age_stepsize
@@ -50,8 +53,10 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
     best_alpha = np.zeros((ny, nx))
     best_snr = np.zeros((ny, nx))
 
-    for this_alpha in orientations:
-        for this_age in ages:
+    pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(ages)*len(orientations)).start()
+
+    for i, this_alpha in enumerate(orientations):
+        for j, this_age in enumerate(ages):
             
             this_age = 10**this_age
 
@@ -72,6 +77,8 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
             best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
             best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
             best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
+        
+        pbar.update((i+1)*len(ages))
 
     best_snr = ParameterGrid(dem, best_snr, d, name='SNR')
     best_amp = ParameterGrid(dem, best_amp, d, name='Amplitude', units='m')
