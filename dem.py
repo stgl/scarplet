@@ -1,10 +1,13 @@
 """ Classes for loading digital elevation models as numeric grids """
 
 import os, sys
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+
 from osgeo import gdal, gdalconst
+import gdal_merge
 import osr
 
 sys.setrecursionlimit(10000)
@@ -144,6 +147,19 @@ class BaseSpatialGrid(GDALMixin):
         else:
             self._georef_info = _georef_info
             self._griddata = np.empty((0,0))
+
+    def is_contiguous(self, grid):
+         
+
+    def merge(self, grid):
+
+        if not self.is_contiguous(grid):
+            raise ValueError("Grids are not contiguous")
+
+        sys.argv = [self._georef_info.filename, grid._georef_info.filename]
+        gdal_merge()
+
+        return BaseSpatialGrid('out.tif') 
 
     def plot(self, **kwargs):
         
