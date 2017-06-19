@@ -153,7 +153,16 @@ class BaseSpatialGrid(GDALMixin):
             self._griddata = np.empty((0,0))
 
     def is_contiguous(self, grid):
-         
+
+        lr_overlap_x = self._georef_info.lrx >= grid._georef_info.lrx and self._georef_info.lrx <= grid._georef_info.ulx 
+        lr_overlap_y = self._georef_info.lry >= grid._georef_info.lry and self._georef_info.lry <= grid._georef_info.uly 
+        rl_overlap_x = self._georef_info.lrx <= grid._georef_info.lrx and self._georef_info.lrx >= grid._georef_info.ulx 
+        rl_overlap_y = self._georef_info.lry <= grid._georef_info.lry and self._georef_info.lry >= grid._georef_info.uly 
+
+        A_overlap_B = lr_overlap_x and lr_overlap_y
+        B_overlap_A = rl_overlap_x and rl_overlap_y
+
+        return A_overlap_B or B_overlap_A
 
     def merge(self, grid):
 
