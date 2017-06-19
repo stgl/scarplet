@@ -128,6 +128,10 @@ class GeorefInfo(object):
         self.dy = None
         self.nx = None 
         self.ny = None
+        self.ulx = None
+        self.uly = None
+        self.lrx = None
+        self.lry = None
 
 #class GeographicMixin(object):
 #    pass
