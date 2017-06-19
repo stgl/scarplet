@@ -18,23 +18,32 @@ class CalculationMethodsTestCase(unittest.TestCase):
         
         self.dem = dem.DEMGrid(TESTDATA_FILENAME)
 
+    @unittest.skip("")
     def test_calculate_slope(self):
 
         sx, sy = self.dem._calculate_slope()
+        true_sx, true_sy = np.load('data/big_basin_sxsy.npy')
 
+    @unittest.skip("")
     def test_calculate_laplacian(self):
 
         del2z = self.dem._calculate_laplacian()
+        true_del2z = np.load('data/big_basin_del2z.npy')
     
+    @unittest.skip("")
     def test_calculate_directional_laplacian(self):
         
         alpha = np.pi/4
         del2z = self.dem._calculate_directional_laplacian(alpha)
+        true_del2z_45 = np.load('data/big_basin_del2z_45.npy')
 
+    @unittest.skip("")
     def test_estimate_curvature_noiselevel(self):
 
+        # TODO: set up synthetic grid 
         m, s = self.dem._estimate_curvature_noiselevel()
 
+    @unittest.skip("")
     def test_pad_boundary(self):
         
         dx = 5
@@ -59,17 +68,19 @@ class BaseSpatialGridTestCase(unittest.TestCase):
 
     def test_is_contiguous(self):
 
-        adjacent_grid = BaseSpatialGrid(MERGEDATA_FILENAME)
+        adjacent_grid = dem.BaseSpatialGrid(MERGEDATA_FILENAME)
         
         self.assertTrue(self.dem.is_contiguous(adjacent_grid), "Adjacent grids incorrectly flagged as not contiguous")
 
     def test_merge(self):
 
-        adjacent_grid = BaseSpatialGrid(MERGEDATA_FILENAME)
-        merged_grid = BaseSpatialGrid('data/merged.tif')
+        adjacent_grid = dem.BaseSpatialGrid(MERGEDATA_FILENAME)
+        test_grid = self.dem.merge(adjacent_grid)
+        true_grid = dem.BaseSpatialGrid('data/merged.tif')
+        
+        self.assertEqual(test_grid._griddata.all(), true_grid._griddata.all(), "Grids merged incorrectly")
 
-        self.assrtEqual(self.dem._griddata.all(), merged_grid._griddata.all(), "Grids merged incorrectly")
-
+    @unittest.skip("Skipping plot test until master image generated")
     #@image_comparison(baseline_images=['plot_gist_earth'], extensions=['png'])
     def test_plot(self):
 
