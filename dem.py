@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from osgeo import gdal, gdalconst
-import gdal_merge
 import osr
+
+sys.path.append('/usr/bin')
+import gdal_merge
 
 sys.setrecursionlimit(10000)
 
@@ -148,7 +150,9 @@ class BaseSpatialGrid(GDALMixin):
 
         if filename is not None:
             self.load(filename)
+            self.filename = filename
         else:
+            self.filename = None
             self._georef_info = _georef_info
             self._griddata = np.empty((0,0))
 
@@ -169,10 +173,12 @@ class BaseSpatialGrid(GDALMixin):
         if not self.is_contiguous(grid):
             raise ValueError("Grids are not contiguous")
 
-        sys.argv = [self._georef_info.filename, grid._georef_info.filename]
-        gdal_merge()
+        sys.argv = [self.filename, grid.filename]
+        gdal_merge.main()
+        merged_grid = BaseSpatialGrid('out.tif') 
+        os.remove('out.tif')
 
-        return BaseSpatialGrid('out.tif') 
+        return merged_grid
 
     def plot(self, **kwargs):
         
