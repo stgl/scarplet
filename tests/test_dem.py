@@ -8,6 +8,7 @@ import numpy as np
 import filecmp
 
 TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'data/big_basin.tif')
+MERGEDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'data/mindego_hill.tif')
 
 
 class CalculationMethodsTestCase(unittest.TestCase):
@@ -55,6 +56,19 @@ class BaseSpatialGridTestCase(unittest.TestCase):
     def setUp(self):
 
         self.dem = dem.BaseSpatialGrid(TESTDATA_FILENAME)
+
+    def test_is_contiguous(self):
+
+        adjacent_grid = BaseSpatialGrid(MERGEDATA_FILENAME)
+        
+        self.assertTrue(self.dem.is_contiguous(adjacent_grid), "Adjacent grids incorrectly flagged as not contiguous")
+
+    def test_merge(self):
+
+        adjacent_grid = BaseSpatialGrid(MERGEDATA_FILENAME)
+        merged_grid = BaseSpatialGrid('data/merged.tif')
+
+        self.assrtEqual(self.dem._griddata.all(), merged_grid._griddata.all(), "Grids merged incorrectly")
 
     #@image_comparison(baseline_images=['plot_gist_earth'], extensions=['png'])
     def test_plot(self):
