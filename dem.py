@@ -217,6 +217,11 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.xllcenter = self._georef_info.geo_transform[0] + self._georef_info.dx
         self._georef_info.yllcenter = self._georef_info.geo_transform[3] - (self._georef_info.ny+1)*np.abs(self._georef_info.dy)
 
+        self._georef_info.ulx = self._georef_info.geo_transform[0]
+        self._georef_info.uly = self._georef_info.geo_transform[3]
+        self._georef_info.lrx = self._georef_info.geo_transform[0] + self._georef_info.dx*self._georef_info.nx
+        self._georef_info.lry = self._georef_info.geo_transform[3] - self._georef_info.dy*self._georef_info.ny
+
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     
