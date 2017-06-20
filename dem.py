@@ -14,7 +14,7 @@ import gdal_merge
 
 sys.setrecursionlimit(10000)
 
-FLOAT32_MIN = np.finfo(float32).min
+FLOAT32_MIN = np.finfo(np.float32).min
 
 GDAL_DRIVER_NAME = 'GTiff'
 
