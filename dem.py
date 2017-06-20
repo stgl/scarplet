@@ -146,25 +146,26 @@ class BaseSpatialGrid(GDALMixin):
     
 
     dtype = gdalconst.GDT_Float32 # TODO: detect and set dtype
-    
-    _georef_info = GeorefInfo()
 
     def __init__(self, filename=None):
+        
+        _georef_info = GeorefInfo()
 
         if filename is not None:
+            self._georef_info = _georef_info # TODO: fix reference...
             self.load(filename)
             self.filename = filename
         else:
             self.filename = None
-            self._georef_info = _georef_info
+            self._georef_info = _georef_info # TODO: fix reference...
             self._griddata = np.empty((0,0))
 
     def is_contiguous(self, grid):
 
-        lr_overlap_x = self._georef_info.lrx >= grid._georef_info.lrx and self._georef_info.lrx <= grid._georef_info.ulx 
+        lr_overlap_x = self._georef_info.lrx <= grid._georef_info.lrx and self._georef_info.lrx >= grid._georef_info.ulx 
         lr_overlap_y = self._georef_info.lry >= grid._georef_info.lry and self._georef_info.lry <= grid._georef_info.uly 
-        rl_overlap_x = self._georef_info.lrx <= grid._georef_info.lrx and self._georef_info.lrx >= grid._georef_info.ulx 
-        rl_overlap_y = self._georef_info.lry <= grid._georef_info.lry and self._georef_info.lry >= grid._georef_info.uly 
+        rl_overlap_x = grid._georef_info.lrx <= self._georef_info.lrx and grid._georef_info.lrx >= self._georef_info.ulx 
+        rl_overlap_y = grid._georef_info.lry >= self._georef_info.lry and grid._georef_info.lry <= self._georef_info.uly 
 
         A_overlap_B = lr_overlap_x and lr_overlap_y
         B_overlap_A = rl_overlap_x and rl_overlap_y
@@ -188,7 +189,7 @@ class BaseSpatialGrid(GDALMixin):
         
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        ax.imshow(self._griddata, origin='lower', **kwargs)
+        ax.imshow(self._griddata, **kwargs)
 
     def save(self, filename): 
 
@@ -243,26 +244,30 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.ulx = self._georef_info.geo_transform[0]
         self._georef_info.uly = self._georef_info.geo_transform[3]
         self._georef_info.lrx = self._georef_info.geo_transform[0] + self._georef_info.dx*self._georef_info.nx
-        self._georef_info.lry = self._georef_info.geo_transform[3] - self._georef_info.dy*self._georef_info.ny
+        self._georef_info.lry = self._georef_info.geo_transform[3] + self._georef_info.dy*self._georef_info.ny
 
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     
-    _georef_info = GeorefInfo()
-
     # TODO: fix inheritance to use BaseSpatialGrid init
     # XXX: This is here for Python 2.7 compatibility for now
     def __init__(self, filename=None):
 
+        _georef_info = GeorefInfo()
+
         if filename is not None:
+            self._georef_info = _georef_info 
             self.load(filename)
             self._griddata[self._griddata == FLOAT32_MIN] = np.nan
             self.filename = filename
         else:
             self.filename = None 
             self.label = ''
-            self._georef_info = GeorefInfo() 
+            self._georef_info = _georef_info 
             self._griddata = np.empty((0,0))
+
+    def _fill_nodata(self):
+        pass
 
 
 class Hillshade(BaseSpatialGrid):
@@ -277,7 +282,7 @@ class Hillshade(BaseSpatialGrid):
   
         ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
         self._hillshade = ls.hillshade(self._griddata, vert_exag=1, dx=self._georef_info.dx, dy=self._georef_info.dy)      
-        plt.imshow(self._hillshade, alpha=1, cmap='gray', origin='lower')
+        plt.imshow(self._hillshade, alpha=1, cmap='gray')
         plt.show()
 
 
@@ -294,6 +299,6 @@ class ParameterGrid(BaseSpatialGrid):
     def plot(self, alpha=0.5, colormap='viridis'):
 
         plt.imshow(self._griddata, alpha=alpha, cmap=colormap)
-        cb = plt.colorbar(orientation='horizontal', extend='both', origin='lower')
+        cb = plt.colorbar(orientation='horizontal', extend='both')
         label = self.name + ' [' + self.units + ']'
         cb.set_label(label)
