@@ -162,15 +162,7 @@ class BaseSpatialGrid(GDALMixin):
 
     def is_contiguous(self, grid):
 
-        lr_overlap_x = self._georef_info.lrx <= grid._georef_info.lrx and self._georef_info.lrx >= grid._georef_info.ulx 
-        lr_overlap_y = self._georef_info.lry >= grid._georef_info.lry and self._georef_info.lry <= grid._georef_info.uly 
-        rl_overlap_x = grid._georef_info.lrx <= self._georef_info.lrx and grid._georef_info.lrx >= self._georef_info.ulx 
-        rl_overlap_y = grid._georef_info.lry >= self._georef_info.lry and grid._georef_info.lry <= self._georef_info.uly 
-
-        A_overlap_B = lr_overlap_x and lr_overlap_y
-        B_overlap_A = rl_overlap_x and rl_overlap_y
-
-        return A_overlap_B or B_overlap_A
+        return self.bbox.intersects(grid.bbox) 
 
     def merge(self, grid):
 
@@ -245,7 +237,8 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.uly = self._georef_info.geo_transform[3]
         self._georef_info.lrx = self._georef_info.geo_transform[0] + self._georef_info.dx*self._georef_info.nx
         self._georef_info.lry = self._georef_info.geo_transform[3] + self._georef_info.dy*self._georef_info.ny
-
+        
+        self.bbox = BoundingBox((self._georef_info.lrx, self._georef_info.lry), (self._georef_info.ulx, self._georef_info.uly))
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     
@@ -302,3 +295,42 @@ class ParameterGrid(BaseSpatialGrid):
         cb = plt.colorbar(orientation='horizontal', extend='both')
         label = self.name + ' [' + self.units + ']'
         cb.set_label(label)
+
+class BoundingBox(object):
+
+    def __init__(self, lr, ul):
+
+        self.lrx = lr[0]
+        self.lry = lr[1]
+        self.lr = lr
+
+        self.ulx = ul[0]
+        self.uly = ul[1]
+        self.ul = ul
+
+        self.llx = ul[0]
+        self.lly = lr[1]
+        self.ll = (self.llx, self.lly)
+
+        self.urx = lr[0]
+        self.ury = ul[1]
+        self.ur = (self.urx, self.ury)
+
+        self.corners = [self.ul, self.ll, self.ur, self.lr] 
+
+    def contains(self, point):
+
+        intersect_x = point[0] >= self.ulx and point[0] <= self.lrx
+        intersect_y = point[1] >= self.lry and point[1] <= self.uly
+
+        return intersect_x and intersect_y
+
+    def intersects(self, bbox):
+        
+        for corner in bbox.corners:
+            if self.contains(corner):
+                return True
+
+        return False
+
+
