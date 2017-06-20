@@ -8,7 +8,11 @@ import numpy as np
 import filecmp
 
 TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'data/big_basin.tif')
-MERGEDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'data/mindego_hill.tif')
+
+CONTIGUOUS_FILENAMES = [os.path.join(os.path.dirname(__file__), 'data/contig/' + f) for f in os.listdir('tests/data/contig')] 
+NONCONTIGUOUS_FILENAMES = [os.path.join(os.path.dirname(__file__), 'data/noncontig/' + f) for f in os.listdir('tests/data/noncontig')] 
+MERGE_FILENAME = os.path.join(os.path.dirname(__file__), 'data/contig/mindego_hill.tif')
+
 
 
 class CalculationMethodsTestCase(unittest.TestCase):
@@ -68,15 +72,23 @@ class BaseSpatialGridTestCase(unittest.TestCase):
 
     def test_is_contiguous(self):
 
-        adjacent_grid = dem.BaseSpatialGrid(MERGEDATA_FILENAME)
+        self.assertTrue(self.dem.is_contiguous(self.dem), "Grid incorrectly flagged as not contiguous with itself")
         
-        self.assertTrue(self.dem.is_contiguous(adjacent_grid), "Adjacent grids incorrectly flagged as not contiguous")
+        for f in CONTIGUOUS_FILENAMES:
+            with self.subTest(f=f):
+                adjacent_grid = dem.BaseSpatialGrid(f)
+                self.assertTrue(self.dem.is_contiguous(adjacent_grid), "Adjacent grids incorrectly flagged as not contiguous")
+        
+        for f in NONCONTIGUOUS_FILENAMES:
+            with self.subTest(f=f):
+                nonadjacent_grid = dem.BaseSpatialGrid(f)
+                self.assertFalse(self.dem.is_contiguous(nonadjacent_grid), "Non-adjacent grids incorrectly flagged as contiguous")
 
     def test_merge(self):
 
-        adjacent_grid = dem.BaseSpatialGrid(MERGEDATA_FILENAME)
+        adjacent_grid = dem.BaseSpatialGrid(MERGE_FILENAME)
         test_grid = self.dem.merge(adjacent_grid)
-        true_grid = dem.BaseSpatialGrid('data/merged.tif')
+        true_grid = dem.BaseSpatialGrid('tests/data/merged.tif')
         
         self.assertEqual(test_grid._griddata.all(), true_grid._griddata.all(), "Grids merged incorrectly")
 
