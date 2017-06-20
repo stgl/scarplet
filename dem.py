@@ -14,7 +14,10 @@ import gdal_merge
 
 sys.setrecursionlimit(10000)
 
+FLOAT32_MIN = np.finfo(float32).min
+
 GDAL_DRIVER_NAME = 'GTiff'
+
 
 class CalculationMixin(object):
 
@@ -245,12 +248,17 @@ class BaseSpatialGrid(GDALMixin):
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     
     _georef_info = GeorefInfo()
-    
+
+    # TODO: fix inheritance to use BaseSpatialGrid init
+    # XXX: This is here for Python 2.7 compatibility for now
     def __init__(self, filename=None):
 
         if filename is not None:
             self.load(filename)
+            self._griddata[self._griddata == FLOAT32_MIN] = np.nan
+            self.filename = filename
         else:
+            self.filename = None 
             self.label = ''
             self._georef_info = GeorefInfo() 
             self._griddata = np.empty((0,0))
