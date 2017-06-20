@@ -176,9 +176,10 @@ class BaseSpatialGrid(GDALMixin):
         if not self.is_contiguous(grid):
             raise ValueError("Grids are not contiguous")
 
-        sys.argv = [self.filename, grid.filename]
+        sys.argv = ['', self.filename, grid.filename]
         gdal_merge.main()
         merged_grid = BaseSpatialGrid('out.tif') 
+        merged_grid._griddata[merged_grid._griddata == FLOAT32_MIN] = np.nan
         os.remove('out.tif')
 
         return merged_grid
