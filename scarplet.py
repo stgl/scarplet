@@ -1,7 +1,7 @@
 """ Functions for determinig best-fit template parameters by convolution with a
 grid """
 
-from dem import ParameterGrid
+from dem import Hillshade
 import WindowedTemplate as wt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -152,12 +152,11 @@ def plot_results(dem, amp, age, alpha, snr):
 
     for data in results:
         plt.figure()
-        hs = dem.Hillshade(dem)
+        hs = Hillshade(dem)
         hs.plot()
         data.plot()
         plt.savefig(data.name + '_' + dem.label + '.png', dpi=300, bbox_inches='tight')
         plt.show()
-
 
 def save_results(dem, amp, age, alpha, snr, base_dir=''):
     
@@ -173,6 +172,24 @@ def save_results(dem, amp, age, alpha, snr, base_dir=''):
         filename = '_'.join(param.split(' ')) + '_' + dem.label + '.tif'
         filename = base_dir + filename
         data.save(filename)
+
+
+class ParameterGrid(BaseSpatialGrid):
+
+    def __init__(self, dem, data, d, name='', units=''):
+        
+        self._georef_info = dem._georef_info
+        self._griddata = data
+        self.d = d
+        self.name = name
+        self.units = units
+
+    def plot(self, alpha=0.5, colormap='viridis'):
+
+        plt.imshow(self._griddata, alpha=alpha, cmap=colormap)
+        cb = plt.colorbar(orientation='horizontal', extend='both')
+        label = self.name + ' [' + self.units + ']'
+        cb.set_label(label)
 
 
 # XXX: necessary?
