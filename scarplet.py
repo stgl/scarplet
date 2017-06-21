@@ -177,7 +177,7 @@ def plot_results(dem, amp, age, alpha, snr, colormap='viridis'):
 def run_on_grid(dem):
 
     amp, age, alpha, snr = calculate_best_fit_parameters(dem, wt.Scarp)
-    amp, age, alpha, snr = mask_by_snr(amp, age, alpha, snr, thresh=1)
+    amp, age, alpha, snr = mask_by_snr(amp, age, alpha, snr)
     plot_results(dem, amp, age, alpha, snr)
 
     return amp, age, alpha, snr
@@ -193,7 +193,7 @@ def save_results(dem, amp, age, alpha, snr, base_dir=''):
     
     for data, param in zip(results, labels):
         #grid = ParameterGrid(dem, data, d, name=param, units=labels[param])
-        filename = '_'.join(param.split(' ')) + '_' + dem.label + '.tif'
+        filename = '_'.join(param.split(' ')).lower() + '_' + dem.label + '.tif'
         filename = base_dir + filename
         data.save(filename)
 
@@ -210,7 +210,7 @@ class ParameterGrid(BaseSpatialGrid):
 
     def plot(self, alpha=0.5, colormap='viridis'):
 
-        plt.imshow(self._griddata, alpha=alpha, cmap=colormap)
+        plt.imshow(self._griddata, alpha=alpha, cmap=colormap, origin='lower')
         cb = plt.colorbar(orientation='horizontal', extend='both')
         label = self.name + ' [' + self.units + ']'
         cb.set_label(label)

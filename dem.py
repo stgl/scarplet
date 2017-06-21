@@ -71,7 +71,7 @@ class CalculationMixin(object):
         d2z_dy2 = np.vstack([pad_y, d2z_dy2, pad_y])
 
         del2z = d2z_dx2*np.cos(alpha)**2 - 2*d2z_dxdy*np.sin(alpha)*np.cos(alpha) + d2z_dy2*np.sin(alpha)**2
-        del2z[nan_idx] = np.NAN 
+        del2z[nan_idx] = np.nan 
 
         return del2z
 
@@ -86,7 +86,8 @@ class CalculationMixin(object):
 
         for alpha in angles:
             del2z = self._calculate_directional_laplacian(alpha)
-            lowpass = ndimage.gaussian_filter(del2z, 100)
+            # TODO: determine bandpass range from original spectrum
+            lowpass = ndimage.gaussian_filter(del2z, 100) 
             highpass = del2z - lowpass
             m.append(np.nanmean(highpass))
             sd.append(np.nanstd(highpass))
@@ -189,11 +190,6 @@ class BaseSpatialGrid(GDALMixin):
 
         ncols = self._georef_info.nx
         nrows = self._georef_info.ny
-        dx = self._georef_info.dx
-        if self._georef_info.dy is not None:
-            dy = self._georef_info.dy
-        else:
-            dy = dx
 
         x_origin = self._georef_info.xllcenter
         y_origin = self._georef_info.yllcenter
@@ -209,7 +205,7 @@ class BaseSpatialGrid(GDALMixin):
 
     def load(self, filename): #TODO: make this a class method?
         
-        self.label = filename.split('_')[0]
+        self.label = filename.split('/')[-1].split('.')[0]
 
         gdal_dataset = gdal.Open(filename)
         band = gdal_dataset.GetRasterBand(1)
@@ -277,24 +273,6 @@ class Hillshade(BaseSpatialGrid):
   
         ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
         self._hillshade = ls.hillshade(self._griddata, vert_exag=1, dx=self._georef_info.dx, dy=self._georef_info.dy)      
-        plt.imshow(self._hillshade, alpha=1, cmap='gray')
+        plt.imshow(self._hillshade, alpha=1, cmap='gray', origin='lower')
         plt.show()
-
-
-class ParameterGrid(BaseSpatialGrid):
-
-    def __init__(self, dem, data, d, name='', units=''):
-        
-        self._georef_info = dem._georef_info
-        self._griddata = data
-        self.d = d
-        self.name = name
-        self.units = units
-
-    def plot(self, alpha=0.5, colormap='viridis'):
-
-        plt.imshow(self._griddata, alpha=alpha, cmap=colormap)
-        cb = plt.colorbar(orientation='horizontal', extend='both')
-        label = self.name + ' [' + self.units + ']'
-        cb.set_label(label)
 
