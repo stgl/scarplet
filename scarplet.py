@@ -1,8 +1,9 @@
 """ Functions for determinig best-fit template parameters by convolution with a
 grid """
 
-from dem import Hillshade
+from dem import BaseSpatialGrid, Hillshade
 import WindowedTemplate as wt
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pyfftw
@@ -108,6 +109,20 @@ def compare_fits(grids):
 
     return best_amp, best_age, best_alpha, best_snr
 
+def mask_by_snr(amp, age, alpha, snr, thresh=None):
+
+    if thresh is None:
+        thresh = np.nanmean(snr._griddata)
+
+    mask = snr._griddata < thresh
+
+    amp._griddata[mask] = np.nan
+    age._griddata[mask] = np.nan
+    alpha._griddata[mask] = np.nan
+    snr._griddata[mask] = np.nan
+
+    return amp, age, alpha, snr
+
 #@profile
 def match_template(data, template):
     
@@ -133,7 +148,8 @@ def match_template(data, template):
     template_sum = np.sum(template**2)
     
     amp = xcorr/template_sum
-    
+   
+    # TODO  remove intermediate terms to make more memory efficent
     n = np.sum(M) + eps
     T1 = template_sum*(amp**2)
     T2 = -2*amp*xcorr
@@ -146,7 +162,7 @@ def match_template(data, template):
 
     return amp, snr
 
-def plot_results(dem, amp, age, alpha, snr):
+def plot_results(dem, amp, age, alpha, snr, colormap='viridis'):
    
     results = [amp, age, alpha, snr]
 
@@ -154,9 +170,17 @@ def plot_results(dem, amp, age, alpha, snr):
         plt.figure()
         hs = Hillshade(dem)
         hs.plot()
-        data.plot()
+        data.plot(colormap=colormap)
         plt.savefig(data.name + '_' + dem.label + '.png', dpi=300, bbox_inches='tight')
         plt.show()
+
+def run_on_grid(dem):
+
+    amp, age, alpha, snr = calculate_best_fit_parameters(dem, wt.Scarp)
+    amp, age, alpha, snr = mask_by_snr(amp, age, alpha, snr, thresh=1)
+    plot_results(dem, amp, age, alpha, snr)
+
+    return amp, age, alpha, snr
 
 def save_results(dem, amp, age, alpha, snr, base_dir=''):
     
