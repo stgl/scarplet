@@ -1,24 +1,34 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery import Celery
+from celery import *
 
 import dem, scarplet
+from scarplet import TemplateFit
 import WindowedTemplate as wt
+
 import time
 import numpy as np
+
+from timeit import default_timer as timer
 
 app = Celery('scarplet-testing', broker='sqs://')
 app.config_from_object('celeryconfig')
 
-data = dem.DEMGrid('synthetic_kt10_1000.tif')
+data = dem.DEMGrid('carrizo.tif')
+#data = dem.DEMGrid('synthetic_kt10_1000.tif')
+#data = wt.generate_synthetic_scarp(1, 0, 10, 200, 200)
 
 @app.task(ignore_result=False)
-def long_function(t):
-    A = np.random.randn(100, 100)
+def long_function(t, n=100):
+    A = np.random.randn(n, n)
     time.sleep(t)
     return A
 
-@app.task
+@app.task(ignore_result=False)
+def add(x, y):
+    return x+y
+
+@app.task(ignore_result=False)
 def tsum(M):
     return sum(M[:])
 
@@ -26,19 +36,30 @@ def tsum(M):
 def load_data(filename):
     return dem.DEMGrid(filename)
 
-@app.task()
+@app.task(ignore_result=False)
 def match_template(d, age, alpha):
     amp, snr = scarplet.calculate_amplitude(data, wt.Scarp, d, age, alpha)
     return TemplateFit(d, age, alpha, amp, snr)
 
-@app.task()
-def compare_fits(grids):
-    return scarplet.compare_fits(grids)
+def calculate_best_fit_parameters(d=100):
+    ages = [10, 100, 1000]
+    alphas = [0, np.pi/4, np.pi/2]
+    alphas += -1*alphas
+    
+    start = timer()
+    job = group([match_template.s(d, age, alpha) for age in ages for alpha in alphas])
+    res = job.apply_async()
 
-class TemplateFit(object):
-    def __init__(self, d, age, alpha, amp, snr):
-        self.d = d
-        self.age = age 
-        self.alpha = alpha
-        self.amp = amp
-        self.snr = snr
+    results = scarplet.compare_fits(data, res.join())
+
+    res.forget()
+    t_tot = timer() - start
+
+    print("Template matching complete")
+    print("-"*30)
+    #print("Time for async fits:\t " + "{:.1f}".format(t_fits) + " s")
+    #print("Time for comparison:\t " + "{:.1f}".format(t_comp) + " s")
+    print("Total time:\t\t " + "{:.1f}".format(t_tot) + " s")
+
+    return results
+
