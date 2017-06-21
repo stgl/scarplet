@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
-from progressbar import ProgressBar, Bar, Percentage
+from progressbar import ProgressBar, Bar, Percentage, ETA
 
 
 eps = np.spacing(1)
@@ -53,7 +53,7 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
     best_alpha = np.zeros((ny, nx))
     best_snr = np.zeros((ny, nx))
 
-    pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(ages)*len(orientations)).start()
+    pbar = ProgressBar(widgets=[Percentage(), Bar(left='[', right=']'), ' ', ETA()], maxval=len(ages)*len(orientations)).start()
 
     for i, this_alpha in enumerate(orientations):
         for j, this_age in enumerate(ages):
@@ -149,14 +149,15 @@ def match_template(data, template):
 def plot_results(dem, amp, age, alpha, snr):
    
     results = [amp, age, alpha, snr]
-    
-    fig = plt.figure()
 
-    for i, data in enumerate(results):
-        fig.add_subplot(2,2,i+1)
+    for data in results:
+        plt.figure()
+        hs = dem.Hillshade(dem)
+        hs.plot()
         data.plot()
+        plt.savefig(data.name + '_' + dem.label + '.png', dpi=300, bbox_inches='tight')
+        plt.show()
 
-    plt.show()
 
 def save_results(dem, amp, age, alpha, snr, base_dir=''):
     
