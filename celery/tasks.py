@@ -42,12 +42,17 @@ def match_template(d, age, alpha):
     return TemplateFit(d, age, alpha, amp, snr)
 
 def calculate_best_fit_parameters(d=100):
-    ages = [10, 100, 1000]
-    alphas = [0, np.pi/4, np.pi/2]
-    alphas += -1*alphas
+
+    max_age = 3 
+    age_step = 0.5
+    num_ages = max_age/age_step
+    ang_step = 2
+    num_angles = 180/ang_step + 1
+    ages = 10**np.linspace(0, max_age, num=num_ages)
+    angles = np.linspace(-np.pi/2, np.pi/2, num=num_angles)
     
     start = timer()
-    job = group([match_template.s(d, age, alpha) for age in ages for alpha in alphas])
+    job = group([match_template.s(d, age, alpha) for age in ages for alpha in angles])
     res = job.apply_async()
 
     results = scarplet.compare_fits(data, res.join())
