@@ -16,7 +16,7 @@ app.config_from_object('celeryconfig')
 
 #data = dem.DEMGrid('carrizo.tif')
 #data = dem.DEMGrid('synthetic_kt10_1000.tif')
-data = wt.generate_synthetic_scarp(1, 0, 10, 200, 200)
+data = wt.generate_synthetic_scarp(1, 0, 10, 500, 500)
 
 @app.task(ignore_result=False)
 def long_function(t, n=100):
@@ -44,9 +44,11 @@ def match_template(d, age, alpha):
 @app.task
 def match_all():
     d = 100
-    max_age = 3.5
-    nages = 3
-    nangles = 3
+    max_age = 3
+    age_step = 0.5
+    nages = max_age/age_step 
+    ang_step = 2
+    nangles = 180/ang_step + 1
     ages = 10**np.linspace(0, max_age, num=nages)
     angles = np.linspace(-np.pi/2, np.pi/2, num=nangles)
 
