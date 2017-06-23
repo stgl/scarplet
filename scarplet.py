@@ -88,24 +88,15 @@ def calculate_best_fit_parameters(dem, Template, **kwargs):
 
     return best_amp, best_age, best_alpha, best_snr 
 
-def compare_fits(grids):
+def compare_fits(best_results, this_results):
 
-    s = grids[0].amplitude.shape
-    best_snr = np.zeros(s)
-    best_amp = np.zeros(s)
-    best_age = np.zeros(s)
-    best_alpha = np.zeros(s)
+    best_amp, best_age, best_alpha, best_snr = best_results
+    this_amp, this_age, this_alpha, this_snr = this_results
 
-    for fit in grids:
-        best_amp = (best_snr > fit.snr)*best_amp + (best_snr < fit.snr)*fit.amplitude
-        best_age = (best_snr > fit.snr)*best_age + (best_snr < fit.snr)*fit.age
-        best_alpha = (best_snr > fit.snr)*best_alpha + (best_snr < fit.snr)*fit.alpha
-        best_snr = (best_snr > fit.snr)*best_snr + (best_snr < fit.snr)*fit.snr
-
-    best_snr = ParameterGrid(dem, best_snr, grids[0].d, name='SNR')
-    best_amp = ParameterGrid(dem, best_amp, grids[0].d, name='Amplitude', units='m')
-    best_age = ParameterGrid(dem, best_age, grids[0].d, name='Morphologic age', units='m^2')
-    best_alpha = ParameterGrid(dem, best_alpha, grids[0].d, name='Orientation', units='deg.')
+    best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
+    best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
+    best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
+    best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
 
     return best_amp, best_age, best_alpha, best_snr
 
@@ -219,7 +210,7 @@ class ParameterGrid(BaseSpatialGrid):
 # XXX: necessary?
 class TemplateFit(object):
 
-    def __init__(d, age, alpha, amplitude, snr):
+    def __init__(self, d, age, alpha, amplitude, snr):
     
         self.d = d
         self.age = age
