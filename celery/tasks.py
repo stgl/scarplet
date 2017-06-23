@@ -39,5 +39,18 @@ def load_data(filename):
 @app.task(ignore_result=False)
 def match_template(d, age, alpha):
     amp, snr = scarplet.calculate_amplitude(data, wt.Scarp, d, age, alpha)
-    return TemplateFit(d, age, alpha, amp, snr)
+    return age, alpha, amp, snr
 
+@app.task
+def match_all():
+    d = 100
+    max_age = 3.5
+    nages = 3
+    nangles = 3
+    ages = 10**np.linspace(0, max_age, num=nages)
+    angles = np.linspace(-np.pi/2, np.pi/2, num=nangles)
+
+    return group(match_template.s(d, age, alpha) for age in ages for alpha in angles)
+
+def get_grid_size():
+    return data._griddata.shape
