@@ -18,36 +18,44 @@ from timeit import default_timer as timer
 app = Celery('scarplet-testing', broker='sqs://')
 app.config_from_object('celeryconfig')
 
-#data = dem.DEMGrid('../tests/data/carrizo.tif')
-#data = dem.DEMGrid('synthetic_kt10_1000.tif')
-data = wt.generate_synthetic_scarp(1, 0, 10, 500, 500)
+data = dem.DEMGrid('../tests/data/carrizo.tif')
+#data = load_data_from 
 
-@app.task(ignore_result=False)
-def long_function(t, n=100):
-    A = np.random.randn(n, n)
-    time.sleep(t)
-    return A
+def load_data_from_s3(filename, bucket_name='scarp-tmp'):
+    connection = boto.connect_s3()
+    bucket = connection.get_bucket(bucket_name, validate=False)
+    key = bucket.new_key(filename)
+    key.get_contents_to_filename(filename)
+    return np.load(filename)
 
-@app.task(ignore_result=False)
-def add(x, y):
-    return x+y
-
-@app.task(ignore_result=False)
-def tsum(M):
-    return sum(M[:])
-
-@app.task
-def load_data(filename):
-    return dem.DEMGrid(filename)
+def save_data_to_s3(results, bucket_name='scarp-tmp'):
+    connection = boto.connect_s3()
+    bucket = connection.get_bucket(bucket_name, validate=False)
+    d = datetime.datetime.now()
+    filename = 'tmp_' + d.isoformat() + '.npy'
+    key = bucket.new_key(filename)
+    np.save(filename, results)
+    key.set_contents_from_filename(filename)
 
 def save_results_to_s3(results):
     connection = boto.connect_s3()
     bucket = connection.get_bucket('scarp-tmp', validate=False)
     d = datetime.datetime.now()
-    fn = 'tmp_' + d.isoformat() + '.npy'
-    key = bucket.new_key(fn)
-    np.save(fn, results)
-    key.set_contents_from_filename(fn)
+    filename = 'tmp_' + d.isoformat() + '.npy'
+    key = bucket.new_key(filename)
+    np.save(filename, results)
+    key.set_contents_from_filename(filename)
+
+def compare_fits_from_s3():
+    connection = boto.connect_s3()
+    bucket = connection.get_bucket('scarp-tmp', validate=False)
+    best_results = initialize_results()
+    for key in bucket.list():
+        key.get_contents_to_filename('tmp.npy')
+        this_results = np.load('tmp.npy')
+        best_results = scarplet.compare_fits(best_results, this_results)
+        key.delete()
+    return best_results
 
 @app.task(ignore_result=True)
 def match_template(d, age, alpha):
@@ -60,13 +68,13 @@ def match_template(d, age, alpha):
 @app.task(ignore_result=False)
 def match_chunk(min_age, max_age):
     d = 100
-    age_step = 0.5
-    ang_step = 2
-    nages = (max_age - min_age)/age_step 
+    age_step = 0.1
+    ang_step = 1
+    nages = (max_age - min_age)/age_step + 1 
     #nangles = (max_ang- min_ang)/ang_step 
 
     ages = 10**np.linspace(min_age, max_age, num=nages)
-    orientations = np.linspace(-np.pi/2, np.pi/2, num=91)
+    orientations = np.linspace(-np.pi/2, np.pi/2, num=181)
 
     s = data._griddata.shape 
     best_snr = np.zeros(s)
