@@ -1,3 +1,6 @@
+"""
+Utilities for S3 data transfer
+"""
 
 def load_data_from_s3(filename, bucket_name='scarp-tmp'):
     connection = boto.connect_s3()
@@ -20,13 +23,4 @@ def save_data_to_s3(results, bucket_name='scarp-tmp'):
     key = bucket.new_key(filename)
     np.save(filename, results)
     key.set_contents_from_filename(filename)
-
-def pairs(iterable):
-    a, b = itertools.tee(iterable)
-    next(b, None)
-    return itertools.izip(a, b)
-
-def pairwise(iterable):
-    a = iter(iterable)
-    return itertools.izip(a, a)
 

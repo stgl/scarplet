@@ -21,42 +21,6 @@ app.config_from_object('celeryconfig')
 data = dem.DEMGrid('../tests/data/carrizo.tif')
 #data = load_data_from 
 
-def load_data_from_s3(filename, bucket_name='scarp-tmp'):
-    connection = boto.connect_s3()
-    bucket = connection.get_bucket(bucket_name, validate=False)
-    key = bucket.new_key(filename)
-    key.get_contents_to_filename(filename)
-    return np.load(filename)
-
-def save_data_to_s3(results, bucket_name='scarp-tmp'):
-    connection = boto.connect_s3()
-    bucket = connection.get_bucket(bucket_name, validate=False)
-    d = datetime.datetime.now()
-    filename = 'tmp_' + d.isoformat() + '.npy'
-    key = bucket.new_key(filename)
-    np.save(filename, results)
-    key.set_contents_from_filename(filename)
-
-def save_results_to_s3(results):
-    connection = boto.connect_s3()
-    bucket = connection.get_bucket('scarp-tmp', validate=False)
-    d = datetime.datetime.now()
-    filename = 'tmp_' + d.isoformat() + '.npy'
-    key = bucket.new_key(filename)
-    np.save(filename, results)
-    key.set_contents_from_filename(filename)
-
-def compare_fits_from_s3():
-    connection = boto.connect_s3()
-    bucket = connection.get_bucket('scarp-tmp', validate=False)
-    best_results = initialize_results()
-    for key in bucket.list():
-        key.get_contents_to_filename('tmp.npy')
-        this_results = np.load('tmp.npy')
-        best_results = scarplet.compare_fits(best_results, this_results)
-        key.delete()
-    return best_results
-
 @app.task(ignore_result=True)
 def match_template(d, age, alpha):
     best_results = load_results_from_s3()
@@ -104,6 +68,50 @@ def match_chunk(min_age, max_age):
             
     save_results_to_s3([best_amp, best_age, best_alpha, best_snr])
 
+def load_data_from_s3(filename, bucket_name='scarp-tmp'):
+    connection = boto.connect_s3()
+    bucket = connection.get_bucket(bucket_name, validate=False)
+    key = bucket.new_key(filename)
+    key.get_contents_to_filename(filename)
+    return np.load(filename)
+
+def save_data_to_s3(results, bucket_name='scarp-tmp'):
+    connection = boto.connect_s3()
+    bucket = connection.get_bucket(bucket_name, validate=False)
+    d = datetime.datetime.now()
+    filename = 'tmp_' + d.isoformat() + '.npy'
+    key = bucket.new_key(filename)
+    np.save(filename, results)
+    key.set_contents_from_filename(filename)
+
+def save_results_to_s3(results):
+    connection = boto.connect_s3()
+    bucket = connection.get_bucket('scarp-tmp', validate=False)
+    d = datetime.datetime.now()
+    filename = 'tmp_' + d.isoformat() + '.npy'
+    key = bucket.new_key(filename)
+    np.save(filename, results)
+    key.set_contents_from_filename(filename)
+
+def compare_fits_from_s3():
+    connection = boto.connect_s3()
+    bucket = connection.get_bucket('scarp-tmp', validate=False)
+    best_results = initialize_results()
+    for key in bucket.list():
+        key.get_contents_to_filename('tmp.npy')
+        this_results = np.load('tmp.npy')
+        best_results = scarplet.compare_fits(best_results, this_results)
+        key.delete()
+    return best_results
+
+def pairs(iterable):
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return itertools.izip(a, b)
+
+def pairwise(iterable):
+    a = iter(iterable)
+    return itertools.izip(a, a)
+
 def get_grid_size():
     return data._griddata.shape
-
