@@ -4,7 +4,7 @@ import tasks
 form utils import pairs
 
 from s3utils import save_data_to_s3
-from manage_workers import start_multiple_workers, stop_all_workers
+from manage_workers import broadcast_data, start_multiple_workers, stop_all_workers
 
 import boto
 from celery import *
@@ -15,7 +15,10 @@ dage = 0.5
 x = np.linspace(0, 3.5, 3.5/dage)
 age_breaks = pairs(x)
 n = len([x for x in age_breaks])
+
 start_multiple_workers(connection, n)
+# TODO: download data as part of set up?
+#broadcast_data(connection)
 
 g = group([tasks.match_chunk.s(a, b) for a, b in age_breaks])
 r = g.apply_async()

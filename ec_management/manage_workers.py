@@ -12,6 +12,7 @@ AWS_AMI_INSTANCE_ID = ''
 INSTANCE_NUMBER = 1
 PATH_TO_SETUP = '/home/rmsare/src/scarplet-python/setup.sh'
 
+# TODO: download data as part of set up?
 def broadcast_data(connection):
     res = connection.get_all_reservations()
     instances = res[0].get_instances()
