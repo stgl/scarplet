@@ -209,7 +209,7 @@ class ParameterGrid(BaseSpatialGrid):
 
 class TemplateResult(BaseSpatialGrid):
     
-    def __init__(self, dem, amplitude, age, alpha, snr):
+    def __init__(self, dem, d, amplitude, age, alpha, snr):
         
         self._georef_info = dem._georef_info
         self.d = d
