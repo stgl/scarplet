@@ -1,9 +1,6 @@
 """ Functions for determinig best-fit template parameters by convolution with a
 grid """
 
-from dem import BaseSpatialGrid, Hillshade
-import WindowedTemplate as wt
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pyfftw
@@ -11,8 +8,9 @@ from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
 from progressbar import ProgressBar, Bar, Percentage, ETA
 
+from dem import BaseSpatialGrid, Hillshade
+import WindowedTemplate as wt
 
-eps = np.spacing(1)
 pyfftw.interfaces.cache.enable()
 
 def calculate_amplitude(dem, Template, d, age, alpha):
@@ -128,6 +126,8 @@ def match_template(data, template):
 
     #data = np.pad(data, pad_width=pad_width, mode='symmetric')
 
+    eps = np.spacing(1)
+    
     M = template != 0
     fc = fft2(data)
     ft = fft2(template)
@@ -207,6 +207,21 @@ class ParameterGrid(BaseSpatialGrid):
         cb.set_label(label)
 
 
+class TemplateResult(BaseSpatialGrid):
+    
+    def __init__(self, dem, amplitude, age, alpha, snr):
+        
+        self._georef_info = dem._georef_info
+        self.d = d
+        self.name = dem.name
+        
+        self.amplitude = ParameterGrid(dem, amplitude, d, name='Amplitude', units='m')
+        self.age = ParameterGrid(dem, age, d, name='Morphologic age', units='m^2')
+        self.alpha = ParameterGrid(dem, alpha, d, name='Orientation', units='deg.')
+        self.snr = ParameterGrid(dem, snr, d, name='SNR')
+        self.results = [self.amplitude, self.age, self.alpha, self.snr]
+
+        
 # XXX: necessary?
 class TemplateFit(object):
 
