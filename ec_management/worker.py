@@ -4,12 +4,15 @@ from celery import *
 
 
 class BaseWorker(Process):
-    pass
+    def __init__(self):
+        self.queue = 'default-queue'
 
 
 class MatchWorker(BaseWorker):
-    pass
+    def __init__(self):
+        self.queue = 'scarp-search-queue'
 
 
-class CompareWorker(BaseWorker):
-    pass
+class AggregationWorker(BaseWorker):
+    def __init__(self):
+        self.queue = 'scarp-aggregate-queue'
