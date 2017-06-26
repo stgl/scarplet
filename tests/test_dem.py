@@ -14,7 +14,6 @@ NONCONTIGUOUS_FILENAMES = [os.path.join(os.path.dirname(__file__), 'data/noncont
 MERGE_FILENAME = os.path.join(os.path.dirname(__file__), 'data/contig/mindego_hill.tif')
 
 
-
 class CalculationMethodsTestCase(unittest.TestCase):
     
     
@@ -72,7 +71,8 @@ class BaseSpatialGridTestCase(unittest.TestCase):
 
     def test_is_contiguous(self):
 
-        self.assertTrue(self.dem.is_contiguous(self.dem), "Grid incorrectly flagged as not contiguous with itself")
+        with self.subTest():
+            self.assertTrue(self.dem.is_contiguous(self.dem), "Grid incorrectly flagged as not contiguous with itself")
         
         for f in CONTIGUOUS_FILENAMES:
             with self.subTest(f=f):
