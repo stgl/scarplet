@@ -44,7 +44,7 @@ def start_worker(connection):
     instance = res.instances[0]
     connection.create_tags([instance.id], {"Name" : "aws-scarp{:d}".format(INSTANCE_NUMBER)})
 
-    run_command(instance, "celery worker -A tasks -l INFO -f log/info.log -Q scarp-queue")
+    run_command(instance, "celery worker -A tasks -l INFO -f log/info.log -n scarp-worker-%h -Q scarp-queue")
 
 def start_multiple_workers(connection, n_workers):
     for i in range(n_workers):
