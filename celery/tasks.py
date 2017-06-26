@@ -4,16 +4,13 @@ import os, sys
 import boto
 from celery import *
 
+import time, datetime
+import numpy as np
+
 import dem, scarplet
 from scarplet import TemplateFit
 import WindowedTemplate as wt
 from WindowedTemplate import Scarp as Template
-
-import time
-import datetime
-import numpy as np
-
-from timeit import default_timer as timer
 
 app = Celery('scarplet-testing', broker='sqs://')
 app.config_from_object('celeryconfig')

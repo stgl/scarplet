@@ -19,6 +19,7 @@ sys.path.append('/usr/bin')
 import gdal_merge
 
 def combine_all_overlapping_grids(data_dir):
+    # TODO: implement this
     pass
 
 def download_datasets(base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/NCAL/NCAL_be/', 
@@ -41,6 +42,7 @@ def download_datasets(base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/
     datasets = np.array([file_info(dest_dir + fn) for fn in dataset_names])
 
     return datasets
+
 def download_directory(url, working_dir='/media/rmsare/data/ot_data/'):
     """
     Download all files in a remote directory. Does not descend into 
