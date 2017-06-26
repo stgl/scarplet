@@ -113,7 +113,7 @@ def form_dataset_name(code, llx, lly, working_dir='/media/rmsare/data/ot_data/')
 
     return working_dir + code + str(llx / 1000) + '_' + str(lly / 1000)
 
-def merge_grids(files, outfilename='merged.tif', nodata_value='-9999', working_dir='/media/rmsare/data/merged_data/'):
+def merge_grids(files, outfilename='merged.tif', nodata_value='-9999', working_dir='/media/rmsare/data/fixed_merged_data/'):
     # TODO: fix gdal_merge argv
     #sys.argv = ['-o', outfilename, '-init', nodata_value, '-a_nodata', nodata_value] + filenames
     #print("Merging:")
@@ -208,7 +208,7 @@ def merge_datasets(datasets,
           nrows=10,
           ncols=8,
           dest_dir='/media/rmsare/data/ot_data/',
-          working_dir='/media/rmsare/data/merged_data/'):
+          working_dir='/media/rmsare/data/fixed_merged_data/'):
 
     #base_url = 'https://cloud.sdsc.edu/v1/AUTH_opentopography/Raster/SoCAL/SoCAL_be/'
 
