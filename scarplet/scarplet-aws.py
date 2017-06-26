@@ -1,11 +1,13 @@
-import boto
-from celery import *
+import dem, scarplet
 
 import tasks
 form utils import pairs
 
 from s3utils import save_data_to_s3
 from manage_workers import broadcast_data, start_multiple_workers, stop_all_workers
+
+import boto
+from celery import *
 
 connection = boto.connect_ec2()
 
