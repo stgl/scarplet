@@ -2,15 +2,9 @@
 import boto
 from boto.manage.cmdshell import sshclient_from_instance
 
-AWS_KEY = 'aws-scarp'
-AWS_KEY_PATH = '/home/rmsare/aws_keys/aws-scarp.pem'
-AWS_REGION = 'us-west-2'
-AWS_SECURITY_GROUP = 'aws-scarp'
-
-AWS_AMI_INSTANCE_ID = ''
+from settings import *
 
 INSTANCE_NUMBER = 1
-PATH_TO_SETUP = '/home/rmsare/src/scarplet-python/setup.sh'
 
 # TODO: download data as part of set up?
 def broadcast_data(connection):
@@ -30,7 +24,7 @@ def run_command(instance, command):
         print("Download complete for instance " + str(i.id))
 
 def start_worker(connection):
-    with f as open(PATH_TO_SETUP, 'r'):
+    with f as open(SETUP_PATH, 'r'):
         setup_script = f.read()
 
     res = connection.run_instances(
@@ -43,6 +37,7 @@ def start_worker(connection):
 
     instance = res.instances[0]
     connection.create_tags([instance.id], {"Name" : "aws-scarp{:d}".format(INSTANCE_NUMBER)})
+    INSTANCE_NUMBER += 1
 
     run_command(instance, "celery worker -A tasks -l INFO -f log/info.log -n scarp-worker-%h -Q scarp-queue")
 
