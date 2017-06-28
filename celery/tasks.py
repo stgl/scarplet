@@ -35,7 +35,7 @@ def match_template(d, age, alpha):
 @app.task(ignore_result=False)
 def match_chunk(min_age, max_age, min_ang=0, max_ang=180):
     d = 100
-    age_step = 0.1
+    age_step = 0.25
     ang_step = 1
     nages = (max_age - min_age)/age_step + 1
     nangles = (max_ang - min_ang)/ang_step 
@@ -78,11 +78,12 @@ def load_data_from_s3(filename, bucket_name='scarp-tmp'):
     key.get_contents_to_filename(filename)
     return np.load(filename)
 
-def save_data_to_s3(results, bucket_name='scarp-tmp'):
+def save_data_to_s3(results, filename=None, bucket_name='scarp-tmp'):
     connection = boto.connect_s3()
     bucket = connection.get_bucket(bucket_name, validate=False)
     d = datetime.datetime.now()
-    filename = 'tmp_' + d.isoformat() + '.npy'
+    if not filename:
+        filename = 'tmp_' + d.isoformat() + '.npy'
     key = bucket.new_key(filename)
     np.save(filename, results)
     key.set_contents_from_filename(filename)
@@ -96,6 +97,7 @@ def save_results_to_s3(results):
     np.save(filename, results)
     key.set_contents_from_filename(filename)
 
+@app.task(ignore_results=False)
 def compare_fits_from_s3():
     connection = boto.connect_s3()
     bucket = connection.get_bucket('scarp-tmp', validate=False)
@@ -105,7 +107,18 @@ def compare_fits_from_s3():
         this_results = np.load('tmp.npy')
         best_results = scarplet.compare_fits(best_results, this_results)
         key.delete()
-    return best_results
+    save_data_to_s3(best_results, filename='best_results_carrizo.npy', bucket_name='scarp-results')
+
+def initialize_results():
+    s = tasks.get_grid_size() 
+    best_snr = np.zeros(s)
+    best_amp = np.zeros(s)
+    best_age = np.zeros(s)
+    best_alpha = np.zeros(s)
+    return best_amp, best_age, best_alpha, best_snr
+
+def get_grid_size():
+    return data._griddata.shape
 
 def pairs(iterable):
     a, b = itertools.tee(iterable)
@@ -115,6 +128,3 @@ def pairs(iterable):
 def pairwise(iterable):
     a = iter(iterable)
     return itertools.izip(a, a)
-
-def get_grid_size():
-    return data._griddata.shape
