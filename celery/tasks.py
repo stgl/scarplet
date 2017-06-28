@@ -5,7 +5,6 @@ import boto
 from celery import *
 
 import dem, scarplet
-from scarplet import TemplateFit
 import WindowedTemplate as wt
 from WindowedTemplate import Scarp as Template
 
