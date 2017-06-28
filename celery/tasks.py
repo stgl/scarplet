@@ -21,6 +21,10 @@ app.config_from_object('celeryconfig')
 data = dem.DEMGrid('../tests/data/carrizo.tif')
 #data = load_data_from 
 
+@app.task(ignore_result=False)
+def add(x, y):
+    return x + y
+
 @app.task(ignore_result=True)
 def match_template(d, age, alpha):
     best_results = load_results_from_s3()
@@ -30,15 +34,15 @@ def match_template(d, age, alpha):
     save_results_to_s3(best_results)
 
 @app.task(ignore_result=False)
-def match_chunk(min_age, max_age):
+def match_chunk(min_age, max_age, min_ang=0, max_ang=180):
     d = 100
     age_step = 0.1
     ang_step = 1
-    nages = (max_age - min_age)/age_step + 1 
-    #nangles = (max_ang- min_ang)/ang_step 
+    nages = (max_age - min_age)/age_step + 1
+    nangles = (max_ang - min_ang)/ang_step 
 
-    ages = 10**np.linspace(min_age, max_age, num=nages)
-    orientations = np.linspace(-np.pi/2, np.pi/2, num=181)
+    ages = 10**np.linspace(min_age, max_age, num=nages)[:-1]
+    orientations = np.linspace(-np.pi/2, np.pi/2, num=nangles)
 
     s = data._griddata.shape 
     best_snr = np.zeros(s)
