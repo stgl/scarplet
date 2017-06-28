@@ -21,7 +21,7 @@ Date            | Description
 
 ## Notes
 
-- Use `celery --autoscale=min,max` to limit concurrent jobs
+- Use `celery --autoscale=min,max` to limit concurrent jobs (best with concurrency at least # processors)
 - Run time constrained by I/O: Pickling/un-pickling
 - Run time constraiend by CPU: Matching template
 - Memory not a limiting factor for `t2.medium` or better (maybe `t2.small` too?) 
