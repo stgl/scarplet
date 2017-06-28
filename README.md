@@ -45,6 +45,6 @@ Synthetic (400 x 400) | Laptop                                   |
 "                     | AWS (5 x *t2.xlarge* instances)          | 
 "                     | AWS (5 x *t2.xlarge* instances)          | 
 Carrizo (~500 x 4000) | Laptop                                   | 4-6 hrs? 
-"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | ~1 hr (62 min) 
 "                     | AWS (5 x *t2.xlarge* instances)          | 
 
