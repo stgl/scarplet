@@ -39,12 +39,12 @@ Date            | Description
 Test case             | Platform                                 | Time
 --------------------- | ---------------------------------------- | ---------
 Synthetic (200 x 200) | Laptop (using 1/4 2.5 GHz CPU, 4 GB RAM) |  
-s                     | AWS (5 x *t2.xlarge* instances)          | 
-s                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
 Synthetic (400 x 400) | Laptop                                   |  
-s                     | AWS (5 x *t2.xlarge* instances)          | 
-s                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
 Carrizo (~500 x 4000) | Laptop                                   | 4-6 hrs? 
-s                     | AWS (5 x *t2.xlarge* instances)          | 
-s                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
 
