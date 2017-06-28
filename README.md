@@ -13,7 +13,7 @@ Date            | Description
 ## TODO
 
 - Test with Carrizo data
-- ``Test AWS "search and gather" chord`` Doesn't work: don't send data in backend messages...
+- ~~Test AWS "search and gather" chord~~ Doesn't work: don't send data in backend messages...
 - Write gather and compare task
 - Get AWS autoscaling working
 - AWS testing
