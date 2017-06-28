@@ -33,9 +33,8 @@ def match_template(d, age, alpha):
     save_results_to_s3(best_results)
 
 @app.task(ignore_result=False)
-def match_chunk(min_age, max_age, min_ang=0, max_ang=180):
+def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step=0.1):
     d = 100
-    age_step = 0.25
     ang_step = 1
     nages = (max_age - min_age)/age_step + 1
     nangles = (max_ang - min_ang)/ang_step 
