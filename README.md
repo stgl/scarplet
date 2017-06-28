@@ -13,7 +13,23 @@ Date            | Description
 ## TODO
 
 - Test with Carrizo data
-- Test AWS "search and gather" chord
+- ~~Test AWS "search and gather" chord~~ Doesn't work: don't send data in backend messages...
+- Write gather and compare task
 - Get AWS autoscaling working
 - AWS testing
 - Processing time estimate
+
+## Notes
+### Using `celery` and `boto`
+- `waiting()` and `complete_count()` method calls can be expensive
+- group methods can't track progress if `ignore_result=True`...
+
+### Running workers
+- Use `celery --autoscale=min,max` to limit concurrent jobs (best with concurrency at least # processors)
+- Running multiple workers on one machine doesn't seem to make a difference in how jobs are consumed
+
+### Observations...
+- Run time constrained by I/O: Pickling/un-pickling
+- Run time constraiend by CPU: Matching template
+- Memory not a limiting factor for `t2.medium` or better (maybe `t2.small` too?) 
+- `t2.micro` instances run out of memory on 8 MB Carrizo test case (duh)
