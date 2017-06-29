@@ -12,13 +12,13 @@ Date            | Description
 
 ## TODO
 
+- Test and time multiple instances with task-specific queues
+- Processing time estimate
+- Get AWS autoscaling working
+- AWS testing
 - ~~Test with Carrizo data~~
 - ~~Test AWS "search and gather" chord~~ Doesn't work: don't send data in backend messages...
 - ~~Write gather and compare task~~
-- Test and time mu
-- Get AWS autoscaling working
-- AWS testing
-- Processing time estimate
 
 ## Notes
 ### Using `celery` and `boto`
