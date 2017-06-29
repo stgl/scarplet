@@ -12,7 +12,9 @@ from WindowedTemplate import Scarp as Template
 
 import time
 import datetime
+
 import numpy as np
+import numexpr
 
 from timeit import default_timer as timer
 
@@ -23,6 +25,7 @@ data = dem.DEMGrid('../tests/data/carrizo.tif')
 #data = load_data_from 
 
 @app.task(ignore_result=False)
+@app.task
 def add(x, y):
     return x + y
 
@@ -35,13 +38,13 @@ def match_template(d, age, alpha):
     save_results_to_s3(best_results)
 
 @app.task(ignore_result=False)
-def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step=0.1):
+def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step = 0.1):
     d = 100
     ang_step = 1
-    nages = (max_age - min_age)/age_step + 1
+    nages = (max_age - min_age)/age_step + 1 
     nangles = (max_ang - min_ang)/ang_step 
 
-    ages = 10**np.linspace(min_age, max_age, num=nages)[:-1]
+    ages = 10**np.linspace(min_age, max_age, num=nages)[:-1}
     orientations = np.linspace(-np.pi/2, np.pi/2, num=nangles)
 
     s = data._griddata.shape 
@@ -65,11 +68,11 @@ def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step=0.1):
             this_amp[mask] = 0 
             this_snr[mask] = 0
 
-            best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
-            best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
-            best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
-            best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
-            
+            best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
+            best_age = numexpr.evaluate("(best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age")
+            best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
+            best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")            
+
     save_results_to_s3([best_amp, best_age, best_alpha, best_snr])
 
 def load_data_from_s3(filename, bucket_name='scarp-tmp'):
@@ -98,18 +101,6 @@ def save_results_to_s3(results):
     np.save(filename, results)
     key.set_contents_from_filename(filename)
 
-def get_grid_size():
-    return data._griddata.shape
-
-def initialize_results():
-    s = tasks.get_grid_size() 
-    best_snr = np.zeros(s)
-    best_amp = np.zeros(s)
-    best_age = np.zeros(s)
-    best_alpha = np.zeros(s)
-    return best_amp, best_age, best_alpha, best_snr
-
-@app.task(ignore_results=False)
 def compare_fits_from_s3():
     connection = boto.connect_s3()
     bucket = connection.get_bucket('scarp-tmp', validate=False)
@@ -119,8 +110,7 @@ def compare_fits_from_s3():
         this_results = np.load('tmp.npy')
         best_results = scarplet.compare_fits(best_results, this_results)
         key.delete()
-    save_data_to_s3(best_results, filename='best_results_carrizo.npy', bucket_name='scarp-results')
-
+    return best_results
 
 def pairs(iterable):
     a, b = itertools.tee(iterable)
@@ -130,3 +120,6 @@ def pairs(iterable):
 def pairwise(iterable):
     a = iter(iterable)
     return itertools.izip(a, a)
+
+def get_grid_size():
+    return data._griddata.shape

@@ -5,6 +5,8 @@ from dem import BaseSpatialGrid, Hillshade
 import WindowedTemplate as wt
 
 import numpy as np
+import numexpr
+
 import matplotlib.pyplot as plt
 import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
@@ -93,11 +95,10 @@ def compare_fits(best_results, this_results):
     best_amp, best_age, best_alpha, best_snr = best_results
     this_amp, this_age, this_alpha, this_snr = this_results
 
-    best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
-    best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
-    best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
-    best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
-
+    best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
+    best_age = numexpr.evaluate("(best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age")
+    best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
+    best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")    
     return best_amp, best_age, best_alpha, best_snr
 
 def mask_by_snr(amp, age, alpha, snr, thresh=None):
