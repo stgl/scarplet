@@ -12,9 +12,10 @@ Date            | Description
 
 ## TODO
 
-- Test with Carrizo data
+- ~~Test with Carrizo data~~
 - ~~Test AWS "search and gather" chord~~ Doesn't work: don't send data in backend messages...
-- Write gather and compare task
+- ~~Write gather and compare task~~
+- Test and time mu
 - Get AWS autoscaling working
 - AWS testing
 - Processing time estimate
@@ -25,6 +26,7 @@ Date            | Description
 - group methods can't track progress if `ignore_result=True`...
 
 ### Running workers
+- Queue up tasks, then launch workers: better chance of consuming tasks sitting on queue?
 - Use `celery --autoscale=min,max` to limit concurrent jobs (best with concurrency at least # processors)
 - Running multiple workers on one machine doesn't seem to make a difference in how jobs are consumed
 
@@ -35,6 +37,8 @@ Date            | Description
 - `t2.micro` instances run out of memory on 8 MB Carrizo test case (duh)
 
 ## Benchmark list
+
+**Parameters:** *dkt* = 0.1, *kt* max = 10^3.5, orientation -90/+90
 
 Test case             | Platform                                 | Time
 --------------------- | ---------------------------------------- | ---------
@@ -47,4 +51,20 @@ Synthetic (400 x 400) | Laptop                                   |
 Carrizo (~500 x 4000) | Laptop                                   | 4-6 hrs? 
 "                     | AWS (5 x *t2.xlarge* instances)          | ~1 hr (62 min) 
 "                     | AWS (5 x *t2.xlarge* instances)          | 
+
+**Parameters:** *dkt* = 0.25, *kt* max = 10^3.5, orientation -90/+90
+
+Test case             | Platform                                 | Time
+--------------------- | ---------------------------------------- | ---------
+Synthetic (200 x 200) | Laptop (using 1/4 2.5 GHz CPU, 4 GB RAM) |  
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+Synthetic (400 x 400) | Laptop                                   |  
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+Carrizo (~500 x 4000) | Laptop                                   | 
+"                     | AWS (5 x *t2.xlarge* instances)          | 20 min
+"                     | AWS (5 x *t2.xlarge* instances)          | 
+
+
 
