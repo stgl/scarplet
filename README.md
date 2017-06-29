@@ -42,30 +42,31 @@ Date            | Description
 **Parameters:** *dkt* = 0.1, *kt* max = 10^3.5, orientation -90/+90
 
 Test case             | Platform                                 | Time
---------------------- | ---------------------------------------- | ---------
+:-------------------- | :--------------------------------------- | ---------:
 Synthetic (200 x 200) | Laptop (using 1/4 2.5 GHz CPU, 4 GB RAM) |  
 "                     | AWS (5 x *t2.xlarge* instances)          | 
-"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS                                      | 
 Synthetic (400 x 400) | Laptop                                   |  
-"                     | AWS (5 x *t2.xlarge* instances)          | 
-"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS                                      | 
+"                     | AWS                                      | 
 Carrizo (~500 x 4000) | Laptop                                   | 3.6 hrs 
-"                     | AWS (5 x *t2.xlarge* instances)          | ~1 hr (62 min) 
-"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS: Fit on instances, compare on laptop | ~1 hr (62 min) 
+"                     | AWS: Fit and compare on instances        | ~0.52 hr (31 min) 
+"                     | AWS: Single-search step granularity      | > 13 hrs
 
 **Parameters:** *dkt* = 0.25, *kt* max = 10^3.5, orientation -90/+90
 
 Test case             | Platform                                 | Time
---------------------- | ---------------------------------------- | ---------
+:-------------------- | :--------------------------------------- | ---------:
 Synthetic (200 x 200) | Laptop (using 1/4 2.5 GHz CPU, 4 GB RAM) |  
-"                     | AWS (5 x *t2.xlarge* instances)          | 
-"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS                                      | 
+"                     | AWS                                      | 
 Synthetic (400 x 400) | Laptop                                   |  
-"                     | AWS (5 x *t2.xlarge* instances)          | 
-"                     | AWS (5 x *t2.xlarge* instances)          | 
-Carrizo (~500 x 4000) | Laptop                                   | 2 hrs?
-"                     | AWS (5 x *t2.xlarge* instances)          | 20 min
-"                     | AWS (5 x *t2.xlarge* instances)          | 
+"                     | AWS                                      | 
+"                     | AWS                                      | 
+Carrizo (~500 x 4000) | Laptop                                   | 1.4 hrs (85 min)
+"                     | AWS Fit on instances, compare on laptop  | 20 min
+"                     | AWS                                      | 
 
 
 
