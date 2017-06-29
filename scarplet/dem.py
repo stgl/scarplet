@@ -75,6 +75,34 @@ class CalculationMixin(object):
 
         return del2z
 
+    def _calculate_directional_laplacian_numexpr(self, alpha):
+
+        dx = self._georef_info.dx
+        dy = self._georef_info.dy       
+        z = self._griddata
+        nan_idx = np.isnan(z)
+        z[nan_idx] = 0
+        
+        dz_dx = np.diff(z, 1, 1)/dx
+        d2z_dxdy = np.diff(dz_dx, 1, 0)/dx
+        pad_x = np.zeros((d2z_dxdy.shape[0], 1))
+        d2z_dxdy = np.hstack([pad_x, d2z_dxdy])
+        pad_y = np.zeros((1, d2z_dxdy.shape[1]))
+        d2z_dxdy = np.vstack([pad_y, d2z_dxdy])
+        
+        d2z_dx2 = np.diff(z, 2, 1)/dx**2
+        pad_x = np.zeros((d2z_dx2.shape[0], 1))
+        d2z_dx2 = np.hstack([pad_x, d2z_dx2, pad_x])
+
+        d2z_dy2 = np.diff(z, 2, 0)/dy**2
+        pad_y = np.zeros((1, d2z_dy2.shape[1]))
+        d2z_dy2 = np.vstack([pad_y, d2z_dy2, pad_y])
+
+        del2z = numexpr.evaluate("d2z_dx2*cos(alpha)**2 - 2*d2z_dxdy*sin(alpha)*cos(alpha) + d2z_dy2*sin(alpha)**2")
+        del2z[nan_idx] = np.nan 
+
+        return del2z
+
     def _estimate_curvature_noiselevel(self):
         
         from scipy import ndimage

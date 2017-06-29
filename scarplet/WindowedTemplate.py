@@ -91,6 +91,31 @@ class Scarp(WindowedTemplate):
 
         return W
 
+    def template_numexpr(self):
+        
+        alpha = self.alpha
+        kt = self.kt
+        c = self.c
+        d = self.d
+
+        x = self.de*np.linspace(1, self.nx, num=self.nx)
+        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = x - np.mean(x)
+        y = y - np.mean(y)
+
+        x, y = np.meshgrid(x, y)
+        xr = numexpr.evaluate("x*cos(alpha) + y*sin(alpha)")
+        yr = numexpr.evaluate("-x*sin(alpha) + y*cos(alpha)")
+
+        pi = np.pi
+        W = numexpr.evaluate("(-xr/(2*kt**(3/2)*sqrt(pi)))*exp(-xr**2/(4*kt))")
+
+        mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
+        W = numexpr.evaluate("W*mask")
+        #W = W.T
+
+        return W
+
 
 class Channel(WindowedTemplate):
     
