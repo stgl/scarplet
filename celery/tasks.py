@@ -1,6 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
 import os, sys
+sys.apth.append('../scarplet')
+
 import boto
 from celery import *
 
@@ -96,6 +98,17 @@ def save_results_to_s3(results):
     np.save(filename, results)
     key.set_contents_from_filename(filename)
 
+def get_grid_size():
+    return data._griddata.shape
+
+def initialize_results():
+    s = tasks.get_grid_size() 
+    best_snr = np.zeros(s)
+    best_amp = np.zeros(s)
+    best_age = np.zeros(s)
+    best_alpha = np.zeros(s)
+    return best_amp, best_age, best_alpha, best_snr
+
 @app.task(ignore_results=False)
 def compare_fits_from_s3():
     connection = boto.connect_s3()
@@ -108,16 +121,6 @@ def compare_fits_from_s3():
         key.delete()
     save_data_to_s3(best_results, filename='best_results_carrizo.npy', bucket_name='scarp-results')
 
-def initialize_results():
-    s = tasks.get_grid_size() 
-    best_snr = np.zeros(s)
-    best_amp = np.zeros(s)
-    best_age = np.zeros(s)
-    best_alpha = np.zeros(s)
-    return best_amp, best_age, best_alpha, best_snr
-
-def get_grid_size():
-    return data._griddata.shape
 
 def pairs(iterable):
     a, b = itertools.tee(iterable)
