@@ -26,6 +26,7 @@ Date            | Description
 - group methods can't track progress if `ignore_result=True`...
 
 ### Running workers
+- **One worker per queue**
 - Queue up tasks, then launch workers: better chance of consuming tasks sitting on queue?
 - Use `celery --autoscale=min,max` to limit concurrent jobs (best with concurrency at least # processors)
 - Running multiple workers on one machine doesn't seem to make a difference in how jobs are consumed
