@@ -61,9 +61,9 @@ def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step = 0.1):
             t = Template(d, this_age, this_alpha, nx, ny, de)
             template = t.template()
 
-            curv = data._calculate_directional_laplacian(this_alpha)
+            curv = data._calculate_directional_laplacian_numexpr(this_alpha)
             
-            this_amp, this_snr = scarplet.match_template(curv, template)
+            this_amp, this_snr = scarplet.match_template_numexpr(curv, template)
             mask = t.get_window_limits()
             this_amp[mask] = 0 
             this_snr[mask] = 0
