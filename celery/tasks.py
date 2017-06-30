@@ -44,7 +44,7 @@ def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step = 0.1):
     nages = (max_age - min_age)/age_step + 1 
     nangles = (max_ang - min_ang)/ang_step 
 
-    ages = 10**np.linspace(min_age, max_age, num=nages)[:-1}
+    ages = 10**np.linspace(min_age, max_age, num=nages)[:-1]
     orientations = np.linspace(-np.pi/2, np.pi/2, num=nangles)
 
     s = data._griddata.shape 
