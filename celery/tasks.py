@@ -129,7 +129,7 @@ def compare_fits_from_s3():
         this_results = np.load('tmp.npy')
         best_results = scarplet.compare_fits(best_results, this_results)
         key.delete()
-    save_data_to_s3(best_results, filename='best_carrizo.npy', bucket='scarp-results')
+    save_data_to_s3(best_results, filename='best_carrizo.npy', bucket_name='scarp-results')
 
 def pairs(iterable):
     a, b = itertools.tee(iterable)
