@@ -55,11 +55,20 @@ def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step = 0.1):
     ny, nx = s
     de = data._georef_info.dx
 
+    # Pre-plain PyFFTW FFT calls (30 s speedup over whole loop)
+    pyfftw.interfaces.cache.enable()
+    pyfftw.interfaces.cache.set_keepalive_time(10)
+
+    t = Template(d, 10, 0, nx, ny, de)
+    template = t.template_numexpr()
+    curv = data._calculate_directional_laplacian_numexpr(0)
+    this_amp, this_snr = scarplet.match_template_numexpr(curv, template)
+
     for this_alpha in orientations:
         for this_age in ages:
             
             t = Template(d, this_age, this_alpha, nx, ny, de)
-            template = t.template()
+            template = t.template_numexpr()
 
             curv = data._calculate_directional_laplacian_numexpr(this_alpha)
             
