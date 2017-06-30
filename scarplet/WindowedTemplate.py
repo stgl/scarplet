@@ -5,6 +5,8 @@ from osgeo import osr, ogr, gdal
 
 import math
 import numpy as np
+import numexpr
+
 from scipy.signal import convolve2d
 from scipy.special import erf, erfinv
 import matplotlib.pyplot as plt

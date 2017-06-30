@@ -154,6 +154,42 @@ def match_template(data, template):
 
     return amp, snr
 
+def match_template_numexpr(data, template):
+    
+    eps = np.spacing(1)
+    #template = template_function(template_args)
+
+    if data.ndim < template.ndim:
+        raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
+    if np.any(np.less(data.shape, template.shape)):
+        raise ValueError("Size of template must be less than or equal to size of data matrix")
+
+    #pad_width = tuple((wid, wid) for wid in template.shape)
+
+    #data = np.pad(data, pad_width=pad_width, mode='symmetric')
+
+    M = numexpr.evaluate("template != 0")
+    fc = fft2(data)
+    ft = fft2(template)
+    fc2 = fft2(numexpr.evaluate("data**2"))
+    fm2 = fft2(M)
+
+    #xcorr = signal.fftconvolve(data, template, mode='same')
+    xcorr = np.real(fftshift(ifft2(numexpr.evaluate("ft*fc"))))
+    template_sum = np.sum(template**2)
+    
+    amp = numexpr.evaluate("xcorr/template_sum")
+   
+    # TODO  remove intermediate terms to make more memory efficent
+    n = np.sum(M) + eps
+    T1 = numexpr.evaluate("template_sum*(amp**2)")
+    T3 = fftshift(ifft2(numexpr.evaluate("fc2*fm2")))
+    error = (1/n)*numexpr.evaluate("real(T1 - 2*amp*xcorr + T3)") + eps # avoid small-magnitude dvision
+    #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
+    snr = numexpr.evaluate("real(T1/error)")
+
+    return amp, snr
+
 def plot_results(dem, amp, age, alpha, snr, colormap='viridis'):
    
     results = [amp, age, alpha, snr]
