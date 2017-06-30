@@ -13,6 +13,7 @@ from WindowedTemplate import Scarp as Template
 import time
 import datetime
 
+import pyfftw
 import numpy as np
 import numexpr
 
@@ -128,7 +129,7 @@ def compare_fits_from_s3():
         this_results = np.load('tmp.npy')
         best_results = scarplet.compare_fits(best_results, this_results)
         key.delete()
-    return best_results
+    save_data_to_s3(best_results, filename='best_carrizo.npy', bucket='scarp-results')
 
 def pairs(iterable):
     a, b = itertools.tee(iterable)
