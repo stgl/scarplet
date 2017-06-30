@@ -44,7 +44,7 @@ def match_chunk(min_age, max_age, min_ang=0, max_ang=180, age_step = 0.1):
     nages = (max_age - min_age)/age_step + 1 
     nangles = (max_ang - min_ang)/ang_step 
 
-    ages = 10**np.linspace(min_age, max_age, num=nages)[:-1}
+    ages = 10**np.linspace(min_age, max_age, num=nages)[:-1]
     orientations = np.linspace(-np.pi/2, np.pi/2, num=nangles)
 
     s = data._griddata.shape 
@@ -101,6 +101,15 @@ def save_results_to_s3(results):
     np.save(filename, results)
     key.set_contents_from_filename(filename)
 
+def initialize_results():
+    s = get_grid_size() 
+    best_snr = np.zeros(s)
+    best_amp = np.zeros(s)
+    best_age = np.zeros(s)
+    best_alpha = np.zeros(s)
+    return best_amp, best_age, best_alpha, best_snr
+
+@app.task(ignore_results=False)
 def compare_fits_from_s3():
     connection = boto.connect_s3()
     bucket = connection.get_bucket('scarp-tmp', validate=False)
