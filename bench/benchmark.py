@@ -116,58 +116,58 @@ if __name__ == "__main__":
     de = data._georef_info.dx
    
     # Normal test
-    print("Testing naive implementation")
+    #print("Testing naive implementation")
 
-    best_amp = np.zeros((ny, nx))
-    best_age = np.zeros((ny, nx))
-    best_alpha = np.zeros((ny, nx))
-    best_snr = np.zeros((ny, nx))
+    #best_amp = np.zeros((ny, nx))
+    #best_age = np.zeros((ny, nx))
+    #best_alpha = np.zeros((ny, nx))
+    #best_snr = np.zeros((ny, nx))
 
-    pbar = ProgressBar(widgets=[Percentage(), Bar(left='[', right=']'), ' ', ETA()], maxval=len(ages)*len(orientations)).start()
+    #pbar = ProgressBar(widgets=[Percentage(), Bar(left='[', right=']'), ' ', ETA()], maxval=len(ages)*len(orientations)).start()
 
-    start = timer()
-    for i, this_alpha in enumerate(orientations):
-        for j, this_age in enumerate(ages):
-            
-            this_age = 10**this_age
+    #start = timer()
+    #for i, this_alpha in enumerate(orientations):
+    #    for j, this_age in enumerate(ages):
+    #        
+    #        this_age = 10**this_age
 
-            t0 = timer()
-            t = Scarp(d, this_age, this_alpha, nx, ny, de)
-            template = t.template()
-            t1 = timer()
-            #print("Generate template:\t\t\t{:.2f} s".format(t1-t0))
+    #        t0 = timer()
+    #        t = Scarp(d, this_age, this_alpha, nx, ny, de)
+    #        template = t.template()
+    #        t1 = timer()
+    #        #print("Generate template:\t\t\t{:.2f} s".format(t1-t0))
 
-            t0 = timer()
-            curv = data._calculate_directional_laplacian(this_alpha)
-            t1 = timer()
-            #print("Calculate Laplacian:\t\t\t{:.2f} s".format(t1-t0))
-            
-            t0 = timer()
-            this_amp, this_snr = scarplet.match_template(curv, template)
-            t1 = timer()
-            #print("Match template:\t\t\t\t{:.2f} s".format(t1-t0))
-            mask = t.get_window_limits()
-            this_amp[mask] = 0 
-            this_snr[mask] = 0
+    #        t0 = timer()
+    #        curv = data._calculate_directional_laplacian(this_alpha)
+    #        t1 = timer()
+    #        #print("Calculate Laplacian:\t\t\t{:.2f} s".format(t1-t0))
+    #        
+    #        t0 = timer()
+    #        this_amp, this_snr = scarplet.match_template(curv, template)
+    #        t1 = timer()
+    #        #print("Match template:\t\t\t\t{:.2f} s".format(t1-t0))
+    #        mask = t.get_window_limits()
+    #        this_amp[mask] = 0 
+    #        this_snr[mask] = 0
 
-            t0 = timer()
-            best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
-            best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
-            best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
-            best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
-            t1 = timer()
-            #print("Find best SNR:\t\t\t\t{:.2f} s".format(t1-t0))
+    #        t0 = timer()
+    #        best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
+    #        best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
+    #        best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
+    #        best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
+    #        t1 = timer()
+    #        #print("Find best SNR:\t\t\t\t{:.2f} s".format(t1-t0))
 
-            pbar.update((i+1)*len(ages))
-    stop = timer()
-    print("\nTime elapsed:\t\t\t\t{:.2f} s".format(stop-start))
+    #        pbar.update((i+1)*len(ages))
+    #stop = timer()
+    #print("\nTime elapsed:\t\t\t\t{:.2f} s".format(stop-start))
 
-    fig = plt.figure()
-    fig.add_subplot(121)
-    plt.imshow(best_snr)
+    #fig = plt.figure()
+    #fig.add_subplot(121)
+    #plt.imshow(best_snr)
 
-    true_age = best_age.copy()
-    true_snr = best_snr.copy()
+    #true_age = best_age.copy()
+    #true_snr = best_snr.copy()
 
     # Numexpr test
     print("-"*80)
@@ -188,17 +188,17 @@ if __name__ == "__main__":
 
             t0 = timer()
             t = Scarp(d, this_age, this_alpha, nx, ny, de)
-            template = template_numexpr(nx, ny, de, this_age, this_alpha)
+            template = t.template_numexpr()
             t1 = timer()
             #print("Generate template:\t\t\t{:.2f} s".format(t1-t0))
 
             t0 = timer()
-            curv = calculate_directional_laplacian_numexpr(data, this_alpha)
+            curv = data._calculate_directional_laplacian_numexpr(this_alpha)
             t1 = timer()
             #print("Calculate Laplacian:\t\t\t{:.2f} s".format(t1-t0))
             
             t0 = timer()
-            this_amp, this_snr = match_template_numexpr(curv, template)
+            this_amp, this_snr = scarplet.match_template_numexpr(curv, template)
             t1 = timer()
             #print("Match template:\t\t\t\t{:.2f} s".format(t1-t0))
             mask = t.get_window_limits()
