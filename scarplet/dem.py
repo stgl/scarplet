@@ -140,7 +140,7 @@ class CalculationMixin(object):
         #pad_y = np.zeros((dy, nx))
         #z_pad = np.vstack([pad_y, z_pad, pad_y]) 
 
-        self._griddata = np.pad(self._griddata, pad_width=(dy, dx), mode='constant')
+        self._griddata = np.pad(self._griddata, pad_width=(dy, dx), mode='reflect')
 
         nx, ny = self._griddata.shape
         
@@ -148,7 +148,7 @@ class CalculationMixin(object):
         self._georef_info.ny = ny
         self._georef_info.xllcenter -= dx
         self._georef_info.yllcenter -= dy
-        self._griddata = z_pad 
+        #self._griddata = z_pad 
 
 class GDALMixin(object):
     pass
