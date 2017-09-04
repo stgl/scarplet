@@ -12,7 +12,9 @@ import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
 from progressbar import ProgressBar, Bar, Percentage, ETA
+from timeit import default_timer as timer
 
+np.seterr(divide='ignore', invalid='ignore')
 
 eps = np.spacing(1)
 pyfftw.interfaces.cache.enable()
@@ -34,61 +36,38 @@ def calculate_amplitude(dem, Template, d, age, alpha):
     return amp, snr
 
 #@profile
-def calculate_best_fit_parameters(dem, Template, **kwargs):
+def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
     
+    this_age = 10**this_age
     #args = parse_args(**kwargs)
-    d = 100
-    de = 1
+    de = dem._georef_info.dx 
 
-    age_max = 3.5 
-    age_min = 0
-    age_stepsize = 0.1
     ang_stepsize = 1
 
     num_angles = 180/ang_stepsize + 1
-    num_ages = (age_max - age_min)/age_stepsize
     orientations = np.linspace(-np.pi/2, np.pi/2, num_angles)
-    ages = np.linspace(age_min, age_max, num_ages)
 
     ny, nx = dem._griddata.shape
     best_amp = np.zeros((ny, nx))
-    best_age = np.zeros((ny, nx))
     best_alpha = np.zeros((ny, nx))
     best_snr = np.zeros((ny, nx))
 
-    pbar = ProgressBar(widgets=[Percentage(), Bar(left='[', right=']'), ' ', ETA()], maxval=len(ages)*len(orientations)).start()
+    for this_alpha in orientations:
+        t = Template(d, this_age, this_alpha, nx, ny, de)
+        template = t.template()
 
-    for i, this_alpha in enumerate(orientations):
-        for j, this_age in enumerate(ages):
-            
-            this_age = 10**this_age
-
-            #args['kt'] = this_age
-            #args['alpha'] = this_alpha
-            #t = Template(args)
-            t = Template(d, this_age, this_alpha, nx, ny, de)
-            template = t.template()
-
-            curv = dem._calculate_directional_laplacian(this_alpha)
-            
-            this_amp, this_snr = match_template(curv, template)
-            mask = t.get_window_limits()
-            this_amp[mask] = 0 
-            this_snr[mask] = 0
-
-            best_amp = (best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp
-            best_age = (best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age
-            best_alpha = (best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha
-            best_snr = (best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr
+        curv = dem._calculate_directional_laplacian_numexpr(this_alpha)
         
-        pbar.update((i+1)*len(ages))
+        this_amp, this_snr = match_template_numexpr(curv, template)
+        mask = t.get_window_limits()
+        this_amp[mask] = 0 
+        this_snr[mask] = 0
 
-    best_snr = ParameterGrid(dem, best_snr, d, name='SNR')
-    best_amp = ParameterGrid(dem, best_amp, d, name='Amplitude', units='m')
-    best_age = ParameterGrid(dem, best_age, d, name='Morphologic age', units='m^2')
-    best_alpha = ParameterGrid(dem, best_alpha, d, name='Orientation', units='deg.')
-
-    return best_amp, best_age, best_alpha, best_snr 
+        best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
+        best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
+        best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")         
+    
+    return best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr 
 
 def compare_fits(best_results, this_results):
 
@@ -116,9 +95,12 @@ def mask_by_snr(amp, age, alpha, snr, thresh=None):
     return amp, age, alpha, snr
 
 #@profile
-def match_template(data, template):
+def match_template(data, age, angle):
     
     #template = template_function(template_args)
+    ny, nx = data.shape
+    de = 1
+    template = Template(d, age, angle, nx, ny, de).template()
 
     if data.ndim < template.ndim:
         raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
