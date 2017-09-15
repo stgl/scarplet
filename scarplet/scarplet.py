@@ -6,10 +6,14 @@ import WindowedTemplate as wt
 
 import numpy as np
 import numexpr
+import multiprocessing as mp
 
-import matplotlib.pyplot as plt
 import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
+
+from functools import partial
+
+import matplotlib.pyplot as plt
 
 from progressbar import ProgressBar, Bar, Percentage, ETA
 from timeit import default_timer as timer
@@ -36,7 +40,8 @@ def calculate_amplitude(dem, Template, d, age, alpha):
     return amp, snr
 
 #@profile
-def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
+# XXX: This is the old verion, without multicore processing
+def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
     
     this_age = 10**this_age
     #args = parse_args(**kwargs)
@@ -69,16 +74,45 @@ def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
     
     return best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr 
 
-def compare_fits(best_results, this_results):
+# XXX: This version uses multiprocessing
+def calculate_best_fit_parameter(dem, Template, d, this_age, **kwargs):
+    
+    this_age = 10**this_age
+    #args = parse_args(**kwargs)
+    de = dem._georef_info.dx 
 
-    best_amp, best_age, best_alpha, best_snr = best_results
-    this_amp, this_age, this_alpha, this_snr = this_results
+    ang_stepsize = 1
 
-    best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
-    best_age = numexpr.evaluate("(best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age")
-    best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
-    best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")    
-    return best_amp, best_age, best_alpha, best_snr
+    num_angles = 180/ang_stepsize + 1
+    orientations = np.linspace(-np.pi/2, np.pi/2, num_angles)
+
+    ny, nx = dem._griddata.shape
+
+    nprocs = mp.cpu_count()
+    pool = mp.Pool(processes=nprocs)
+    wrapper = partial(match_template, dem, Template, d, this_age)
+    results = pool.imap(wrapper, (angle for angle in orientations), chunksize=nprocs)
+    
+    best_amp, best_alpha, best_snr = compare_async_results(results, ny, nx)
+
+    pool.close()
+    pool.join()
+    
+    return np.stack([best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr])
+
+def compare_async_results(results, ny, nx):
+    best_amp = np.zeros((ny, nx))
+    best_alpha = np.zeros((ny, nx))
+    best_snr = np.zeros((ny, nx))
+
+    for r in results:
+        this_amp, this_alpha, this_snr = r
+
+        best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
+        best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
+        best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")         
+    
+    return best_amp, best_alpha, best_snr 
 
 def mask_by_snr(amp, age, alpha, snr, thresh=None):
 
@@ -95,46 +129,45 @@ def mask_by_snr(amp, age, alpha, snr, thresh=None):
     return amp, age, alpha, snr
 
 #@profile
-def match_template(data, age, angle):
-    
-    #template = template_function(template_args)
-    ny, nx = data.shape
-    de = 1
-    template = Template(d, age, angle, nx, ny, de).template()
+def match_template(data, Template, d, age, angle):
 
-    if data.ndim < template.ndim:
-        raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
-    if np.any(np.less(data.shape, template.shape)):
-        raise ValueError("Size of template must be less than or equal to size of data matrix")
+    curv = data._calculate_directional_laplacian(angle) 
+    ny, nx = curv.shape
+    de = data._georef_info.dx 
 
-    pad_width = tuple((wid, wid) for wid in template.shape)
+    template_obj = Template(d, age, angle, nx, ny, de)
+    template = template_obj.template()
 
-    #data = np.pad(data, pad_width=pad_width, mode='symmetric')
+    if curv.ndim < template.ndim:
+        raise ValueError("Dimensions of template must be less than or equal to dimensions of curv matrix")
+    if np.any(np.less(curv.shape, template.shape)):
+        raise ValueError("Size of template must be less than or equal to size of curv matrix")
 
-    M = template != 0
-    fc = fft2(data)
+    M = numexpr.evaluate("template != 0")
+    fc = fft2(curv)
     ft = fft2(template)
-    fc2 = fft2(data**2)
+    fc2 = fft2(numexpr.evaluate("curv**2"))
     fm2 = fft2(M)
 
-    #xcorr = signal.fftconvolve(data, template, mode='same')
-    xcorr = np.real(fftshift(ifft2(ft*fc)))
+    #xcorr = signal.fftconvolve(curv, template, mode='same')
+    xcorr = np.real(fftshift(ifft2(numexpr.evaluate("ft*fc"))))
     template_sum = np.sum(template**2)
     
-    amp = xcorr/template_sum
+    amp = numexpr.evaluate("xcorr/template_sum")
    
     # TODO  remove intermediate terms to make more memory efficent
     n = np.sum(M) + eps
-    T1 = template_sum*(amp**2)
-    T2 = -2*amp*xcorr
-    T3 = fftshift(ifft2(fc2*fm2))
-    error = (1/n)*(T1 + T2 + T3) + eps # avoid small-magnitude dvision
+    T1 = numexpr.evaluate("template_sum*(amp**2)")
+    T3 = fftshift(ifft2(numexpr.evaluate("fc2*fm2")))
+    error = (1/n)*numexpr.evaluate("real(T1 - 2*amp*xcorr + T3)") + eps # avoid small-magnitude dvision
     #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
-    error = np.real(error)
-    snr = T1/error
-    snr = np.real(snr)
+    snr = numexpr.evaluate("real(T1/error)")
 
-    return amp, snr
+    mask = template_obj.get_window_limits()
+    amp[mask] = 0 
+    snr[mask] = 0
+
+    return amp, angle, snr
 
 def match_template_numexpr(data, template):
     
