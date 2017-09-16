@@ -40,7 +40,7 @@ def calculate_amplitude(dem, Template, d, age, alpha):
     return amp, snr
 
 #@profile
-# XXX: This is the old verion, without multicore processing
+# XXX: This is the old verion
 def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
     
     this_age = 10**this_age
@@ -74,7 +74,7 @@ def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
     
     return best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr 
 
-# XXX: This version uses multiprocessing
+# XXX: This version uses multiple cores
 def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
     
     this_age = 10**this_age
@@ -172,42 +172,6 @@ def match_template(data, Template, d, age, angle):
 
     return amp, angle, snr
 
-def match_template_numexpr(data, template):
-    
-    eps = np.spacing(1)
-    #template = template_function(template_args)
-
-    if data.ndim < template.ndim:
-        raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
-    if np.any(np.less(data.shape, template.shape)):
-        raise ValueError("Size of template must be less than or equal to size of data matrix")
-
-    #pad_width = tuple((wid, wid) for wid in template.shape)
-
-    #data = np.pad(data, pad_width=pad_width, mode='symmetric')
-
-    M = numexpr.evaluate("template != 0")
-    fc = fft2(data)
-    ft = fft2(template)
-    fc2 = fft2(numexpr.evaluate("data**2"))
-    fm2 = fft2(M)
-
-    #xcorr = signal.fftconvolve(data, template, mode='same')
-    xcorr = np.real(fftshift(ifft2(numexpr.evaluate("ft*fc"))))
-    template_sum = np.sum(template**2)
-    
-    amp = numexpr.evaluate("xcorr/template_sum")
-   
-    # TODO  remove intermediate terms to make more memory efficent
-    n = np.sum(M) + eps
-    T1 = numexpr.evaluate("template_sum*(amp**2)")
-    T3 = fftshift(ifft2(numexpr.evaluate("fc2*fm2")))
-    error = (1/n)*numexpr.evaluate("real(T1 - 2*amp*xcorr + T3)") + eps # avoid small-magnitude dvision
-    #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
-    snr = numexpr.evaluate("real(T1/error)")
-
-    return amp, snr
-
 def plot_results(dem, amp, age, alpha, snr, colormap='viridis'):
    
     results = [amp, age, alpha, snr]
@@ -219,14 +183,6 @@ def plot_results(dem, amp, age, alpha, snr, colormap='viridis'):
         data.plot(colormap=colormap)
         plt.savefig(data.name + '_' + dem.label + '.png', dpi=300, bbox_inches='tight')
         plt.show()
-
-def run_on_grid(dem):
-
-    amp, age, alpha, snr = calculate_best_fit_parameters(dem, wt.Scarp)
-    amp, age, alpha, snr = mask_by_snr(amp, age, alpha, snr)
-    plot_results(dem, amp, age, alpha, snr)
-
-    return amp, age, alpha, snr
 
 def save_results(dem, amp, age, alpha, snr, base_dir=''):
     
