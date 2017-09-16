@@ -11,6 +11,8 @@ from scipy.signal import convolve2d
 from scipy.special import erf, erfinv
 import matplotlib.pyplot as plt
 
+np.seterr(divide='ignore', invalid='ignore')
+
 DEFAULT_EPSG = 32610 # UTM 10N
 
 class WindowedTemplate(object):
