@@ -67,7 +67,7 @@ def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
         best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
         best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")         
     
-    return best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr 
+    return np.stack([best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr])
 
 def compare_fits(best_results, this_results):
 

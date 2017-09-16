@@ -142,12 +142,18 @@ class CalculationMixin(object):
 
         self._griddata = np.pad(self._griddata, pad_width=(dy, dx), mode='reflect')
 
-        nx, ny = self._griddata.shape
+        ny, nx = self._griddata.shape
         
         self._georef_info.nx = nx
         self._georef_info.ny = ny
         self._georef_info.xllcenter -= dx
         self._georef_info.yllcenter -= dy
+
+        x_min = self._georef_info.geo_transform[0] - dx*self._georef_info.dx
+        y_max = self._georef_info.geo_transform[3] + dy*np.abs(self._georef_info.dy)
+        
+        new_transform = (x_min, self._georef_info.dx, 0, y_max, 0, -self._georef_info.dy)
+        self._georef_info.geo_transform = new_transform
         #self._griddata = z_pad 
 
 class GDALMixin(object):
