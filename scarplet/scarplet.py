@@ -75,7 +75,7 @@ def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
     return best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr 
 
 # XXX: This version uses multiprocessing
-def calculate_best_fit_parameter(dem, Template, d, this_age, **kwargs):
+def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
     
     this_age = 10**this_age
     #args = parse_args(**kwargs)
@@ -91,7 +91,7 @@ def calculate_best_fit_parameter(dem, Template, d, this_age, **kwargs):
     nprocs = mp.cpu_count()
     pool = mp.Pool(processes=nprocs)
     wrapper = partial(match_template, dem, Template, d, this_age)
-    results = pool.imap(wrapper, (angle for angle in orientations), chunksize=nprocs)
+    results = pool.imap(wrapper, (angle for angle in orientations), chunksize=1)
     
     best_amp, best_alpha, best_snr = compare_async_results(results, ny, nx)
 
@@ -111,7 +111,8 @@ def compare_async_results(results, ny, nx):
         best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
         best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
         best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")         
-    
+        del this_amp, this_snr, r
+
     return best_amp, best_alpha, best_snr 
 
 def mask_by_snr(amp, age, alpha, snr, thresh=None):
@@ -139,24 +140,26 @@ def match_template(data, Template, d, age, angle):
     template = template_obj.template()
 
     if curv.ndim < template.ndim:
-        raise ValueError("Dimensions of template must be less than or equal to dimensions of curv matrix")
+        raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
     if np.any(np.less(curv.shape, template.shape)):
-        raise ValueError("Size of template must be less than or equal to size of curv matrix")
+        raise ValueError("Size of template must be less than or equal to size of data matrix")
 
     M = numexpr.evaluate("template != 0")
+    fm2 = fft2(M)
+    n = np.sum(M) + eps
+    del M
+
     fc = fft2(curv)
     ft = fft2(template)
     fc2 = fft2(numexpr.evaluate("curv**2"))
-    fm2 = fft2(M)
+    template_sum = np.sum(numexpr.evaluate("template**2"))
+    del curv, template
 
-    #xcorr = signal.fftconvolve(curv, template, mode='same')
     xcorr = np.real(fftshift(ifft2(numexpr.evaluate("ft*fc"))))
-    template_sum = np.sum(template**2)
     
     amp = numexpr.evaluate("xcorr/template_sum")
    
     # TODO  remove intermediate terms to make more memory efficent
-    n = np.sum(M) + eps
     T1 = numexpr.evaluate("template_sum*(amp**2)")
     T3 = fftshift(ifft2(numexpr.evaluate("fc2*fm2")))
     error = (1/n)*numexpr.evaluate("real(T1 - 2*amp*xcorr + T3)") + eps # avoid small-magnitude dvision
