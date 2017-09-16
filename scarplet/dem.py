@@ -103,6 +103,7 @@ class CalculationMixin(object):
         return del2z
 
     def _estimate_curvature_noiselevel(self):
+        # XXX: this is not complete!
         
         from scipy import ndimage
 
@@ -114,7 +115,7 @@ class CalculationMixin(object):
         for alpha in angles:
             del2z = self._calculate_directional_laplacian(alpha)
             # TODO: determine bandpass range from original spectrum
-            lowpass = ndimage.gaussian_filter(del2z, 100) 
+            lowpass = ndimage.gaussian_filter(del2z, 100) # XXX: does not consider de
             highpass = del2z - lowpass
             m.append(np.nanmean(highpass))
             sd.append(np.nanstd(highpass))
@@ -209,6 +210,7 @@ class BaseSpatialGrid(GDALMixin):
         if not self.is_contiguous(grid):
             raise ValueError("Grids are not contiguous")
 
+        # XXX: this is hacky, eventually implement as native GDAL
         sys.argv = ['', self.filename, grid.filename]
         gdal_merge.main()
         merged_grid = BaseSpatialGrid('out.tif') 
@@ -274,6 +276,7 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.lry = self._georef_info.geo_transform[3] + self._georef_info.dy*self._georef_info.ny
         
         self.bbox = BoundingBox((self._georef_info.lrx, self._georef_info.lry), (self._georef_info.ulx, self._georef_info.uly))
+
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     
