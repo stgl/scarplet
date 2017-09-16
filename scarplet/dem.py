@@ -1,15 +1,13 @@
 """ Classes for loading digital elevation models as numeric grids """
 
 import os, sys
-
+import numpy as np
+import numexpr
 import matplotlib
 import matplotlib.pyplot as plt
 
-import numpy as np
-import numexpr
-
-from osgeo import gdal, gdalconst
 import osr
+from osgeo import gdal, gdalconst
 
 sys.path.append('/usr/bin')
 import gdal_merge
@@ -19,7 +17,6 @@ from utils import BoundingBox
 sys.setrecursionlimit(10000)
 
 FLOAT32_MIN = np.finfo(np.float32).min
-
 GDAL_DRIVER_NAME = 'GTiff'
 
 
