@@ -1,26 +1,22 @@
 """ Functions for determinig best-fit template parameters by convolution with a
 grid """
 
-from dem import BaseSpatialGrid, Hillshade
-import WindowedTemplate as wt
 
 import numpy as np
 import numexpr
 import multiprocessing as mp
+import matplotlib.pyplot as plt
 
 import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
-
 from functools import partial
 
-import matplotlib.pyplot as plt
+from dem import BaseSpatialGrid, Hillshade
 
-from progressbar import ProgressBar, Bar, Percentage, ETA
 from timeit import default_timer as timer
 
 np.seterr(divide='ignore', invalid='ignore')
 
-eps = np.spacing(1)
 pyfftw.interfaces.cache.enable()
 
 def calculate_amplitude(dem, Template, d, age, alpha):
@@ -101,6 +97,7 @@ def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
     return np.stack([best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr])
 
 def compare_async_results(results, ny, nx):
+
     best_amp = np.zeros((ny, nx))
     best_alpha = np.zeros((ny, nx))
     best_snr = np.zeros((ny, nx))
@@ -132,6 +129,7 @@ def mask_by_snr(amp, age, alpha, snr, thresh=None):
 #@profile
 def match_template(data, Template, d, age, angle):
 
+    eps = np.spacing(1)
     curv = data._calculate_directional_laplacian(angle) 
     ny, nx = curv.shape
     de = data._georef_info.dx 
