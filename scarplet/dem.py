@@ -12,6 +12,7 @@ from osgeo import gdal, gdalconst
 sys.path.append('/usr/bin')
 import gdal_merge
 
+from rasterio.fill import fillnodata
 from utils import BoundingBox
 
 sys.setrecursionlimit(10000)
@@ -290,15 +291,25 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self._georef_info = _georef_info 
             self.load(filename)
             self._griddata[self._griddata == FLOAT32_MIN] = np.nan
+            self.nodata_value = np.nan
             self.filename = filename
+            self.is_interpolated = False
         else:
             self.filename = None 
             self.label = ''
             self._georef_info = _georef_info 
             self._griddata = np.empty((0,0))
+            self.is_interpolated = False
 
     def _fill_nodata(self):
-        pass
+        if ~np.isnan(self.nodata_value):
+            nodata_mask = self._griddata == self.nodata_value
+        else:
+            nodata_mask = np.isnan(self._griddata) 
+        self.nodata_mask = nodata_mask
+        # XXX: GDAL (or rasterio) FillNoData takes mask with 0s at nodata locations
+        self._griddata = fillnodata(self._griddata, mask=~self.nodata_mask)
+        self.is_interpolated = True
 
 
 class Hillshade(BaseSpatialGrid):
