@@ -28,7 +28,17 @@ class CalculationMixin(object):
         pass
 
     def _calculate_slope(self):
+        """
+        Calculate gradient of grid in x and y directions.
+
+        Pads boundary so as to return slope grids of same size as object's 
+        grid data
         
+        Returns:
+            slope_x: slope in x direction
+            slope_y: slope in y direction
+        """
+
         dx = self._georef_info.dx
         dy = self._georef_info.dy
 
@@ -44,10 +54,22 @@ class CalculationMixin(object):
         return slope_x, slope_y
     
     def _calculate_laplacian(self):
+        """
+        Calculate curvature of grid in y direction.
+        """
         
         return self._calculate_directional_laplacian(0)
 
     def _calculate_directional_laplacian(self, alpha):
+        """
+        Calculate curvature of grid in arbitrary direction.
+
+        Args:
+            alpha: direction angle (azimuth) in radians. 0 is north or y-axis.
+
+        Returns:
+            del2s: grid of curvature values
+        """
  
         dx = self._georef_info.dx
         dy = self._georef_info.dy       
@@ -76,6 +98,17 @@ class CalculationMixin(object):
         return del2z
 
     def _calculate_directional_laplacian_numexpr(self, alpha):
+        """
+        Calculate curvature of grid in arbitrary direction.
+
+        Optimized with numexpr expressions.
+
+        Args:
+            alpha: direction angle (azimuth) in radians. 0 is north or y-axis.
+
+        Returns:
+            del2s: grid of curvature values
+        """
 
         dx = self._georef_info.dx
         dy = self._georef_info.dy       
@@ -104,13 +137,23 @@ class CalculationMixin(object):
         return del2z
 
     def _estimate_curvature_noiselevel(self):
+        """
+        Estimate noise level in curvature of grid as a function of direction.
+
+        Returns:
+            angles: array of orientations (azimuths) in radians
+            mean:   array of mean curvature in correponding direction
+            sd:     array of curvature standard deviation
+                    in correponding direction
+        """
+
         # XXX: this is not complete!
         
         from scipy import ndimage
 
         angles = np.linspace(0, np.pi, num=180)
 
-        m = [] 
+        mean = [] 
         sd = []
 
         for alpha in angles:
@@ -118,12 +161,15 @@ class CalculationMixin(object):
             # TODO: determine bandpass range from original spectrum
             lowpass = ndimage.gaussian_filter(del2z, 100) # XXX: does not consider de
             highpass = del2z - lowpass
-            m.append(np.nanmean(highpass))
+            mean.append(np.nanmean(highpass))
             sd.append(np.nanstd(highpass))
 
-        return m, sd
+        return angles, mean, sd
 
     def _pad_boundary(self, dx, dy):
+        """
+        Pad grid boundary with reflected boundary conditions.
+        """
 
         #dx = np.round(dx/2)
         #dy = np.round(dy/2)
@@ -203,10 +249,28 @@ class BaseSpatialGrid(GDALMixin):
             self._griddata = np.empty((0,0))
 
     def is_contiguous(self, grid):
+        """
+        Returns true if this grid is contiguous with or overlaps another 
+        BaseSpatialGrid
+
+        Args:
+            grid: BaseSpatialGrid
+        """
 
         return self.bbox.intersects(grid.bbox) 
 
     def merge(self, grid):
+        """
+        Merge this grid with another BaseSpatialGrid.
+
+        Wrapper argound gdal_merge.py.
+
+        Args:
+            grid: BaseSpatialGrid
+
+        Returns:
+            merged_grid: Merged BaseSpatialGrid
+        """
 
         if not self.is_contiguous(grid):
             raise ValueError("Grids are not contiguous")
@@ -221,12 +285,21 @@ class BaseSpatialGrid(GDALMixin):
         return merged_grid
 
     def plot(self, **kwargs):
+        """
+        Plot grid data
+
+        Keyword args:
+            Any valid keyword argument for matplotlib.pyplot.imshow
+        """
         
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
         ax.imshow(self._griddata, **kwargs)
 
-    def save(self, filename): 
+    def save(self, filename):
+        """
+        Save grid as georeferenced TIFF
+        """
 
         ncols = self._georef_info.nx
         nrows = self._georef_info.ny
@@ -244,6 +317,9 @@ class BaseSpatialGrid(GDALMixin):
         out_band.FlushCache()
 
     def load(self, filename): #TODO: make this a class method?
+        """
+        Load grid from file
+        """
         
         self.label = filename.split('/')[-1].split('.')[0]
 
@@ -302,6 +378,12 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self.is_interpolated = False
 
     def _fill_nodata(self):
+        """
+        Fill nodata values in elevation grid by interpolation.
+
+        Wrapper around GDAL/rasterio's FillNoData, fillnodata methods
+        """
+
         if ~np.isnan(self.nodata_value):
             nodata_mask = self._griddata == self.nodata_value
         else:
@@ -326,12 +408,22 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
 class Hillshade(BaseSpatialGrid):
     
     def __init__(self, dem):
+        """
+        Load DEMGrid object as Hillshade
+        """
         
         self._georef_info = dem._georef_info 
         self._griddata = dem._griddata
         self._hillshade = None
 
     def plot(self, az=315, elev=45):
+        """
+        Plot hillshade
+
+        Args:
+            az: azimuth of light source
+            elev: elevation angle of light source
+        """
   
         ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
         self._hillshade = ls.hillshade(self._griddata, vert_exag=1, dx=self._georef_info.dx, dy=self._georef_info.dy)      
