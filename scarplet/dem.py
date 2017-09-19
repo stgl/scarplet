@@ -309,12 +309,17 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
         self.nodata_mask = nodata_mask
 
         # Calculate reasonable search distance
-        col_nodata = np.sum(self.nodata_mask, axis=0).max()
-        row_nodata = np.sum(self.nodata_mask, axis=1).max()
-        dist = 2*max(row_nodata, col_nodata)
 
         # XXX: GDAL (or rasterio) FillNoData takes mask with 0s at nodata locations
-        self._griddata = fillnodata(self._griddata, mask=~self.nodata_mask, max_search_distance=dist)
+        num_nodata = np.sum(nodata_mask)
+        while num_nodata > 0:
+            mask = np.isnan(self._griddata)
+            col_nodata = np.sum(mask, axis=0).max()
+            row_nodata = np.sum(mask, axis=1).max()
+            dist = max(row_nodata, col_nodata) / 2
+            self._griddata = fillnodata(self._griddata, mask=~mask, max_search_distance=dist)
+            num_nodata = np.sum(np.isnan(self._griddata))
+        
         self.is_interpolated = True
 
 
