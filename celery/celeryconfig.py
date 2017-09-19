@@ -1,11 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 from kombu.entity import Exchange, Queue
 
-CELERY_ACCESS_KEY_ID = 'AKIAI7EYBMIC2O5AU52Q'
-CELERY_ACCESS_KEY = 'IQ9ow99uECoTMXB4kolnz8N0XWzTzl82zJ6RlVPe'
+CELERY_ACCESS_KEY_ID = '<>'
+CELERY_ACCESS_KEY = '<>'
 
-CELERY_SQS_ACCESS_KEY_ID = 'AKIAI5SE6SDNUDGU7OAA' 
-CELERY_SQS_KEY = 'Q82q2J1Tu+cmntDN2TmvxRCUdFf+JduhlahLA0+9'
+CELERY_SQS_ACCESS_KEY_ID = '<>' 
+CELERY_SQS_KEY = '<>'
 
 # Backend options (S3)
 CELERY_RESULT_BACKEND = 'celery_s3.backends.S3Backend'
