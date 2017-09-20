@@ -112,6 +112,14 @@ def compare_async_results(results, ny, nx):
 
     return best_amp, best_alpha, best_snr 
 
+def mask_by_age(results, thresh=10): # XXX: linear age units (not log-10)
+
+    mask = results[1, :, :] < thresh
+
+    results[:, mask] = np.nan
+
+    return results
+
 def mask_by_snr(results, thresh=None):
 
     if thresh is None:
