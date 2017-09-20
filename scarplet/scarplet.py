@@ -120,6 +120,14 @@ def mask_by_age(results, thresh=10): # XXX: linear age units (not log-10)
 
     return results
 
+def mask_by_amplitude(results, thresh=0.1):
+
+    mask = np.abs(results[0, :, :]) < thresh
+
+    results[:, mask] = np.nan
+
+    return results
+
 def mask_by_snr(results, thresh=None):
 
     if thresh is None:
