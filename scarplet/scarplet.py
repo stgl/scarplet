@@ -73,8 +73,8 @@ def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
 # XXX: This version uses multiple cores
 def calculate_best_fit_parameters(dem, Template, d, this_age, **kwargs):
     
-    this_age = 10**this_age
-    #args = parse_args(**kwargs)
+    this_age = 10**this_age # XXX: Assumes age parameter is given as logarithm
+    #args = parse_args(**kwargs) 
     de = dem._georef_info.dx 
 
     ang_stepsize = 1
@@ -112,19 +112,16 @@ def compare_async_results(results, ny, nx):
 
     return best_amp, best_alpha, best_snr 
 
-def mask_by_snr(amp, age, alpha, snr, thresh=None):
+def mask_by_snr(results, thresh=None):
 
     if thresh is None:
-        thresh = np.nanmean(snr._griddata)
+        thresh = np.nanmean(results[-1, :, :])
 
-    mask = snr._griddata < thresh
+    mask = results[-1, :, :] < thresh
 
-    amp._griddata[mask] = np.nan
-    age._griddata[mask] = np.nan
-    alpha._griddata[mask] = np.nan
-    snr._griddata[mask] = np.nan
+    results[:, mask] = np.nan
 
-    return amp, age, alpha, snr
+    return results
 
 #@profile
 def match_template(data, Template, d, age, angle):
