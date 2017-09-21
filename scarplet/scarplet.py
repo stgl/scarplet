@@ -157,7 +157,6 @@ def match_template(data, Template, d, age, angle):
         raise ValueError("Size of template must be less than or equal to size of data matrix")
 
     M = numexpr.evaluate("template != 0")
-    M[~mask] = 0
     fm2 = fft2(M)
     n = np.sum(M) + eps
     del M
