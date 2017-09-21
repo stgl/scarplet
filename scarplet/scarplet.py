@@ -183,17 +183,29 @@ def match_template(data, Template, d, age, angle):
 
     return amp, angle, snr
 
-def plot_results(dem, amp, age, alpha, snr, colormap='viridis'):
-   
-    results = [amp, age, alpha, snr]
+def plot_results(dem, results, colormap='viridis'):
 
-    for data in results:
-        plt.figure()
+    names = ['Amplitude [m]', 'Age [m$^2$]', 'Angle [$^\circ$ from N]', 'SNR']
+    results = mask_by_snr(results, thresh=100)
+    results[0,:,:] = np.abs(results[0,:,:])
+    results[2,:,:] *= 180. / np.pi
+
+    fig = plt.figure()
+    n = 141
+    i = 0
+    for data, name in zip(results, names):
+        ax = fig.add_subplot(n+i)
         hs = Hillshade(dem)
         hs.plot()
-        data.plot(colormap=colormap)
-        plt.savefig(data.name + '_' + dem.label + '.png', dpi=300, bbox_inches='tight')
-        plt.show()
+        ax.invert_yaxis()
+        im = plt.imshow(data, cmap=colormap, alpha=0.5)
+        cb = plt.colorbar(im, orientation='horizontal', shrink=0.75, label=name)
+        ax.invert_yaxis()
+        i += 1
+
+    fig.set_size_inches(11, 8.5)
+    plt.savefig('results_' + dem.label + '.png', dpi=300, bbox_inches='tight')
+    plt.show()
 
 def save_results(dem, amp, age, alpha, snr, base_dir=''):
     
