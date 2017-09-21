@@ -86,11 +86,12 @@ class Scarp(WindowedTemplate):
         xr = x*np.cos(self.alpha) + y*np.sin(self.alpha)
         yr = -x*np.sin(self.alpha) + y*np.cos(self.alpha)
 
-        W = (-xr/(2*self.kt**(3/2)*np.sqrt(np.pi)))*np.exp(-xr**2/(4*self.kt))
+        W = (-xr/(2.*self.kt**(3/2.)*np.sqrt(np.pi)))*np.exp(-xr**2./(4.*self.kt))
 
         mask = (abs(xr) < self.c) & (abs(yr) < self.d)
         W = W*mask
         #W = W.T
+        W = np.flipud(np.fliplr(W))
 
         return W
 
@@ -116,6 +117,7 @@ class Scarp(WindowedTemplate):
         mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
         W = numexpr.evaluate("W*mask")
         #W = W.T
+        W = np.flipud(np.fliplr(W))
 
         return W
 
