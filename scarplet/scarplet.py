@@ -61,8 +61,8 @@ def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
         
         this_amp, this_snr = match_template_numexpr(curv, template)
         mask = t.get_window_limits()
-        this_amp[mask] = 0 
-        this_snr[mask] = 0
+        this_amp[mask] = np.nan 
+        this_snr[mask] = np.nan
 
         best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
         best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
@@ -149,6 +149,7 @@ def match_template(data, Template, d, age, angle):
 
     template_obj = Template(d, age, angle, nx, ny, de)
     template = template_obj.template()
+    mask = template_obj.get_window_limits()
 
     if curv.ndim < template.ndim:
         raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
@@ -156,6 +157,7 @@ def match_template(data, Template, d, age, angle):
         raise ValueError("Size of template must be less than or equal to size of data matrix")
 
     M = numexpr.evaluate("template != 0")
+    M[~mask] = 0
     fm2 = fft2(M)
     n = np.sum(M) + eps
     del M
@@ -177,9 +179,8 @@ def match_template(data, Template, d, age, angle):
     #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
     snr = numexpr.evaluate("real(T1/error)")
 
-    mask = template_obj.get_window_limits()
-    amp[mask] = 0 
-    snr[mask] = 0
+    amp[mask] = np.nan 
+    snr[mask] = np.nan
 
     return amp, angle, snr
 
@@ -206,6 +207,7 @@ def plot_results(dem, results, colormap='viridis'):
     fig.set_size_inches(11, 8.5)
     plt.savefig('results_' + dem.label + '.png', dpi=300, bbox_inches='tight')
     plt.show()
+
 
 def save_results(dem, amp, age, alpha, snr, base_dir=''):
     
