@@ -35,7 +35,6 @@ class WindowedTemplate(object):
 
         return args
 
-
     def template(self):
         pass
 
@@ -68,7 +67,7 @@ class Scarp(WindowedTemplate):
 
         self.d = d
         self.kt = kt
-        self.alpha = alpha
+        self.alpha = -alpha
         self.nx = nx
         self.ny = ny
         self.de = de
