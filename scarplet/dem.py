@@ -187,8 +187,8 @@ class CalculationMixin(object):
 
         self._griddata = np.pad(self._griddata, pad_width=(dy, dx), mode='reflect')
         self.padded = True
-        self.pad_dx = pad_dx
-        self.pad_dy = pad_dy
+        self.pad_dx = dx
+        self.pad_dy = dy
 
         ny, nx = self._griddata.shape
         
