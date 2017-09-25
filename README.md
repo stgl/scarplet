@@ -7,7 +7,7 @@ Date            | Description
 --------------- | -----------
 22 September 2017 | Tests with EarthScope data complete
 12 September 2017 | Synthetic testing, Carrizo testing, benchmarking complete
-July 2017    | Abandoned Celery for dedicated Match/Reduce instances
+July 2017    | Abandoned Celery for dedicated Match/Reduce instances using shared filesystem
 30 June 2017 | Testing Celery framework
 29 June 2017 | Update AMI with optimized linear algebra libs
 25-29 June 2017 | Benchmarking and develop worker classes for autoscaling
