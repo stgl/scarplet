@@ -130,7 +130,7 @@ def mask_by_amplitude(results, thresh=0.1):
 
 def mask_by_snr(results, thresh=None):
 
-    if thresh is None:
+    if not thresh:
         thresh = np.nanmean(results[-1, :, :])
 
     mask = results[-1, :, :] < thresh
@@ -138,6 +138,10 @@ def mask_by_snr(results, thresh=None):
     results[:, mask] = np.nan
 
     return results
+
+def mask_generic(results):
+    results = mask_by_age(results, thresh=10)
+    results = mask_by_snr(results)
 
 #@profile
 def match_template(data, Template, d, age, angle):
@@ -176,10 +180,11 @@ def match_template(data, Template, d, age, angle):
     T3 = fftshift(ifft2(numexpr.evaluate("fc2*fm2")))
     error = (1/n)*numexpr.evaluate("real(T1 - 2*amp*xcorr + T3)") + eps # avoid small-magnitude dvision
     #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
-    snr = numexpr.evaluate("real(T1/error)")
+    snr = numexpr.evaluate("abs(T1/error)")
 
-    amp[mask] = np.nan 
-    snr[mask] = np.nan
+    # XXX: this is neccessary to avoid comparisons with NAN
+    amp[mask] = 0
+    snr[mask] = 0
 
     return amp, angle, snr
 
