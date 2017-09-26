@@ -404,6 +404,21 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
         
         self.is_interpolated = True
 
+    def _fill_nodata_with_edge_values(self):
+
+        if ~np.isnan(self.nodata_value):
+            nodata_mask = self._griddata == self.nodata_value
+        else:
+            nodata_mask = np.isnan(self._griddata) 
+        self.nodata_mask = nodata_mask
+
+        for row in self._griddata:
+            idx = np.where(isnan(row)).min()
+            fill_value = row[idx]
+            row[np.isnan(row)] = fill_value
+
+        self.is_interpolated = True
+
 
 class Hillshade(BaseSpatialGrid):
     
