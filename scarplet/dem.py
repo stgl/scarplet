@@ -13,7 +13,7 @@ sys.path.append('/usr/bin')
 import gdal_merge
 
 from rasterio.fill import fillnodata
-from utils import BoundingBox
+from utils import BoundingBox, pad_with_neighboring_values
 
 sys.setrecursionlimit(10000)
 
@@ -204,6 +204,7 @@ class CalculationMixin(object):
         #new_transform = (x_min, self._georef_info.dx, 0, y_max, 0, -self._georef_info.dy)
         #self._georef_info.geo_transform = new_transform
         #self._griddata = z_pad 
+    
 
 class GDALMixin(object):
     pass
@@ -368,7 +369,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self.load(filename)
             self._griddata[self._griddata == FLOAT32_MIN] = np.nan
             self.nodata_value = np.nan
-            self.filename = filename
+            self.filename = filename.split('/')[-1]
             self.is_interpolated = False
         else:
             self.filename = None 
@@ -418,6 +419,41 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             row[np.isnan(row)] = fill_value
 
         self.is_interpolated = True
+
+    def _pad_boundary_with_neighboring_values(self, pad):
+        """
+        Pad grid boundary with neighboring values
+
+        This method is implemented for grids saved with the EarthScope filename
+        convention. It requires that neighboring data is stored in a shared
+        directory 
+        """
+
+        #dx = np.round(dx/2)
+        #dy = np.round(dy/2)
+
+        #nx = self._georef_info.nx
+        #ny = self._georef_info.ny
+
+        #pad_x = np.zeros((ny, dx))
+        #z_pad = np.hstack([pad_x, self._griddata, pad_x]) 
+        #
+        #nx += 2*dx 
+        #
+        #pad_y = np.zeros((dy, nx))
+        #z_pad = np.vstack([pad_y, z_pad, pad_y]) 
+
+        self._griddata = pad_boundary_with_neighboring_values(self.filename, pad)
+        self.padded = True
+        self.pad_dx = dx
+        self.pad_dy = dy
+
+        ny, nx = self._griddata.shape
+        
+        self._georef_info.nx = nx
+        self._georef_info.ny = ny
+        self._georef_info.xllcenter -= dx
+        self._georef_info.yllcenter -= dy
 
 
 class Hillshade(BaseSpatialGrid):
