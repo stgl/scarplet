@@ -420,41 +420,6 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
 
         self.is_interpolated = True
 
-    def _pad_boundary_with_neighboring_values(self, pad):
-        """
-        Pad grid boundary with neighboring values
-
-        This method is implemented for grids saved with the EarthScope filename
-        convention. It requires that neighboring data is stored in a shared
-        directory 
-        """
-
-        #dx = np.round(dx/2)
-        #dy = np.round(dy/2)
-
-        #nx = self._georef_info.nx
-        #ny = self._georef_info.ny
-
-        #pad_x = np.zeros((ny, dx))
-        #z_pad = np.hstack([pad_x, self._griddata, pad_x]) 
-        #
-        #nx += 2*dx 
-        #
-        #pad_y = np.zeros((dy, nx))
-        #z_pad = np.vstack([pad_y, z_pad, pad_y]) 
-
-        self._griddata = pad_boundary_with_neighboring_values(self.filename, pad)
-        self.padded = True
-        self.pad_dx = dx
-        self.pad_dy = dy
-
-        ny, nx = self._griddata.shape
-        
-        self._georef_info.nx = nx
-        self._georef_info.ny = ny
-        self._georef_info.xllcenter -= dx
-        self._georef_info.yllcenter -= dy
-
 
 class Hillshade(BaseSpatialGrid):
     
