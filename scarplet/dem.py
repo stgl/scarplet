@@ -13,8 +13,7 @@ sys.path.append('/usr/bin')
 import gdal_merge
 
 from rasterio.fill import fillnodata
-from utils import BoundingBox, pad_with_neighboring_values
-
+from utils import BoundingBox
 sys.setrecursionlimit(10000)
 
 FLOAT32_MIN = np.finfo(np.float32).min
