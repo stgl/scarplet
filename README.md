@@ -5,6 +5,7 @@ Python framework for template matching to detect fault scarps in ALSM data
 
 Date            | Description
 --------------- | -----------
+6 October 2017  | EarthScope NorCal dataset processed and available on S3
 22 September 2017 | Tests with EarthScope data complete
 12 September 2017 | Synthetic testing, Carrizo testing, benchmarking complete
 July 2017    | Abandoned Celery for dedicated Match/Reduce instances using shared filesystem
