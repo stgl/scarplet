@@ -12,6 +12,7 @@ from osgeo import gdal, gdalconst
 sys.path.append('/usr/bin')
 import gdal_merge
 
+from copy import copy
 from rasterio.fill import fillnodata
 from utils import BoundingBox
 sys.setrecursionlimit(10000)
@@ -394,12 +395,14 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
 
         # XXX: GDAL (or rasterio) FillNoData takes mask with 0s at nodata locations
         num_nodata = np.sum(nodata_mask)
-        while num_nodata > 0:
+        prev_nodata = np.nan
+        while num_nodata > 0 or num_nodata == prev_nodata:
             mask = np.isnan(self._griddata)
             col_nodata = np.sum(mask, axis=0).max()
             row_nodata = np.sum(mask, axis=1).max()
             dist = max(row_nodata, col_nodata) / 2
             self._griddata = fillnodata(self._griddata, mask=~mask, max_search_distance=dist)
+            prev_nodata = copy(num_nodata)
             num_nodata = np.sum(np.isnan(self._griddata))
         
         self.is_interpolated = True
