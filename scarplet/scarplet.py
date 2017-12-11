@@ -71,7 +71,7 @@ def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
     return best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr 
 
 # XXX: This version uses multiple cores
-def calculate_best_fit_parameters(dem, Template, d, this_age, ang_max=1.05, ang_min=0, **kwargs):
+def calculate_best_fit_parameters(dem, Template, d, this_age, ang_max=0, ang_min=-1.05, **kwargs):
     
     this_age = 10**this_age # XXX: Assumes age parameter is given as logarithm
     #args = parse_args(**kwargs) 
