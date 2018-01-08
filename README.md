@@ -1,7 +1,10 @@
 # scarplet-python
-Python framework for template matching to detect fault scarps in ALSM data
+Python framework for template matching to detect fault scarps in ALSM data. Very much a work in progress, not for general consumption yet.
 
-## Changelog
+### Features
+Coming soon...
+
+### Changelog
 
 Date            | Description
 --------------- | -----------
@@ -16,3 +19,6 @@ July 2017    | Abandoned Celery for dedicated Match/Reduce instances using share
 22 June 2017    | Finished implementing basic parallel grid search functionality 
 15 May 2017     | Added download utility for OpenTopography data
 12 May 2017     | Template and parameter search pass synthetic tests
+
+### TODO
+Coming soon...
