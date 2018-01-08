@@ -26,6 +26,8 @@ July 2017    | Abandoned Celery for dedicated Match/Reduce instances using share
 12 May 2017     | Template and parameter search pass synthetic tests
 
 ### TODO
+(See issue tracker)
+
 - Port GDAL code to `rasterio` in `dem.py` classes
 - Non-maximum supression
 - Increase test coverage
