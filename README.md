@@ -2,11 +2,11 @@
 Python framework for template matching to detect fault scarps in ALSM data. Very much a work in progress, not for general consumption yet.
 
 ### Features
-This repository implments a framework for windowed template matching in Python. 2D windowed template functions at a range of orientations are convolved with input data, and the best-fitting (highest signal-to-noise ratio) template parameters are retained at each pixel.
+This repository implements a framework for windowed template matching in Python. Two-dimensional windowed template functions at a range of orientations are convolved with input data, and the best-fitting (highest signal-to-noise ratio) template parameters are retained at each pixel.
 
 It works on georeferenced digital elevation models using a curvature-based template functions. A template for scarp-like features is provided, based on work by Hilley, *et al.*, 2010, Hanks, 2000, and many others. This returns best-fitting scarp height, relative age, orientation, and SNR at each DEM pixel.
 
-For scarps, the approach is similar to the Canny edge detector or derivative of Gaussians method. The classes provided can 
+For scarps, the approach is similar to the Canny edge detector or derivative of Gaussians method. The classes provided can handle other template functions as well (to be implemented).
 
 
 ### Changelog
