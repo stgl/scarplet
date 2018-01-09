@@ -27,9 +27,14 @@ July 2017    | Abandoned Celery for dedicated Match/Reduce instances using share
 
 ### TODO
 (See issue tracker for all tasks related to scarplet project)
-
+#### Core functionality
 - Port GDAL code to `rasterio` in `dem.py` classes
 - Improve nodata interpolation to reduce artifacts in x, y directions (i.e. write taperied interpolation method rather than using `rasterio.fill`)
+
+#### Extra
 - Add cleaned-up script for post-processing to remove artifacts
 - Non-maximum supression
-- Increase test coverage
+
+#### Tests
+- Increase test coverage for WindowedTemplate
+- Stop skipping tests, add testing data to repo
