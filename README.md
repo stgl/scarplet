@@ -2,7 +2,7 @@
 Python framework for template matching to detect fault scarps in ALSM data. Very much a work in progress, not for general consumption yet.
 
 ### Features
-This repository implements a framework for windowed template matching in Python. Two-dimensional windowed template functions with a range of plan-view orientations are convolved with input data, and the best-fitting (highest signal-to-noise ratio) template parameters are retained at each pixel.
+This repository implements a windowed template matching algorithm in Python. Two-dimensional windowed template functions with a range of plan-view orientations are convolved with input data, and the best-fitting (highest signal-to-noise ratio) template parameters are retained at each pixel. 
 
 The algorithm works on georeferenced digital elevation models using curvature-based template functions. A template for fault scarps is provided, based on work by Hilley, *et al.*, 2010, Hanks, 2000, and many others. This returns best-fitting scarp height, relative age, orientation, and SNR at each DEM pixel. It detects scarp-like features as areas of high SNR and gives estimates of their relative age and height.
 
@@ -28,7 +28,9 @@ July 2017    | Abandoned Celery for dedicated Match/Reduce instances using share
 
 ### TODO
 (See issue tracker for all tasks related to scarplet project)
+
 #### Core functionality
+- Clean up utilities and remove unused functions
 - Port GDAL code to `rasterio` in `dem.py` classes
 - Improve nodata interpolation to reduce artifacts in x, y directions (i.e. write taperied interpolation method rather than using `rasterio.fill`)
 
