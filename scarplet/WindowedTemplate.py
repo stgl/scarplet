@@ -137,8 +137,8 @@ class Channel(WindowedTemplate):
 
 
 class Morlet(WindowedTemplate):
-
-
+    
+    
     name = "Morlet"
 
     def __init__(d, kt, alpha):
@@ -149,4 +149,38 @@ class Morlet(WindowedTemplate):
     def template(self):
         pass
 
+
+class Ricker(WindowedTemplate):
+
+
+    name = "Ricker"
+
+    def __init__(d, f, alpha, nx, ny, de):
+        self.d = d
+        self.f = f
+        self.alpha = alpha
+
+    def template(self):
+        
+        alpha = self.alpha
+        kt = self.kt
+        c = self.c
+        d = self.d
+
+        x = self.de*np.linspace(1, self.nx, num=self.nx)
+        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = x - np.mean(x)
+        y = y - np.mean(y)
+
+        x, y = np.meshgrid(x, y)
+        xr = numexpr.evaluate("x*cos(alpha) + y*sin(alpha)")
+        yr = numexpr.evaluate("-x*sin(alpha) + y*cos(alpha)")
+
+        pi = np.pi
+        W = numexpr.evaluate("(1 - 2 * (pi * f * x) ** 2) * exp(-(pi * f * t) ** 2)")
+
+        #mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
+        #W = numexpr.evaluate("W*mask")
+        #W = W.T
+        #W = np.flipud(np.fliplr(W))
 
