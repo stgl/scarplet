@@ -173,11 +173,11 @@ class Ricker(WindowedTemplate):
         y = y - np.mean(y)
 
         x, y = np.meshgrid(x, y)
-        xr = numexpr.evaluate("x*cos(alpha) + y*sin(alpha)")
-        yr = numexpr.evaluate("-x*sin(alpha) + y*cos(alpha)")
+        xr = numexpr.evaluate("x * cos(alpha) + y * sin(alpha)")
+        yr = numexpr.evaluate("-x * sin(alpha) + y * cos(alpha)")
 
         pi = np.pi
-        W = numexpr.evaluate("(1 - 2 * (pi * f * x) ** 2) * exp(-(pi * f * t) ** 2)")
+        W = numexpr.evaluate("(1. - 2. * (pi * f * x) ** 2.) * exp(-(pi * f * t) ** 2.)")
 
         #mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
         #W = numexpr.evaluate("W*mask")
