@@ -141,7 +141,7 @@ class Morlet(WindowedTemplate):
     
     name = "Morlet"
 
-    def __init__(d, kt, alpha):
+    def __init__(self, d, kt, alpha):
         self.d = d
         self.kt = kt
         self.alpha = alpha
@@ -155,20 +155,24 @@ class Ricker(WindowedTemplate):
 
     name = "Ricker"
 
-    def __init__(d, f, alpha, nx, ny, de):
+    def __init__(self, d, f, alpha, nx, ny, de):
+
         self.d = d
         self.f = f
-        self.alpha = alpha
+        self.alpha = -alpha
+        self.nx = nx
+        self.ny = ny
+        self.de = de
 
     def template(self):
         
         alpha = self.alpha
-        kt = self.kt
-        c = self.c
+        #c = self.c
         d = self.d
+        f = self.f
 
-        x = self.de*np.linspace(1, self.nx, num=self.nx)
-        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = self.de * np.linspace(1, self.nx, num=self.nx)
+        y = self.de * np.linspace(1, self.ny, num=self.ny)
         x = x - np.mean(x)
         y = y - np.mean(y)
 
@@ -177,10 +181,12 @@ class Ricker(WindowedTemplate):
         yr = numexpr.evaluate("-x * sin(alpha) + y * cos(alpha)")
 
         pi = np.pi
-        W = numexpr.evaluate("(1. - 2. * (pi * f * x) ** 2.) * exp(-(pi * f * t) ** 2.)")
+        W = numexpr.evaluate("(1. - 2. * (pi * f * xr) ** 2.) * exp(-(pi * f * xr) ** 2.)")
 
         #mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
         #W = numexpr.evaluate("W*mask")
         #W = W.T
         #W = np.flipud(np.fliplr(W))
+
+        return W
 
