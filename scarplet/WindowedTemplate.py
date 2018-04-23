@@ -128,6 +128,7 @@ class Channel(WindowedTemplate):
     name = "Channel"
 
     def __init__(d, kt, alpha):
+
         self.d = d
         self.kt = kt
         self.alpha = alpha
@@ -142,6 +143,7 @@ class Morlet(WindowedTemplate):
     name = "Morlet"
 
     def __init__(self, d, kt, alpha):
+
         self.d = d
         self.kt = kt
         self.alpha = alpha
