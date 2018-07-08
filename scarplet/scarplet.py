@@ -116,37 +116,6 @@ def load(filename):
     data_obj._fill_nodata()
     return data_obj
 
-def mask_by_age(results, thresh=10): # XXX: linear age units (not log-10)
-
-    mask = results[1, :, :] < thresh
-
-    results[:, mask] = np.nan
-
-    return results
-
-def mask_by_amplitude(results, thresh=0.1):
-
-    mask = np.abs(results[0, :, :]) < thresh
-
-    results[:, mask] = np.nan
-
-    return results
-
-def mask_by_snr(results, thresh=None):
-
-    if not thresh:
-        thresh = np.nanmean(results[-1, :, :])
-
-    mask = results[-1, :, :] < thresh
-
-    results[:, mask] = np.nan
-
-    return results
-
-def mask_generic(results):
-    results = mask_by_age(results, thresh=10)
-    results = mask_by_snr(results)
-
 def match(data, Template, **kwargs):
     pass
 
