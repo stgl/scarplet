@@ -118,7 +118,7 @@ def load(filename):
     return data_obj
 
 def match(data, Template, **kwargs):
-    results = calculate_best_fit_parameters_serial(data, Template( **kwargs)
+    results = calculate_best_fit_parameters_serial(data, Template, **kwargs)
     return results
 
 #@profile
