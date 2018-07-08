@@ -14,7 +14,9 @@ import gdal_merge
 
 from copy import copy
 from rasterio.fill import fillnodata
+
 from utils import BoundingBox
+
 sys.setrecursionlimit(10000)
 
 FLOAT32_MIN = np.finfo(np.float32).min
