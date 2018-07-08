@@ -41,6 +41,10 @@ class BoundingBox(object):
             if self.contains(corner):
                 return True
 
+        for corner in self.corners:
+            if bbox.contains(corner):
+                return True
+
         return False
 
     def intersection(self, bbox):
