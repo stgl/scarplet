@@ -49,7 +49,7 @@ class CalculationMixin(object):
         z_pad = self._griddata
         
         slope_x = (z_pad[1:-1, 2:] - z_pad[1:-1, :-2])/(2*dx)
-        slope_y = (z_pad[2, 1:-1] - z_pad[:-2, 1:-1])/(2*dx)
+        slope_y = (z_pad[2:, 1:-1] - z_pad[:-2, 1:-1])/(2*dx)
         
         return slope_x, slope_y
     
