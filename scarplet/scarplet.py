@@ -9,15 +9,16 @@ import matplotlib.pyplot as plt
 
 import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
+
 from functools import partial
 
 from dem import BaseSpatialGrid, DEMGrid, Hillshade
 
-from timeit import default_timer as timer
 
 np.seterr(divide='ignore', invalid='ignore')
 
 pyfftw.interfaces.cache.enable()
+
 
 def calculate_amplitude(dem, Template, d, age, alpha):
 
@@ -117,7 +118,8 @@ def load(filename):
     return data_obj
 
 def match(data, Template, **kwargs):
-    pass
+    results = calculate_best_fit_parameters_serial(data, Template( **kwargs)
+    return results
 
 #@profile
 def match_template(data, Template, d, age, angle):
