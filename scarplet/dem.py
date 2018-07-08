@@ -171,20 +171,6 @@ class CalculationMixin(object):
         Pad grid boundary with reflected boundary conditions.
         """
 
-        #dx = np.round(dx/2)
-        #dy = np.round(dy/2)
-
-        #nx = self._georef_info.nx
-        #ny = self._georef_info.ny
-
-        #pad_x = np.zeros((ny, dx))
-        #z_pad = np.hstack([pad_x, self._griddata, pad_x]) 
-        #
-        #nx += 2*dx 
-        #
-        #pad_y = np.zeros((dy, nx))
-        #z_pad = np.vstack([pad_y, z_pad, pad_y]) 
-
         self._griddata = np.pad(self._griddata, pad_width=(dy, dx), mode='reflect')
         self.padded = True
         self.pad_dx = dx
@@ -197,14 +183,6 @@ class CalculationMixin(object):
         self._georef_info.xllcenter -= dx
         self._georef_info.yllcenter -= dy
 
-        # XXX: this is unnceccessary. Why save a padded GeoTIFF?
-        #x_min = self._georef_info.geo_transform[0] - dx*self._georef_info.dx
-        #y_max = self._georef_info.geo_transform[3] + dy*np.abs(self._georef_info.dy)
-        
-        #new_transform = (x_min, self._georef_info.dx, 0, y_max, 0, -self._georef_info.dy)
-        #self._georef_info.geo_transform = new_transform
-        #self._griddata = z_pad 
-    
 
 class GDALMixin(object):
     pass
@@ -226,9 +204,6 @@ class GeorefInfo(object):
         self.uly = None
         self.lrx = None
         self.lry = None
-
-#class GeographicMixin(object):
-#    pass
 
 
 class BaseSpatialGrid(GDALMixin):
@@ -390,8 +365,6 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
         else:
             nodata_mask = np.isnan(self._griddata) 
         self.nodata_mask = nodata_mask
-
-        # Calculate reasonable search distance
 
         # XXX: GDAL (or rasterio) FillNoData takes mask with 0s at nodata locations
         num_nodata = np.sum(nodata_mask)
