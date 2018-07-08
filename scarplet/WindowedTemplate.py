@@ -120,22 +120,7 @@ class Scarp(WindowedTemplate):
         W = np.flipud(np.fliplr(W))
 
         return W
-
-
-class Channel(WindowedTemplate):
     
-    
-    name = "Channel"
-
-    def __init__(d, kt, alpha):
-
-        self.d = d
-        self.kt = kt
-        self.alpha = alpha
-
-    def template(self):
-        pass
-
 
 class Morlet(WindowedTemplate):
     
@@ -191,4 +176,8 @@ class Ricker(WindowedTemplate):
         #W = np.flipud(np.fliplr(W))
 
         return W
+
+
+class Channel(Ricker):
+    pass 
 
