@@ -1,19 +1,15 @@
 """ Class for windowed template matching over a spatial grid """
 
-import dem
-from osgeo import osr, ogr, gdal
-
 import math
 import numpy as np
 import numexpr
 
-from scipy.signal import convolve2d
-from scipy.special import erf, erfinv
 import matplotlib.pyplot as plt
+
+from scipy.special import erf, erfinv
 
 np.seterr(divide='ignore', invalid='ignore')
 
-DEFAULT_EPSG = 32610 # UTM 10N
 
 class WindowedTemplate(object):
     
