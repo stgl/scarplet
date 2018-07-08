@@ -40,12 +40,12 @@ class WindowedTemplate(object):
 
     def get_window_limits(self):
 
-        x4 = self.d*np.cos(self.alpha-np.pi/2)
-        y4 = self.d*np.sin(self.alpha-np.pi/2)
+        x4 = self.d*np.cos(self.alpha - np.pi/2)
+        y4 = self.d*np.sin(self.alpha - np.pi/2)
         x1 = self.d*np.cos(self.alpha)
         y1 = self.d*np.sin(self.alpha)
-        an_y = abs((x4 - x1) + 2*self.c*np.cos(self.alpha-np.pi/2))
-        an_x = abs((y1 - y4) + 2*self.c*np.sin(self.alpha-np.pi/2))
+        an_y = abs((x4 - x1) + 2 * self.c * np.cos(self.alpha - np.pi/2))
+        an_x = abs((y1 - y4) + 2 * self.c * np.sin(self.alpha - np.pi/2))
 
         x = self.de*np.linspace(1, self.nx, num=self.nx)
         y = self.de*np.linspace(1, self.ny, num=self.ny)
@@ -61,8 +61,6 @@ class WindowedTemplate(object):
 class Scarp(WindowedTemplate):
 
     
-    name = "Vertical Scarp"
-
     def __init__(self, d, kt, alpha, nx, ny, de):
 
         self.d = d
@@ -73,23 +71,24 @@ class Scarp(WindowedTemplate):
         self.de = de
         
         frac = 0.9
-        self.c = abs(2*np.sqrt(self.kt)*erfinv(frac))
+        self.c = abs(2 * np.sqrt(self.kt) * erfinv(frac))
 
     def template(self):
 
-        x = self.de*np.linspace(1, self.nx, num=self.nx)
-        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = self.de * np.linspace(1, self.nx, num=self.nx)
+        y = self.de * np.linspace(1, self.ny, num=self.ny)
         x = x - np.mean(x)
         y = y - np.mean(y)
 
         x, y = np.meshgrid(x, y)
-        xr = x*np.cos(self.alpha) + y*np.sin(self.alpha)
-        yr = -x*np.sin(self.alpha) + y*np.cos(self.alpha)
+        xr = x * np.cos(self.alpha) + y * np.sin(self.alpha)
+        yr = -x * np.sin(self.alpha) + y * np.cos(self.alpha)
 
-        W = (-xr/(2.*self.kt**(3/2.)*np.sqrt(np.pi)))*np.exp(-xr**2./(4.*self.kt))
+        W = (-xr / (2. * self.kt ** (3 / 2.) * np.sqrt(np.pi))) \
+            * np.exp(-xr ** 2. / (4. * self.kt))
 
         mask = (abs(xr) < self.c) & (abs(yr) < self.d)
-        W = W*mask
+        W = W * mask
         #W = W.T
         W = np.flipud(np.fliplr(W))
 
@@ -102,20 +101,20 @@ class Scarp(WindowedTemplate):
         c = self.c
         d = self.d
 
-        x = self.de*np.linspace(1, self.nx, num=self.nx)
-        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = self.de * np.linspace(1, self.nx, num=self.nx)
+        y = self.de * np.linspace(1, self.ny, num=self.ny)
         x = x - np.mean(x)
         y = y - np.mean(y)
 
         x, y = np.meshgrid(x, y)
-        xr = numexpr.evaluate("x*cos(alpha) + y*sin(alpha)")
-        yr = numexpr.evaluate("-x*sin(alpha) + y*cos(alpha)")
+        xr = numexpr.evaluate("x * cos(alpha) + y * sin(alpha)")
+        yr = numexpr.evaluate("-x * sin(alpha) + y * cos(alpha)")
 
         pi = np.pi
-        W = numexpr.evaluate("(-xr/(2*kt**(3/2)*sqrt(pi)))*exp(-xr**2/(4*kt))")
+        W = numexpr.evaluate("(-xr / (2 * kt ** (3/2) * sqrt(pi))) * exp(-xr ** 2 / (4 * kt))")
 
         mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
-        W = numexpr.evaluate("W*mask")
+        W = numexpr.evaluate("W * mask")
         #W = W.T
         W = np.flipud(np.fliplr(W))
 
@@ -125,8 +124,6 @@ class Scarp(WindowedTemplate):
 class Morlet(WindowedTemplate):
     
     
-    name = "Morlet"
-
     def __init__(self, d, kt, alpha):
 
         self.d = d
@@ -139,8 +136,6 @@ class Morlet(WindowedTemplate):
 
 class Ricker(WindowedTemplate):
 
-
-    name = "Ricker"
 
     def __init__(self, d, f, alpha, nx, ny, de):
 
