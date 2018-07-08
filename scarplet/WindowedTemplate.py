@@ -172,3 +172,44 @@ class Ricker(WindowedTemplate):
 class Channel(Ricker):
     pass 
 
+class Crater(WindowedTemplate):
+
+
+    def __init__(self, r, kt, nx, ny, de):
+
+        self.r = r / de
+        self.kt = kt
+        self.nx = nx
+        self.ny = ny
+        self.de = de
+
+    def template(self):
+        
+        x = self.de * np.linspace(1, self.nx, num=self.nx)
+        y = self.de * np.linspace(1, self.ny, num=self.ny)
+        x = x - np.mean(x)
+        y = y - np.mean(y)
+
+        x, y = np.meshgrid(x, y)
+
+        W = np.zeros_like(x)
+
+        thetas = np.linspace(0, 2 * np.pi, num=359, endpoint=False)
+        for theta in thetas:
+            alpha = -theta
+            dx = self.r * np.cos(theta)
+            dy = self.r * np.sin(theta)
+            xr = (x - dx) * np.cos(alpha) + (y + dy) * np.sin(alpha)
+            yr = -(x - dx) * np.sin(alpha) + (y + dy) * np.cos(alpha)
+            this_W = (-xr / (2. * self.kt ** (3 / 2.) * np.sqrt(np.pi))) \
+                     * np.exp(-xr ** 2. / (4. * self.kt))
+
+            mask = (abs(xr) < 1) & (abs(yr) < 5 / self.de)
+            this_W *= mask
+
+            if theta > np.pi / 2 and theta < 3 * np.pi / 2:
+                this_W *= -1
+
+            W += this_W
+
+        return W
