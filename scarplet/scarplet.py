@@ -11,7 +11,7 @@ import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 from functools import partial
 
-from dem import BaseSpatialGrid, Hillshade
+from dem import BaseSpatialGrid, DEMGrid, Hillshade
 
 from timeit import default_timer as timer
 
@@ -36,7 +36,6 @@ def calculate_amplitude(dem, Template, d, age, alpha):
     return amp, snr
 
 #@profile
-# XXX: This is the old verion
 def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
     
     this_age = 10**this_age
@@ -112,6 +111,11 @@ def compare_async_results(results, ny, nx):
 
     return best_amp, best_alpha, best_snr 
 
+def load(filename):
+    data_obj = DEMGrid(filename)
+    data_obj._fill_nodata()
+    return data_obj
+
 def mask_by_age(results, thresh=10): # XXX: linear age units (not log-10)
 
     mask = results[1, :, :] < thresh
@@ -142,6 +146,9 @@ def mask_by_snr(results, thresh=None):
 def mask_generic(results):
     results = mask_by_age(results, thresh=10)
     results = mask_by_snr(results)
+
+def match(data, Template, **kwargs):
+    pass
 
 #@profile
 def match_template(data, Template, d, age, angle):
