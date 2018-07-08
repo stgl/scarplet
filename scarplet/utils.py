@@ -47,20 +47,3 @@ class BoundingBox(object):
 
         return False
 
-    def intersection(self, bbox):
-        pass
-       # if not self.intersects(bbox):
-       #     raise ValueError("Bounding boxes do not intersect")
-
-       # interior_points = []
-       # for corner in bbox.corners:
-       #     if self.contains(corner):
-       #         interior_points.append(corner)
-       # 
-       # if len(interior_points) == 1:
-       #     dists = [np.linalg.norm(interior_points[0] - x) for x in self.corners]
-       #     idx = np.where(dists == np.min(dists))
-       #     interior_points.append(self.corners[idx])
-
-       # return BoundingBox(new_lr, new_ul)
-
