@@ -2,7 +2,6 @@
 Utility classes and funcitons for template matching framework.
 """
 
-import dem
 import numpy as np
 
 

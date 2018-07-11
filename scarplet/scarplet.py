@@ -12,7 +12,7 @@ from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
 from functools import partial
 
-from dem import BaseSpatialGrid, DEMGrid, Hillshade
+from scarplet.dem import BaseSpatialGrid, DEMGrid, Hillshade
 
 
 np.seterr(divide='ignore', invalid='ignore')
@@ -116,11 +116,13 @@ def load(filename):
 
     data_obj = DEMGrid(filename)
     data_obj._fill_nodata()
+
     return data_obj
 
 def match(data, Template, **kwargs):
 
     results = calculate_best_fit_parameters_serial(data, Template, **kwargs)
+
     return results
 
 #@profile
@@ -168,3 +170,19 @@ def match_template(data, Template, d, age, angle):
 
     return amp, angle, snr
 
+def plot_results(data, results, figsize=(9,3)):
+    
+    results[0] = np.abs(results[0])
+    results[1] = np.log10(results[1])
+
+    fig, ax = plt.subplots(1, 3, figsize=figsize)
+
+    ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
+    hillshade = ls.hillshade(data._griddata, vert_exag=1, dx=data._georef_info.dx, dy=data._georef_info.dy)
+    
+    labels = ['Amplitude [m]', 'Relative age [m$^2$]', 'Orientation [deg.]', 'Signal-to-noise ratio']
+    cmaps = ['Reds', 'viridis', 'RdBu_r', 'Reds']
+    for i, axis, label, cmap in enumerate(zip(ax, labels, cmaps)):
+        axis.imshow(hillshade, alpha=1, cmap='gray')
+        im = axis.imshow(results[i], alpha=0.5, cmap=cmaps)
+        plt.colorbar(im, ax=ax, shrink=0.5, orientation='horizontal', label=label)

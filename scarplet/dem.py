@@ -15,7 +15,7 @@ import gdal_merge
 from copy import copy
 from rasterio.fill import fillnodata
 
-from utils import BoundingBox
+from scarplet.utils import BoundingBox
 
 sys.setrecursionlimit(10000)
 
