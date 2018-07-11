@@ -304,12 +304,12 @@ class BaseSpatialGrid(GDALMixin):
         gdal_dataset = gdal.Open(filename)
         band = gdal_dataset.GetRasterBand(1)
         nodata = band.GetNoDataValue()
-        self._griddata = band.ReadAsArray() 
+        self._griddata = band.ReadAsArray().astype(float)
 
         if nodata is not None:
             nodata_index = np.where(self._griddata == nodata)
             if self.dtype is not np.uint8:
-                self._griddata[nodata_index] = np.NAN
+                self._griddata[nodata_index] = np.nan
 
         geo_transform = gdal_dataset.GetGeoTransform()
         projection = gdal_dataset.GetProjection()
