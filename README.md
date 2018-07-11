@@ -1,7 +1,7 @@
 # scarplet
 A Python framework for template matching to detect fault scarps and other landforms in digital elevation data. Still a work in progress! 
 
-The [scarp-reduce](https://github.com/rmsare/scarp-reduce) repo contains rudimentary task management scripts to run this in distributed mode on AWS. 
+The [scarp-reduce](https://github.com/rmsare/scarp-reduce) repo contains rudimentary task management scripts to run this in distributed mode on AWS. Planning a rewrite using dask that will be alittle more cloud platform agnostic.
 
 <p align='center'><img src=https://github.com/rmsare/scarplet/raw/master/data/northcoast.png width="640px"></p>
 
