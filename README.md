@@ -4,6 +4,7 @@ A Python framework for template matching to detect fault scarps and other landfo
 The [scarp-reduce](https://github.com/rmsare/scarp-reduce) repo contains basic task management scripts to run this in distributed mode on AWS.
 
 <p align='center'><img src=https://github.com/rmsare/scarplet/raw/master/data/northcoast.png width="640px"></p>
+
 **Signal-to-noise ratio of scarp-like landforms.** a) Swath of elevation data along the northern San Andreas Fault, CA, USA, b) Mapping from the USGS Quaternary faults and folds database, c) Successful and unsuccessful detections by the scarplet methodology.
 
 ### Details
