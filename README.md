@@ -1,7 +1,11 @@
 # scarplet
 A Python framework for template matching to detect fault scarps and other landforms in digital elevation data. Still a work in progress! 
 
-The [scarp-reduce](https://github.com/rmsare/scarp-reduce) repo contains basic task management scripts to run this in distributed mode on AWS.
+The [scarp-reduce](https://github.com/rmsare/scarp-reduce) repo contains rudimentary task management scripts to run this in distributed mode on AWS. Planning a rewrite using dask that will be alittle more cloud platform agnostic.
+
+<p align='center'><img src=https://github.com/rmsare/scarplet/raw/master/data/northcoast.png width="640px"></p>
+
+**Signal-to-noise ratio of scarp-like landforms.** a) Swath of elevation data along the northern San Andreas Fault, CA, USA, b) Mapping from the USGS Quaternary faults and folds database, c) Successful and unsuccessful detections by the scarplet methodology.
 
 ### Details
 This repository implements a windowed template matching algorithm in Python. Two-dimensional windowed template functions with a range of plan-view orientations are convolved with input data, and the best-fitting (highest signal-to-noise ratio) template parameters are retained at each pixel. 
