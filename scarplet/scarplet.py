@@ -118,6 +118,10 @@ def load(filename):
     data_obj = DEMGrid(filename)
     data_obj._fill_nodata()
 
+    if data_obj._georef_info.dx > 1.:
+        data_obj._georef_info.dx = 1.
+        data_obj._georef_info.dy = 1.
+
     return data_obj
 
 def match(data, Template, **kwargs):
