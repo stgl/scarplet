@@ -5,6 +5,8 @@ grid """
 import numpy as np
 import numexpr
 import multiprocessing as mp
+
+import matplotlib
 import matplotlib.pyplot as plt
 
 import pyfftw
@@ -40,7 +42,6 @@ def calculate_amplitude(dem, Template, d, age, alpha):
 def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
     
     this_age = 10**this_age
-    #args = parse_args(**kwargs)
     de = dem._georef_info.dx 
 
     ang_stepsize = 1
@@ -59,7 +60,7 @@ def calculate_best_fit_parameters_serial(dem, Template, d, this_age, **kwargs):
 
         curv = dem._calculate_directional_laplacian_numexpr(this_alpha)
         
-        this_amp, this_snr = match_template_numexpr(curv, template)
+        this_amp, this_snr = match_template(curv, template)
         mask = t.get_window_limits()
         this_amp[mask] = np.nan 
         this_snr[mask] = np.nan
@@ -121,7 +122,7 @@ def load(filename):
 
 def match(data, Template, **kwargs):
 
-    results = calculate_best_fit_parameters_serial(data, Template, **kwargs)
+    results = calculate_best_fit_parameters(data, Template, **kwargs)
 
     return results
 
@@ -170,19 +171,21 @@ def match_template(data, Template, d, age, angle):
 
     return amp, angle, snr
 
-def plot_results(data, results, figsize=(9,3)):
+def plot_results(data, results, az=35, elev=45, figsize=(9,3)):
     
     results[0] = np.abs(results[0])
     results[1] = np.log10(results[1])
 
-    fig, ax = plt.subplots(1, 3, figsize=figsize)
+    fig, ax = plt.subplots(1, 4, figsize=figsize)
+    ax = ax.ravel()
 
     ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
     hillshade = ls.hillshade(data._griddata, vert_exag=1, dx=data._georef_info.dx, dy=data._georef_info.dy)
     
     labels = ['Amplitude [m]', 'Relative age [m$^2$]', 'Orientation [deg.]', 'Signal-to-noise ratio']
     cmaps = ['Reds', 'viridis', 'RdBu_r', 'Reds']
-    for i, axis, label, cmap in enumerate(zip(ax, labels, cmaps)):
+    for i, val in enumerate(zip(ax, labels, cmaps)):
+        axis, label, cmap = val
         axis.imshow(hillshade, alpha=1, cmap='gray')
-        im = axis.imshow(results[i], alpha=0.5, cmap=cmaps)
-        plt.colorbar(im, ax=ax, shrink=0.5, orientation='horizontal', label=label)
+        im = axis.imshow(results[i], alpha=0.5, cmap=cmap)
+        plt.colorbar(im, ax=axis, shrink=0.5, orientation='horizontal', label=label)
