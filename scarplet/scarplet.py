@@ -46,8 +46,8 @@ def calculate_best_fit_parameters_serial(dem, Template, scale, kt, **kwargs):
 
     ang_stepsize = 1
 
-    num_angles = 180/ang_stepsize + 1
-    orientations = np.linspace(-np.pi/2, np.pi/2, num_angles)
+    num_angles = 180. / ang_stepsize + 1
+    orientations = np.linspace(-np.pi / 2, np.pi / 2, num_angles)
 
     ny, nx = dem._griddata.shape
     best_amp = np.zeros((ny, nx))
@@ -175,12 +175,12 @@ def match_template(data, Template, scale, age, angle):
 
     return amp, angle, snr
 
-def plot_results(data, results, az=315, elev=45, figsize=(8,8)):
+def plot_results(data, results, az=315, elev=45, figsize=(4,16)):
     
     results[0] = np.abs(results[0])
     results[1] = np.log10(results[1])
 
-    fig, ax = plt.subplots(2, 2, figsize=figsize)
+    fig, ax = plt.subplots(4, 1, figsize=figsize)
     ax = ax.ravel()
 
     ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
@@ -193,6 +193,6 @@ def plot_results(data, results, az=315, elev=45, figsize=(8,8)):
         axis.imshow(hillshade, alpha=1, cmap='gray')
         im = axis.imshow(results[i], alpha=0.5, cmap=cmap)
         cb = plt.colorbar(im, ax=axis, shrink=0.5, orientation='horizontal', label=label)
-        ticks = matplotlib.ticker.MaxNLocator(nbins=5)
+        ticks = matplotlib.ticker.MaxNLocator(nbins=3)
         cb.locater = ticks
         cb.update_ticks()
