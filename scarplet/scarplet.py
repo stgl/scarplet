@@ -175,12 +175,12 @@ def match_template(data, Template, scale, age, angle):
 
     return amp, angle, snr
 
-def plot_results(data, results, az=35, elev=45, figsize=(9,3)):
+def plot_results(data, results, az=315, elev=45, figsize=(8,8)):
     
     results[0] = np.abs(results[0])
     results[1] = np.log10(results[1])
 
-    fig, ax = plt.subplots(1, 4, figsize=figsize)
+    fig, ax = plt.subplots(2, 2, figsize=figsize)
     ax = ax.ravel()
 
     ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
@@ -192,4 +192,7 @@ def plot_results(data, results, az=35, elev=45, figsize=(9,3)):
         axis, label, cmap = val
         axis.imshow(hillshade, alpha=1, cmap='gray')
         im = axis.imshow(results[i], alpha=0.5, cmap=cmap)
-        plt.colorbar(im, ax=axis, shrink=0.5, orientation='horizontal', label=label)
+        cb = plt.colorbar(im, ax=axis, shrink=0.5, orientation='horizontal', label=label)
+        ticks = matplotlib.ticker.MaxNLocator(nbins=5)
+        cb.locater = ticks
+        cb.update_ticks()
