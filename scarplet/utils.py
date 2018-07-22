@@ -2,8 +2,6 @@
 Utility classes and funcitons for template matching framework.
 """
 
-import numpy as np
-
 
 class BoundingBox(object):
 
@@ -25,7 +23,7 @@ class BoundingBox(object):
         self.ury = ul[1]
         self.ur = (self.urx, self.ury)
 
-        self.corners = [self.ul, self.ll, self.ur, self.lr] 
+        self.corners = [self.ul, self.ll, self.ur, self.lr]
 
     def contains(self, point):
 
@@ -35,7 +33,7 @@ class BoundingBox(object):
         return intersect_x and intersect_y
 
     def intersects(self, bbox):
-        
+
         for corner in bbox.corners:
             if self.contains(corner):
                 return True
@@ -45,4 +43,3 @@ class BoundingBox(object):
                 return True
 
         return False
-
