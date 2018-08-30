@@ -14,7 +14,7 @@ from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
 from functools import partial
 
-from scarplet.dem import BaseSpatialGrid, DEMGrid, Hillshade
+from .dem import BaseSpatialGrid, DEMGrid, Hillshade
 
 
 np.seterr(divide='ignore', invalid='ignore')

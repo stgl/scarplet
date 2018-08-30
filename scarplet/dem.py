@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 from osgeo import gdal, gdalconst
 from copy import copy
 from rasterio.fill import fillnodata
-from scarplet.utils import BoundingBox
+
+from .utils import BoundingBox
 
 sys.path.append('/usr/bin')
 import gdal_merge
