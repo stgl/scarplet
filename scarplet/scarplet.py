@@ -113,6 +113,28 @@ def compare_async_results(results, ny, nx):
 
     return best_amp, best_alpha, best_snr 
 
+def compare(results):
+
+    ny, nx = results[0][0].shape
+
+    best_amp = np.zeros((ny, nx))
+    best_alpha = np.zeros((ny, nx))
+    best_age = np.zeros((ny, nx))
+    best_snr = np.zeros((ny, nx))
+
+    for r in results:
+        this_amp, this_age, this_alpha, this_snr = r
+        this_snr[np.isnan(this_snr)] = 0.
+
+        best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
+        best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
+        best_age = numexpr.evaluate("(best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age")
+        best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")
+        
+        del this_amp, this_age, this_snr, r
+
+    return best_amp, best_age, best_alpha, best_snr
+
 def load(filename):
 
     data_obj = DEMGrid(filename)
@@ -140,6 +162,7 @@ def match_template(data, Template, scale, age, angle):
 
     template_obj = Template(scale, age, angle, nx, ny, de)
     template = template_obj.template()
+
     mask = template_obj.get_window_limits()
 
     if curv.ndim < template.ndim:
@@ -177,8 +200,8 @@ def match_template(data, Template, scale, age, angle):
 
 def plot_results(data, results, az=315, elev=45, figsize=(4,16)):
     
-    results[0] = np.abs(results[0])
-    results[1] = np.log10(results[1])
+    #results[0] = np.abs(results[0])
+    #results[1] = np.log10(results[1])
 
     fig, ax = plt.subplots(4, 1, figsize=figsize)
     ax = ax.ravel()
