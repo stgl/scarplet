@@ -86,18 +86,6 @@ class Scarp(WindowedTemplate):
         frac = 0.9
         self.c = abs(2 * np.sqrt(self.kt) * erfinv(frac))
 
-    def get_mask_lower(self):
-        mask = self.get_mask()
-        xr, _ = self.get_coordinates()
-        mask *= xr <= 0
-        return mask
-
-    def get_mask_upper(self):
-        mask = self.get_mask()
-        xr, _ = self.get_coordinates()
-        mask *= xr >= 0
-        return mask
-
     def template(self):
 
         x = self.de * np.linspace(1, self.nx, num=self.nx)
@@ -144,7 +132,27 @@ class Scarp(WindowedTemplate):
         W = np.flipud(np.fliplr(W))
 
         return W
-    
+
+
+class LowerBreakScarp(Scarp):
+        
+
+    def get_mask(self):
+        mask = super().get_mask()
+        xr, _ = self.get_coordinates()
+        mask *= xr <= 0
+        return mask
+
+
+class UpperBreakScarp(Scarp):
+        
+
+    def get_mask(self):
+        mask = super().get_mask()
+        xr, _ = self.get_coordinates()
+        mask *= xr >= 0
+        return mask
+
 
 class Morlet(WindowedTemplate):
     
