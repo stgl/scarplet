@@ -52,7 +52,24 @@ class WindowedTemplate(object):
         mask = ((X < (min(x) + an_x)) | (X > (max(x) - an_x)) | (Y < (min(y) + an_y)) | (Y > (max(y) - an_y)))
 
         return mask
-    
+
+    def get_coordinates(self):
+        x = self.de * np.linspace(1, self.nx, num=self.nx)
+        y = self.de * np.linspace(1, self.ny, num=self.ny)
+        x = x - np.mean(x)
+        y = y - np.mean(y)
+
+        x, y = np.meshgrid(x, y)
+        xr = x * np.cos(self.alpha) + y * np.sin(self.alpha)
+        yr = -x * np.sin(self.alpha) + y * np.cos(self.alpha)
+
+        return xr, yr
+
+    def get_mask(self):
+        xr, yr = self.get_coordinates()
+        mask = (abs(xr) < self.c) & (abs(yr) < self.d)
+        return mask
+
 
 class Scarp(WindowedTemplate):
 
@@ -69,6 +86,18 @@ class Scarp(WindowedTemplate):
         frac = 0.9
         self.c = abs(2 * np.sqrt(self.kt) * erfinv(frac))
 
+    def get_mask_lower(self):
+        mask = self.get_mask()
+        xr, _ = self.get_coordinates()
+        mask *= xr <= 0
+        return mask
+
+    def get_mask_upper(self):
+        mask = self.get_mask()
+        xr, _ = self.get_coordinates()
+        mask *= xr >= 0
+        return mask
+
     def template(self):
 
         x = self.de * np.linspace(1, self.nx, num=self.nx)
@@ -83,7 +112,7 @@ class Scarp(WindowedTemplate):
         W = (-xr / (2. * self.kt ** (3 / 2.) * np.sqrt(np.pi))) \
             * np.exp(-xr ** 2. / (4. * self.kt))
 
-        mask = (abs(xr) < self.c) & (abs(yr) < self.d)
+        mask = self.get_mask()
         W = W * mask
         #W = W.T
         W = np.flipud(np.fliplr(W))
