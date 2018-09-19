@@ -39,37 +39,34 @@ def calculate_amplitude(dem, Template, scale, age, alpha):
     return amp, snr
 
 #@profile
-def calculate_best_fit_parameters_serial(dem, Template, scale, kt, **kwargs):
+def calculate_best_fit_parameters_serial(dem, Template, scale, **kwargs):
     
-    this_age = 10 ** kt
     de = dem._georef_info.dx 
 
     ang_stepsize = 1
 
     num_angles = 180. / ang_stepsize + 1
     orientations = np.linspace(-np.pi / 2, np.pi / 2, num_angles)
+    kts = np.arange(0, 3.5, 0.1)
 
     ny, nx = dem._griddata.shape
     best_amp = np.zeros((ny, nx))
     best_alpha = np.zeros((ny, nx))
+    best_age = np.zeros((ny, nx))
     best_snr = np.zeros((ny, nx))
 
     for this_alpha in orientations:
-        t = Template(scale, kt, this_alpha, nx, ny, de)
-        template = t.template()
+        for this_age in kts:
+            this_age = 10 ** this_age
 
-        curv = dem._calculate_directional_laplacian_numexpr(this_alpha)
-        
-        this_amp, this_snr = match_template(curv, template)
-        mask = t.get_window_limits()
-        this_amp[mask] = np.nan 
-        this_snr[mask] = np.nan
+            this_amp, this_angle, this_snr = match_template(dem, Template, scale, this_age, this_alpha)
 
-        best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
-        best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
-        best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")         
-    
-    return best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr 
+            best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
+            best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
+            best_age = numexpr.evaluate("(best_snr > this_snr)*best_age + (best_snr < this_snr)*this_age")
+            best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")
+
+    return best_amp, best_age, best_alpha, best_snr
 
 # XXX: This version uses multiple cores
 def calculate_best_fit_parameters(dem, Template, scale, kt, ang_max, ang_min, **kwargs):
@@ -124,6 +121,7 @@ def compare(results):
 
     for r in results:
         this_amp, this_age, this_alpha, this_snr = r
+        this_amp[np.isnan(this_amp)] = 0.
         this_snr[np.isnan(this_snr)] = 0.
 
         best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
