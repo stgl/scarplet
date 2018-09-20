@@ -13,6 +13,7 @@ import pyfftw
 from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
 from functools import partial
+from itertools import product
 
 from .dem import BaseSpatialGrid, DEMGrid, Hillshade
 
@@ -110,9 +111,7 @@ def compare_async_results(results, ny, nx):
 
     return best_amp, best_alpha, best_snr 
 
-def compare(results):
-
-    ny, nx = results[0][0].shape
+def compare(results, ny, nx):
 
     best_amp = np.zeros((ny, nx))
     best_alpha = np.zeros((ny, nx))
@@ -130,6 +129,26 @@ def compare(results):
         best_snr = numexpr.evaluate("(best_snr > this_snr)*best_snr + (best_snr < this_snr)*this_snr")
         
         del this_amp, this_age, this_snr, r
+
+    return best_amp, best_age, best_alpha, best_snr
+
+def fit_parallel(dem, Template, scale):
+    ang_max = np.pi / 2
+    ang_min = -np.pi / 2
+    ang_stepsize = 1
+
+    num_angles = int((180 / np.pi) * (ang_max - ang_min) / ang_stepsize + 1)
+    orientations = np.linspace(ang_min, ang_max, num_angles)
+    ages = 10 ** np.arange(0, 3.5, 0.1)
+    params = [p for p in product(ages, orientations)]
+
+    nprocs = mp.cpu_count()
+    pool = mp.Pool(processes=nprocs)
+    wrapper = partial(match_template, dem, Template, scale)
+    results = pool.starmap(wrapper, params, chunksize=1)
+
+    ny, nx = dem._griddata.shape
+    best_amp, best_age, best_alpha, best_snr = compare(results, ny, nx)
 
     return best_amp, best_age, best_alpha, best_snr
 
