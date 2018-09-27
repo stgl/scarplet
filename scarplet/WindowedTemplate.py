@@ -102,8 +102,6 @@ class Scarp(WindowedTemplate):
 
         mask = self.get_mask()
         W = W * mask
-        #W = W.T
-        W = np.flipud(np.fliplr(W))
 
         return W
 
@@ -128,29 +126,29 @@ class Scarp(WindowedTemplate):
 
         mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
         W = numexpr.evaluate("W * mask")
-        #W = W.T
-        W = np.flipud(np.fliplr(W))
 
         return W
 
 
-class LowerBreakScarp(Scarp):
+class RightFacingUpperBreakScarp(Scarp):
         
 
-    def get_mask(self):
-        mask = super().get_mask()
+    def get_err_mask(self):
         xr, _ = self.get_coordinates()
-        mask *= xr <= 0
+        mask = xr <= 0
         return mask
 
+    def template(self):
+        W = super().template()
+        return -W
 
-class UpperBreakScarp(Scarp):
+
+class LeftFacingUpperBreakScarp(Scarp):
         
 
-    def get_mask(self):
-        mask = super().get_mask()
+    def get_err_mask(self):
         xr, _ = self.get_coordinates()
-        mask *= xr >= 0
+        mask = xr >= 0
         return mask
 
 
