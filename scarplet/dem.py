@@ -12,7 +12,7 @@ from osgeo import gdal, gdalconst
 from copy import copy
 from rasterio.fill import fillnodata
 
-from .utils import BoundingBox
+from utils import BoundingBox
 
 sys.path.append('/usr/bin')
 import gdal_merge
@@ -24,7 +24,7 @@ GDAL_DRIVER_NAME = 'GTiff'
 
 
 class CalculationMixin(object):
-"""Mix-in class for grid calculations"""
+    """Mix-in class for grid calculations"""
 
     def __init__(self):
 
@@ -328,7 +328,7 @@ class BaseSpatialGrid(GDALMixin):
 
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
-"""Class representing grid of elevation values"""
+    """Class representing grid of elevation values"""
 
     # TODO: fix inheritance to use BaseSpatialGrid init
     # XXX: This is here for Python 2.7 compatibility for now
