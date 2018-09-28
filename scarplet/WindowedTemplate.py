@@ -12,7 +12,7 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 class WindowedTemplate(object):
-"""Base class for windowed template function""" 
+    """Base class for windowed template function""" 
     
     def __init__(self):
         
@@ -72,7 +72,7 @@ class WindowedTemplate(object):
 
 
 class Scarp(WindowedTemplate):
-"""Curvature template for vertical scarp"""
+    """Curvature template for vertical scarp"""
 
     
     def __init__(self, d, kt, alpha, nx, ny, de):
@@ -132,7 +132,7 @@ class Scarp(WindowedTemplate):
 
 
 class RightFacingUpperBreakScarp(Scarp):
-"""Template for upper slope break of vertical scarp (right-facting)""" 
+    """Template for upper slope break of vertical scarp (right-facting)""" 
 
     def get_err_mask(self):
         xr, _ = self.get_coordinates()
@@ -145,8 +145,7 @@ class RightFacingUpperBreakScarp(Scarp):
 
 
 class LeftFacingUpperBreakScarp(Scarp):
-"""Template for upper slope break of vertical scarp (left-facting)""" 
-        
+    """Template for upper slope break of vertical scarp (left-facting)""" 
 
     def get_err_mask(self):
         xr, _ = self.get_coordinates()
@@ -155,7 +154,7 @@ class LeftFacingUpperBreakScarp(Scarp):
 
 
 class Morlet(WindowedTemplate):
-"""Template using 2D Morlet wavelet"""
+    """Template using 2D Morlet wavelet"""
     
     def __init__(self, d, kt, alpha):
 
@@ -168,7 +167,7 @@ class Morlet(WindowedTemplate):
 
 
 class Ricker(WindowedTemplate):
-"""Template using 2D Ricker wavelet"""
+    """Template using 2D Ricker wavelet"""
 
     def __init__(self, d, f, alpha, nx, ny, de):
 
@@ -211,7 +210,7 @@ class Channel(Ricker):
 
 
 class Crater(WindowedTemplate):
-"""Template for radially symmetric crater"""
+    """Template for radially symmetric crater"""
 
     def __init__(self, r, kt, nx, ny, de):
 
