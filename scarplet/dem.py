@@ -4,8 +4,10 @@ import os
 import sys
 import numpy as np
 import numexpr
+
 import matplotlib
 import matplotlib.pyplot as plt
+
 from osgeo import gdal, gdalconst
 from copy import copy
 from rasterio.fill import fillnodata
@@ -15,23 +17,21 @@ from .utils import BoundingBox
 sys.path.append('/usr/bin')
 import gdal_merge
 
-
 sys.setrecursionlimit(10000)
-
 
 FLOAT32_MIN = np.finfo(np.float32).min
 GDAL_DRIVER_NAME = 'GTiff'
 
 
 class CalculationMixin(object):
+"""Mix-in class for grid calculations"""
 
     def __init__(self):
 
         pass
 
     def _calculate_slope(self):
-        """
-        Calculate gradient of grid in x and y directions.
+        """Calculate gradient of grid in x and y directions.
 
         Pads boundary so as to return slope grids of same size as object's
         grid data
@@ -56,15 +56,13 @@ class CalculationMixin(object):
         return slope_x, slope_y
 
     def _calculate_laplacian(self):
-        """
-        Calculate curvature of grid in y direction.
+        """Calculate curvature of grid in y direction.
         """
 
         return self._calculate_directional_laplacian(0)
 
     def _calculate_directional_laplacian(self, alpha):
-        """
-        Calculate curvature of grid in arbitrary direction.
+        """Calculate curvature of grid in arbitrary direction.
 
         Args:
             alpha: direction angle (azimuth) in radians. 0 is north or y-axis.
@@ -101,8 +99,7 @@ class CalculationMixin(object):
         return del2z
 
     def _calculate_directional_laplacian_numexpr(self, alpha):
-        """
-        Calculate curvature of grid in arbitrary direction.
+        """Calculate curvature of grid in arbitrary direction.
 
         Optimized with numexpr expressions.
 
@@ -141,8 +138,7 @@ class CalculationMixin(object):
         return del2z
 
     def _estimate_curvature_noiselevel(self):
-        """
-        Estimate noise level in curvature of grid as a function of direction.
+        """Estimate noise level in curvature of grid as a function of direction.
 
         Returns:
             angles: array of orientations (azimuths) in radians
@@ -172,8 +168,7 @@ class CalculationMixin(object):
         return angles, mean, sd
 
     def _pad_boundary(self, dx, dy):
-        """
-        Pad grid boundary with reflected boundary conditions.
+        """Pad grid boundary with reflected boundary conditions.
         """
 
         self._griddata = np.pad(self._griddata, pad_width=(dy, dx),
@@ -230,9 +225,7 @@ class BaseSpatialGrid(GDALMixin):
             self._griddata = np.empty((0, 0))
 
     def is_contiguous(self, grid):
-        """
-        Returns true if this grid is contiguous with or overlaps another
-        BaseSpatialGrid
+        """Returns true if grids are contiguous or overlap
 
         Args:
             grid: BaseSpatialGrid
@@ -241,8 +234,7 @@ class BaseSpatialGrid(GDALMixin):
         return self.bbox.intersects(grid.bbox)
 
     def merge(self, grid):
-        """
-        Merge this grid with another BaseSpatialGrid.
+        """Merge this grid with another BaseSpatialGrid.
 
         Wrapper argound gdal_merge.py.
 
@@ -266,8 +258,7 @@ class BaseSpatialGrid(GDALMixin):
         return merged_grid
 
     def plot(self, **kwargs):
-        """
-        Plot grid data
+        """Plot grid data
 
         Keyword args:
             Any valid keyword argument for matplotlib.pyplot.imshow
@@ -278,8 +269,7 @@ class BaseSpatialGrid(GDALMixin):
         ax.imshow(self._griddata, **kwargs)
 
     def save(self, filename):
-        """
-        Save grid as georeferenced TIFF
+        """Save grid as georeferenced TIFF
         """
 
         ncols = self._georef_info.nx
@@ -295,8 +285,7 @@ class BaseSpatialGrid(GDALMixin):
         out_band.FlushCache()
 
     def load(self, filename):  # TODO: make this a class method?
-        """
-        Load grid from file
+        """Load grid from file
         """
 
         self.label = filename.split('/')[-1].split('.')[0]
@@ -339,6 +328,7 @@ class BaseSpatialGrid(GDALMixin):
 
 
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
+"""Class representing grid of elevation values"""
 
     # TODO: fix inheritance to use BaseSpatialGrid init
     # XXX: This is here for Python 2.7 compatibility for now
@@ -361,8 +351,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self.is_interpolated = False
 
     def _fill_nodata(self):
-        """
-        Fill nodata values in elevation grid by interpolation.
+        """Fill nodata values in elevation grid by interpolation.
 
         Wrapper around GDAL/rasterio's FillNoData, fillnodata methods
         """
@@ -408,8 +397,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
 class Hillshade(BaseSpatialGrid):
 
     def __init__(self, dem):
-        """
-        Load DEMGrid object as Hillshade
+        """Load DEMGrid object as Hillshade
         """
 
         self._georef_info = dem._georef_info
@@ -417,8 +405,7 @@ class Hillshade(BaseSpatialGrid):
         self._hillshade = None
 
     def plot(self, az=315, elev=45):
-        """
-        Plot hillshade
+        """Plot hillshade
 
         Args:
             az: azimuth of light source
