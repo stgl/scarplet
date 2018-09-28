@@ -15,7 +15,7 @@ from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 from functools import partial
 from itertools import product
 
-from .dem import BaseSpatialGrid, DEMGrid, Hillshade
+from dem import BaseSpatialGrid, DEMGrid, Hillshade
 
 
 np.seterr(divide='ignore', invalid='ignore')
@@ -60,7 +60,7 @@ def calculate_best_fit_parameters_serial(dem, Template, scale, **kwargs):
         for this_age in kts:
             this_age = 10 ** this_age
 
-            this_amp, this_angle, this_snr = match_template(dem, Template, scale, this_age, this_alpha)
+            this_amp, this_angle, this_snr = match_template(dem, Template, scale, this_age, this_alpha, **kwargs)
 
             best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + (best_snr < this_snr)*this_amp")
             best_alpha = numexpr.evaluate("(best_snr > this_snr)*best_alpha + (best_snr < this_snr)*this_alpha")
@@ -166,14 +166,14 @@ def match(data, Template, **kwargs):
     return results
 
 #@profile
-def match_template(data, Template, scale, age, angle):
+def match_template(data, Template, scale, age, angle, **kwargs):
 
     eps = np.spacing(1)
     curv = data._calculate_directional_laplacian(angle) 
     ny, nx = curv.shape
     de = data._georef_info.dx 
 
-    template_obj = Template(scale, age, angle, nx, ny, de)
+    template_obj = Template(scale, age, angle, nx, ny, de, **kwargs)
     template = template_obj.template()
 
     mask = template_obj.get_window_limits()
