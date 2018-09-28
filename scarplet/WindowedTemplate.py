@@ -155,6 +155,10 @@ class LeftFacingUpperBreakScarp(Scarp):
 
 class ShiftedTemplateMixin(WindowedTemplate):
     """Mix-in class for template that is offset from the window center"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args)
+        self.set_offset(kwargs['dx'], kwargs['dy'])
 
     def set_offset(self, dx, dy):
         self.dx = dx
@@ -165,16 +169,20 @@ class ShiftedTemplateMixin(WindowedTemplate):
         
         if dx > 0:
             left = np.zeros((ny, dx))
+            W = W[:, 0:-dx]
             W = np.hstack([left, W])
         else:
             right = np.zeros((ny, dx))
+            W = W[:, dx:]
             W = np.hstack([W, right])
 
         if dy > 0:
-            bottom = np.zeros((dy, nx + dx))
+            bottom = np.zeros((dy, nx))
+            W = W[0:-dy, :]
             W = np.vstack([W, bottom])
         else:
-            top = np.zeros((dy, nx + dx))
+            top = np.zeros((dy, nx))
+            W = W[dy:, :]
             W = np.vstack([top, W])
 
         return W
