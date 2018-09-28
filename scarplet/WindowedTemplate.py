@@ -172,6 +172,7 @@ class ShiftedTemplateMixin(WindowedTemplate):
             W = W[:, 0:-dx]
             W = np.hstack([left, W])
         else:
+            dx = abs(dx)
             right = np.zeros((ny, dx))
             W = W[:, dx:]
             W = np.hstack([W, right])
@@ -181,6 +182,7 @@ class ShiftedTemplateMixin(WindowedTemplate):
             W = W[0:-dy, :]
             W = np.vstack([W, bottom])
         else:
+            dy = abs(dy)
             top = np.zeros((dy, nx))
             W = W[dy:, :]
             W = np.vstack([top, W])
