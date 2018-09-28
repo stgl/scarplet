@@ -153,6 +153,48 @@ class LeftFacingUpperBreakScarp(Scarp):
         return mask
 
 
+class ShiftedTemplateMixin(WindowedTemplate):
+    """Mix-in class for template that is offset from the window center"""
+
+    def set_offset(self, dx, dy):
+        self.dx = dx
+        self.dy = dy
+
+    def shift_template(self, W, dx, dy):
+        ny, nx = W.shape
+        
+        if dx > 0:
+            left = np.zeros((ny, dx))
+            W = np.hstack([left, W])
+        else:
+            right = np.zeros((ny, dx))
+            W = np.hstack([W, right])
+
+        if dy > 0:
+            bottom = np.zeros((dy, nx + dx))
+            W = np.vstack([W, bottom])
+        else:
+            top = np.zeros((dy, nx + dx))
+            W = np.vstack([top, W])
+
+        return W
+
+    def template(self):
+        W = super().template()
+        W = self.shift_template(W, self.dx, self.dy)
+        return W
+
+
+class ShiftedLeftFacingUpperBreakScarp(ShiftedTemplateMixin, \
+                                       LeftFacingUpperBreakScarp):
+    pass
+
+
+class ShiftedRightFacingUpperBreakScarp(ShiftedTemplateMixin, \
+                                        RightFacingUpperBreakScarp):
+    pass
+
+
 class Morlet(WindowedTemplate):
     """Template using 2D Morlet wavelet"""
     
