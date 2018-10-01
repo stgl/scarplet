@@ -1,9 +1,10 @@
-
-import dem
 import unittest
+
 import numpy as np
-from scipy.special import erf
 from osgeo import gdal, osr, ogr
+from scarplet import dem
+
+from scipy.special import erf
 
 DEFAULT_EPSG = 32610 # UTM 10N
 
@@ -15,6 +16,7 @@ class WindowedTemplateTestCase(unittest.TestCase):
 class ScarpTestCase(unittest.TestCase):
     pass
 
+
 class MorletTestCase(unittest.TestCase):
     pass
 
@@ -22,8 +24,8 @@ class MorletTestCase(unittest.TestCase):
 def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
     """ Generate DEM of synthetic scarp for testing """
     
-    nx = 2*x_max/de
-    ny = 2*y_max/de
+    nx = int(2 * x_max / de)
+    ny = int(2 * y_max / de)
     x = np.linspace(-x_max, x_max, num=nx)
     y = np.linspace(-y_max, y_max, num=ny)
     x, y = np.meshgrid(x, y)
