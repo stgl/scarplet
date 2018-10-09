@@ -1,21 +1,26 @@
 """ Classes for loading digital elevation models as numeric grids """
 
+import numexpr
+import numpy as np
 import os
 import sys
-import numpy as np
-import numexpr
 
 import matplotlib
 import matplotlib.pyplot as plt
 
-from osgeo import gdal, gdalconst
 from copy import copy
+from osgeo import gdal, gdalconst
 from rasterio.fill import fillnodata
+
+sys.path.append('/usr/bin')
+try:
+    import gdal_merge
+except ImportError as e:
+    print('ImportError: ' + str(e))
+    print('Can\'t import gdal_merge. GDAL binaries may not be installed.')
 
 from utils import BoundingBox
 
-sys.path.append('/usr/bin')
-import gdal_merge
 
 sys.setrecursionlimit(10000)
 
@@ -147,8 +152,6 @@ class CalculationMixin(object):
                     in correponding direction
         """
 
-        # XXX: this is not complete!
-
         from scipy import ndimage
 
         angles = np.linspace(0, np.pi, num=180)
@@ -158,8 +161,6 @@ class CalculationMixin(object):
 
         for alpha in angles:
             del2z = self._calculate_directional_laplacian(alpha)
-            # TODO: determine bandpass range from original spectrum
-            # XXX: does not consider de
             lowpass = ndimage.gaussian_filter(del2z, 100)
             highpass = del2z - lowpass
             mean.append(np.nanmean(highpass))
