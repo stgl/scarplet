@@ -1,8 +1,8 @@
 """ Class for windowed template matching over a spatial grid """
 
 import math
-import numpy as np
 import numexpr
+import numpy as np
 
 import matplotlib.pyplot as plt
 
