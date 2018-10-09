@@ -71,8 +71,6 @@ def calculate_best_fit_parameters_serial(dem, Template, scale, **kwargs):
 
 def calculate_best_fit_parameters(dem, Template, scale, kt, ang_max, ang_min, **kwargs):
     
-    this_age = 10 ** kt # XXX: Assumes age parameter is given as logarithm
-    #args = parse_args(**kwargs) 
     de = dem._georef_info.dx 
 
     ang_stepsize = 1
