@@ -1,9 +1,8 @@
 """ Functions for determinig best-fit template parameters by convolution with a
 grid """
 
-
-import numpy as np
 import numexpr
+import numpy as np
 import multiprocessing as mp
 
 import matplotlib
@@ -39,7 +38,7 @@ def calculate_amplitude(dem, Template, scale, age, alpha):
 
     return amp, snr
 
-#@profile
+
 def calculate_best_fit_parameters_serial(dem, Template, scale, **kwargs):
     
     de = dem._georef_info.dx 
@@ -69,7 +68,7 @@ def calculate_best_fit_parameters_serial(dem, Template, scale, **kwargs):
 
     return best_amp, best_age, best_alpha, best_snr
 
-# XXX: This version uses multiple cores
+
 def calculate_best_fit_parameters(dem, Template, scale, kt, ang_max, ang_min, **kwargs):
     
     this_age = 10 ** kt # XXX: Assumes age parameter is given as logarithm
@@ -95,6 +94,7 @@ def calculate_best_fit_parameters(dem, Template, scale, kt, ang_max, ang_min, **
     
     return np.stack([best_amp, this_age*np.ones_like(best_amp), best_alpha, best_snr])
 
+
 def compare_async_results(results, ny, nx):
 
     best_amp = np.zeros((ny, nx))
@@ -110,6 +110,7 @@ def compare_async_results(results, ny, nx):
         del this_amp, this_snr, r
 
     return best_amp, best_alpha, best_snr 
+
 
 def compare(results, ny, nx):
 
@@ -132,7 +133,9 @@ def compare(results, ny, nx):
 
     return best_amp, best_age, best_alpha, best_snr
 
+
 def fit_parallel(dem, Template, scale):
+
     ang_max = np.pi / 2
     ang_min = -np.pi / 2
     ang_stepsize = 1
@@ -152,6 +155,7 @@ def fit_parallel(dem, Template, scale):
 
     return best_amp, best_age, best_alpha, best_snr
 
+
 def load(filename):
 
     data_obj = DEMGrid(filename)
@@ -159,13 +163,14 @@ def load(filename):
 
     return data_obj
 
+
 def match(data, Template, **kwargs):
 
     results = calculate_best_fit_parameters(data, Template, **kwargs)
 
     return results
 
-#@profile
+
 def match_template(data, Template, scale, age, angle, **kwargs):
 
     eps = np.spacing(1)
@@ -176,7 +181,6 @@ def match_template(data, Template, scale, age, angle, **kwargs):
     template_obj = Template(scale, age, angle, nx, ny, de, **kwargs)
     template = template_obj.template()
 
-    mask = template_obj.get_window_limits()
 
     if curv.ndim < template.ndim:
         raise ValueError("Dimensions of template must be less than or equal to dimensions of data matrix")
@@ -195,28 +199,27 @@ def match_template(data, Template, scale, age, angle, **kwargs):
     del curv, template
 
     xcorr = np.real(fftshift(ifft2(numexpr.evaluate("ft*fc"))))
-    
     amp = numexpr.evaluate("xcorr/template_sum")
    
-    # TODO  remove intermediate terms to make more memory efficent
     T1 = numexpr.evaluate("template_sum*(amp**2)")
     T3 = fftshift(ifft2(numexpr.evaluate("fc2*fm2")))
     error = (1/n)*numexpr.evaluate("real(T1 - 2*amp*xcorr + T3)") + eps # avoid small-magnitude dvision
-    #error = (1/n)*(amp**2*template_sum - 2*amp*fftshift(ifft2(fc*ft)) + fftshift(ifft2(fc2*fm2))) + eps
     snr = numexpr.evaluate("abs(T1/error)")
 
-    # XXX: this is neccessary to avoid comparisons with NAN
+    if hassattr(template_obj, 'get_err_mask'):
+        mask = template_obj.get_err_mask()
+        snr[mask] = 0
+
+    mask = template_obj.get_window_limits()
     amp[mask] = 0
     snr[mask] = 0
 
     return amp, angle, snr
 
+
 def plot_results(data, results, az=315, elev=45, figsize=(4,16)):
     
-    #results[0] = np.abs(results[0])
-    #results[1] = np.log10(results[1])
-
-    fig, ax = plt.subplots(4, 1, figsize=figsize)
+    fig, ax = plt.subplots(2, 2, figsize=figsize)
     ax = ax.ravel()
 
     ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
@@ -232,3 +235,4 @@ def plot_results(data, results, az=315, elev=45, figsize=(4,16)):
         ticks = matplotlib.ticker.MaxNLocator(nbins=3)
         cb.locater = ticks
         cb.update_ticks()
+        axis.invert_yaxis()
