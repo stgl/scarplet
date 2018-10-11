@@ -1,6 +1,4 @@
-"""
-Utility classes and funcitons for template matching framework.
-"""
+""" Utility classes and funcitons for template matching framework. """
 
 
 class BoundingBox(object):
