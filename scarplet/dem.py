@@ -42,9 +42,12 @@ class CalculationMixin(object):
         Pads boundary so as to return slope grids of same size as object's
         grid data
 
-        Returns:
-            slope_x: slope in x direction
-            slope_y: slope in y direction
+        Returns
+        -------
+            slope_x : numpy array
+                slope in x direction
+            slope_y : numpy array
+                slope in y direction
         """
 
         dx = self._georef_info.dx
@@ -70,11 +73,15 @@ class CalculationMixin(object):
     def _calculate_directional_laplacian(self, alpha):
         """Calculate curvature of grid in arbitrary direction.
 
-        Args:
-            alpha: direction angle (azimuth) in radians. 0 is north or y-axis.
+        Parameters
+        ----------
+            alpha : float
+                direction angle (azimuth) in radians. 0 is north or y-axis.
 
-        Returns:
-            del2s: grid of curvature values
+        Returns
+        -------
+            del2s : numpy array
+                grid of curvature values
         """
 
         dx = self._georef_info.dx
@@ -109,11 +116,15 @@ class CalculationMixin(object):
 
         Optimized with numexpr expressions.
 
-        Args:
-            alpha: direction angle (azimuth) in radians. 0 is north or y-axis.
+        Parameters
+        ----------
+            alpha : float
+                direction angle (azimuth) in radians. 0 is north or y-axis.
 
-        Returns:
-            del2s: grid of curvature values
+        Returns
+        -------
+            del2s : numpyarray
+                grid of curvature values
         """
 
         dx = self._georef_info.dx
@@ -146,11 +157,14 @@ class CalculationMixin(object):
     def _estimate_curvature_noiselevel(self):
         """Estimate noise level in curvature of grid as a function of direction.
 
-        Returns:
-            angles: array of orientations (azimuths) in radians
-            mean:   array of mean curvature in correponding direction
-            sd:     array of curvature standard deviation
-                    in correponding direction
+        Returns
+        -------
+            angles : numpy array
+                array of orientations (azimuths) in radians
+            mean : float
+                array of mean curvature in correponding direction
+            sd : float
+                array of curvature standard deviation in correponding direction
         """
 
         from scipy import ndimage
@@ -230,8 +244,9 @@ class BaseSpatialGrid(GDALMixin):
     def is_contiguous(self, grid):
         """Returns true if grids are contiguous or overlap
 
-        Args:
-            grid: BaseSpatialGrid
+        Parameters
+        ----------
+            grid : BaseSpatialGrid
         """
 
         return self.bbox.intersects(grid.bbox)
@@ -241,11 +256,13 @@ class BaseSpatialGrid(GDALMixin):
 
         Wrapper argound gdal_merge.py.
 
-        Args:
-            grid: BaseSpatialGrid
+        Parameters
+        ----------
+            grid : BaseSpatialGrid
 
-        Returns:
-            merged_grid: Merged BaseSpatialGrid
+        Returns
+        -------
+            merged_grid : BaseSpatialGrid
         """
 
         if not self.is_contiguous(grid):
@@ -410,9 +427,12 @@ class Hillshade(BaseSpatialGrid):
     def plot(self, az=315, elev=45):
         """Plot hillshade
 
-        Args:
-            az: azimuth of light source
-            elev: elevation angle of light source
+        Paramaters
+        ----------
+            az : float
+                azimuth of light source in degrees
+            elev : float
+                elevation angle of light source in degrees
         """
 
         ax = plt.gca()
