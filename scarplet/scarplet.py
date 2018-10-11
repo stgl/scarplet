@@ -52,7 +52,7 @@ def calculate_amplitude(dem, Template, scale, age, angle):
 
     curv = dem._calculate_directional_laplacian(angle)
 
-    amp, snr = match_template(curv, template)
+    amp, age, angle, snr = match_template(curv, template)
     mask = t.get_window_limits()
     amp[mask] = 0
     snr[mask] = 0
@@ -112,12 +112,12 @@ def calculate_best_fit_parameters_serial(dem,
 
     for this_angle in orientations:
         for this_age in ages:
-            this_amp, this_angle, this_snr = match_template(dem,
-                                                            Template,
-                                                            scale,
-                                                            this_age,
-                                                            this_angle,
-                                                            **kwargs)
+            this_amp, this_age, this_angle, this_snr = match_template(dem,
+                                                                      Template,
+                                                                      scale,
+                                                                      this_age,
+                                                                      this_angle,
+                                                                      **kwargs)
 
             best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + \
                                         (best_snr < this_snr)*this_amp")
@@ -180,13 +180,13 @@ def calculate_best_fit_parameters(dem,
     wrapper = partial(match_template, dem, Template, scale, age)
     results = pool.imap(wrapper, orientations, chunksize=1)
 
-    best_amp, best_angle, best_snr = compare(results, ny, nx)
+    best_amp, best_age, best_angle, best_snr = compare(results, ny, nx)
 
     pool.close()
     pool.join()
 
     results = np.stack([best_amp,
-                        age * np.ones_like(best_amp),
+                        best_age,
                         best_angle,
                         best_snr])
 
@@ -216,14 +216,18 @@ def compare(results, ny, nx):
     """
 
     best_amp = np.zeros((ny, nx))
+    best_age = np.zeros((ny, nx))
     best_angle = np.zeros((ny, nx))
     best_snr = np.zeros((ny, nx))
 
     for r in results:
-        this_amp, this_angle, this_snr = r
+        this_amp, this_age, this_angle, this_snr = r
 
         best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + \
                                     (best_snr < this_snr)*this_amp")
+
+        best_age = numexpr.evaluate("(best_snr > this_snr)*best_age + \
+                                    (best_snr < this_snr)*this_age")
 
         best_angle = numexpr.evaluate("(best_snr > this_snr)*best_angle + \
                                       (best_snr < this_snr)*this_angle")
@@ -232,7 +236,7 @@ def compare(results, ny, nx):
                                     (best_snr < this_snr)*this_snr")
         del this_amp, this_snr, r
 
-    return best_amp, best_angle, best_snr
+    return best_amp, best_age, best_angle, best_snr
 
 
 def load(filename):
@@ -358,7 +362,10 @@ def match_template(data, Template, scale, age, angle, **kwargs):
     amp[mask] = 0
     snr[mask] = 0
 
-    return amp, angle, snr
+    age = age * np.ones_like(amp)
+
+
+    return amp, age, angle, snr
 
 
 def plot_results(data, results, az=315, elev=45, figsize=(4, 16)):
