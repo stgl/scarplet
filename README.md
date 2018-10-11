@@ -4,8 +4,9 @@ A Python package for template matching to detect fault scarps and other
 landforms in digital elevation data.
 
 It was designed with two main goals:
-    - Allow contributors to easily extend the method to other landforms by defining their own template functions
-    - Make it straightforward to deploy matching tasks in parallel using [dask]() or other tools
+
+* Allow contributors to easily extend the method to other landforms by defining their own template functions
+* Make it straightforward to deploy matching tasks in parallel using multiprocessing, [dask](https://dask.readthedocs.io), or other tools
 
 <p align='center'><img src=https://github.com/rmsare/scarplet/raw/master/data/northcoast.png width="640px"></p>
 
