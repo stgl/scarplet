@@ -1,7 +1,7 @@
 # scarplet
 
 A Python package for applying template matching to digital elevation data, in
-particular for detecting and mesuring maturity of fault scarps and other
+particular for detecting and measuring the maturity of fault scarps and other
 landforms.
 
 It was designed with two main goals:
