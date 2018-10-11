@@ -1,10 +1,7 @@
 """ Class for windowed template matching over a spatial grid """
 
-import math
 import numexpr
 import numpy as np
-
-import matplotlib.pyplot as plt
 
 from scipy.special import erf, erfinv
 
@@ -12,46 +9,41 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 class WindowedTemplate(object):
-    """Base class for windowed template function""" 
-    
+    """Base class for windowed template function
+
+    Attributes
+    ----------
+    d : float
+        Scale of windowed template function in data projection units
+    alpha : float
+        Orientation of windowed template function in radians
+    c : float
+        Curvature limit of template
+    nx : int
+        Number of columns in template array
+    ny : int
+        Number of rows in template array
+    de : float
+        Spacing of template grid cells in dat projection units
+
+    Methods
+    -------
+    get_coordinates():
+        Get arrays of coordinates for template grid points
+    get_mask():
+        Get mask array giving curvature extent of template window
+    get_window_limits():
+        Get mask array giving window extent
+    """
+
     def __init__(self):
-        
+
         self.d = None
         self.alpha = None
         self.nx = None
         self.ny = None
+        self.c = None
         self.de = None
-
-    def parse_args(self, **kwargs):
-        
-        keys = tuple(kwargs.keys())
-        values = tuple(kwargs.values())
-
-        args = dict(zip(keys, values))
-
-        return args
-
-    def template(self):
-        pass
-
-    def get_window_limits(self):
-
-        x4 = self.d*np.cos(self.alpha - np.pi/2)
-        y4 = self.d*np.sin(self.alpha - np.pi/2)
-        x1 = self.d*np.cos(self.alpha)
-        y1 = self.d*np.sin(self.alpha)
-        an_y = abs((x4 - x1) + 2 * self.c * np.cos(self.alpha - np.pi/2))
-        an_x = abs((y1 - y4) + 2 * self.c * np.sin(self.alpha - np.pi/2))
-
-        x = self.de*np.linspace(1, self.nx, num=self.nx)
-        y = self.de*np.linspace(1, self.ny, num=self.ny)
-        x = x - np.mean(x)
-        y = y - np.mean(y)
-
-        X, Y = np.meshgrid(x, y)
-        mask = ((X < (min(x) + an_x)) | (X > (max(x) - an_x)) | (Y < (min(y) + an_y)) | (Y > (max(y) - an_y)))
-
-        return mask
 
     def get_coordinates(self):
         x = self.de * np.linspace(1, self.nx, num=self.nx)
@@ -70,12 +62,71 @@ class WindowedTemplate(object):
         mask = (abs(xr) < self.c) & (abs(yr) < self.d)
         return mask
 
+    def get_window_limits(self):
+
+        x4 = self.d*np.cos(self.alpha - np.pi/2)
+        y4 = self.d*np.sin(self.alpha - np.pi/2)
+        x1 = self.d*np.cos(self.alpha)
+        y1 = self.d*np.sin(self.alpha)
+        an_y = abs((x4 - x1) + 2 * self.c * np.cos(self.alpha - np.pi/2))
+        an_x = abs((y1 - y4) + 2 * self.c * np.sin(self.alpha - np.pi/2))
+
+        x = self.de*np.linspace(1, self.nx, num=self.nx)
+        y = self.de*np.linspace(1, self.ny, num=self.ny)
+        x = x - np.mean(x)
+        y = y - np.mean(y)
+
+        X, Y = np.meshgrid(x, y)
+        mask = ((X < (min(x) + an_x)) | (X > (max(x) - an_x))
+                | (Y < (min(y) + an_y)) | (Y > (max(y) - an_y)))
+
+        return mask
+
 
 class Scarp(WindowedTemplate):
-    """Curvature template for vertical scarp"""
+    """Curvature template for vertical scarp
 
-    
+    Attributes
+    ----------
+    d : float
+        Scale of windowed template function in data projection units
+    alpha : float
+        Orientation of windowed template function in radians
+    kt : float
+        Morphologic age of template in m2
+    nx : int
+        Number of columns in template array
+    ny : int
+        Number of rows in template array
+    de : float
+        Spacing of template grid cells in dat projection units
+
+    Methods
+    -------
+    template():
+        Returns array of windowed template function
+    template_numexpr():
+        Returns array of windowed template function optimized using numexpr
+    """
+
     def __init__(self, d, kt, alpha, nx, ny, de):
+        """Constructor method for scarp template
+
+        Attributes
+        ----------
+        d : float
+            Scale of windowed template function in data projection units
+        kt : float
+            Morphologic age of template in m2
+        alpha : float
+            Orientation of windowed template function in radians
+        nx : int
+            Number of columns in template array
+        ny : int
+            Number of rows in template array
+        de : float
+            Spacing of template grid cells in dat projection units
+        """
 
         self.d = d
         self.kt = kt
@@ -83,11 +134,18 @@ class Scarp(WindowedTemplate):
         self.nx = nx
         self.ny = ny
         self.de = de
-        
+
         frac = 0.9
         self.c = abs(2 * np.sqrt(self.kt) * erfinv(frac))
 
     def template(self):
+        """Return template function
+
+        Returns
+        -------
+        W : numpy array
+            Windowed template function
+        """
 
         x = self.de * np.linspace(1, self.nx, num=self.nx)
         y = self.de * np.linspace(1, self.ny, num=self.ny)
@@ -107,7 +165,14 @@ class Scarp(WindowedTemplate):
         return W
 
     def template_numexpr(self):
-        
+        """Return template function (uses numexpr where possible)
+
+        Returns
+        -------
+        W : numpy array
+            Windowed template function
+        """
+
         alpha = self.alpha
         kt = self.kt
         c = self.c
@@ -123,7 +188,8 @@ class Scarp(WindowedTemplate):
         yr = numexpr.evaluate("-x * sin(alpha) + y * cos(alpha)")
 
         pi = np.pi
-        W = numexpr.evaluate("(-xr / (2 * kt ** (3/2) * sqrt(pi))) * exp(-xr ** 2 / (4 * kt))")
+        W = numexpr.evaluate("(-xr / (2 * kt ** (3/2) * sqrt(pi))) * \
+                             exp(-xr ** 2 / (4 * kt))")
 
         mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
         W = numexpr.evaluate("W * mask")
@@ -132,41 +198,175 @@ class Scarp(WindowedTemplate):
 
 
 class RightFacingUpperBreakScarp(Scarp):
-    """Template for upper slope break of vertical scarp (right-facting)""" 
+    """Template for upper slope break of vertical scarp (right-facting)
+
+    Overrides template function to correct facign direction
+
+    Attributes
+    ----------
+    d : float
+        Scale of windowed template function in data projection units
+    alpha : float
+        Orientation of windowed template function in radians
+    kt : float
+        Morphologic age of template in m2
+    nx : int
+        Number of columns in template array
+    ny : int
+        Number of rows in template array
+    de : float
+        Spacing of template grid cells in dat projection units
+
+    Methods
+    -------
+    get_error_mask():
+        Return mask array that masks the lower slope break of scarp
+    template():
+        Returns array of windowed template function
+    """
+
+    def template(self):
+        """Return template function (uses numexpr where possible)
+
+        Returns
+        -------
+        W : numpy array
+            Windowed template function
+        """
+        W = super().template_numexpr()
+        return -W
 
     def get_err_mask(self):
+        """Return mask array masking the lower half of scarp
+
+        Returns
+        -------
+        mask : numpy array
+            Mask array for lower half of scarp
+        """
         xr, _ = self.get_coordinates()
         mask = xr <= 0
         return mask
 
-    def template(self):
-        W = super().template()
-        return -W
-
 
 class LeftFacingUpperBreakScarp(Scarp):
-    """Template for upper slope break of vertical scarp (left-facting)""" 
+    """Template for upper slope break of vertical scarp (left-facting)
+
+    Attributes
+    ----------
+    d : float
+        Scale of windowed template function in data projection units
+    alpha : float
+        Orientation of windowed template function in radians
+    kt : float
+        Morphologic age of template in m2
+    nx : int
+        Number of columns in template array
+    ny : int
+        Number of rows in template array
+    de : float
+        Spacing of template grid cells in dat projection units
+
+    Methods
+    -------
+    get_error_mask():
+        Return mask array that masks the lower slope break of scarp
+    """
 
     def get_err_mask(self):
+        """Return mask array masking the lower half of scarp
+
+        Returns
+        -------
+        mask : numpy array
+            Mask array for lower hald of scarp
+        """
         xr, _ = self.get_coordinates()
         mask = xr >= 0
         return mask
 
 
 class ShiftedTemplateMixin(WindowedTemplate):
-    """Mix-in class for template that is offset from the window center"""
-    
+    """Mix-in for template that is offset from the window center
+
+    Overrides template function to shift template
+
+    Attributes
+    ----------
+    d : float
+        Scale of windowed template function in data projection units
+    alpha : float
+        Orientation of windowed template function in radians
+    kt : float
+        Morphologic age of template in m2
+    nx : int
+        Number of columns in template array
+    ny : int
+        Number of rows in template array
+    de : float
+        Spacing of template grid cells in dat projection units
+    dx : float
+        X Offset of template center in data projection units
+    dy : float
+        Y Offset of template center data projection units
+
+    Methods
+    -------
+    set_offset(dx, dy):
+        Set offset attrivutes t odx and dy
+    shift_template(W, dx, dy):
+        Shift template array W by dx and dy
+    template():
+        Returns array of windowed template function
+    """
+
     def __init__(self, *args, **kwargs):
+        """Constructor for shifted template
+
+        Parameters
+        ----------
+        dx : float
+            X Offset of template center in data projection units
+        dy : float
+            Y Offset of template center data projection units
+        """
         super().__init__(*args)
         self.set_offset(kwargs['dx'], kwargs['dy'])
 
     def set_offset(self, dx, dy):
+        """Set offset values
+
+        Parameters
+        ----------
+        dx : float
+            X Offset of template center in data projection units
+        dy : float
+            Y Offset of template center data projection units
+        """
+
         self.dx = dx
         self.dy = dy
 
     def shift_template(self, W, dx, dy):
+        """Shift template
+
+        Parameters
+        ----------
+        W : numpy array
+            Windowed template function
+        dx : float
+            X Offset of template center in data projection units
+        dy : float
+            Y Offset of template center data projection units
+
+        Returns
+        -------
+        W : numpy array
+            Shifted windowed template function
+        """
+
         ny, nx = W.shape
-        
+
         if dx > 0:
             left = np.zeros((ny, dx))
             W = W[:, 0:-dx]
@@ -190,38 +390,71 @@ class ShiftedTemplateMixin(WindowedTemplate):
         return W
 
     def template(self):
+        """Template function for shifted template
+
+        Returns
+        -------
+        W : numpy array
+            Shifted windowed template function
+        """
+
         W = super().template()
         W = self.shift_template(W, self.dx, self.dy)
         return W
 
 
-class ShiftedLeftFacingUpperBreakScarp(ShiftedTemplateMixin, \
+class ShiftedLeftFacingUpperBreakScarp(ShiftedTemplateMixin,
                                        LeftFacingUpperBreakScarp):
     pass
 
 
-class ShiftedRightFacingUpperBreakScarp(ShiftedTemplateMixin, \
+class ShiftedRightFacingUpperBreakScarp(ShiftedTemplateMixin,
                                         RightFacingUpperBreakScarp):
     pass
 
 
-class Morlet(WindowedTemplate):
-    """Template using 2D Morlet wavelet"""
-    
-    def __init__(self, d, kt, alpha):
-
-        self.d = d
-        self.kt = kt
-        self.alpha = alpha
-
-    def template(self):
-        pass
-
-
 class Ricker(WindowedTemplate):
-    """Template using 2D Ricker wavelet"""
+    """Template using 2D Ricker wavelet
+
+    Attributes
+    ----------
+    d : float
+        Scale of windowed template function in data projection units
+    alpha : float
+        Orientation of windowed template function in radians
+    kt : float
+        Morphologic age of template in m2
+    nx : int
+        Number of columns in template array
+    ny : int
+        Number of rows in template array
+    de : float
+        Spacing of template grid cells in dat projection units
+    Methods
+    -------
+    template():
+        Returns array of windowed template function
+
+    """
 
     def __init__(self, d, f, alpha, nx, ny, de):
+        """Constructor method for Ricker template
+
+        Paramters
+        ---------
+        d : float
+            Scale of windowed template function in data projection units
+        kt : float
+            Morphologic age of template in m2
+        alpha : float
+            Orientation of windowed template function in radians
+        nx : int
+            Number of columns in template array
+        ny : int
+            Number of rows in template array
+        de : float
+            Spacing of template grid cells in dat projection units
+        """
 
         self.d = d
         self.f = f
@@ -231,9 +464,15 @@ class Ricker(WindowedTemplate):
         self.de = de
 
     def template(self):
-        
+        """Template function for Ricker template
+
+        Returns
+        -------
+        W : numpy array
+            Windowed template function
+        """
+
         alpha = self.alpha
-        #c = self.c
         d = self.d
         f = self.f
 
@@ -247,24 +486,50 @@ class Ricker(WindowedTemplate):
         yr = numexpr.evaluate("-x * sin(alpha) + y * cos(alpha)")
 
         pi = np.pi
-        W = numexpr.evaluate("(1. - 2. * (pi * f * xr) ** 2.) * exp(-(pi * f * xr) ** 2.)")
-
-        #mask = numexpr.evaluate("(abs(xr) < c) & (abs(yr) < d)")
-        #W = numexpr.evaluate("W*mask")
-        #W = W.T
-        #W = np.flipud(np.fliplr(W))
+        W = numexpr.evaluate("(1. - 2. * (pi * f * xr) ** 2.) * \
+                             exp(-(pi * f * xr) ** 2.)")
 
         return W
 
 
 class Channel(Ricker):
-    pass 
+    """Duplicate class for Ricker wavelet used for fluvial channels"""
+    pass
 
 
 class Crater(WindowedTemplate):
-    """Template for radially symmetric crater"""
+    """Template for radially symmetric crater
+
+    Attributes
+    ----------
+    r : float
+        Radius of crater in pixels
+    kt : float
+        Morphologic age of template crater rim in m2
+    nx : int
+        Number of columns in template array
+    ny : int
+        Number of rows in template array
+    de : float
+        Spacing of template grid cells in dat projection units
+    """
 
     def __init__(self, r, kt, nx, ny, de):
+        """Constructor methodfor radially symmetric crater
+
+        Parameters
+        ----------
+        r : float
+            Radius of crater in pixels
+        kt : float
+            Morphologic age of template crater rim in m2
+        nx : int
+            Number of columns in template array
+        ny : int
+            Number of rows in template array
+        de : float
+            Spacing of template grid cells in dat projection units
+        """
 
         self.r = r / de
         self.kt = kt
@@ -273,7 +538,14 @@ class Crater(WindowedTemplate):
         self.de = de
 
     def template(self):
-        
+        """Template function for radially symmetric crater
+
+        Returns
+        -------
+        W : numpy array
+            Windowed template function
+        """
+
         x = self.de * np.linspace(1, self.nx, num=self.nx)
         y = self.de * np.linspace(1, self.ny, num=self.ny)
         x = x - np.mean(x)
@@ -291,9 +563,10 @@ class Crater(WindowedTemplate):
             xr = (x - dx) * np.cos(alpha) + (y + dy) * np.sin(alpha)
             yr = -(x - dx) * np.sin(alpha) + (y + dy) * np.cos(alpha)
             this_W = (-xr / (2. * self.kt ** (3 / 2.) * np.sqrt(np.pi))) \
-                     * np.exp(-xr ** 2. / (4. * self.kt))
+                    * np.exp(-xr ** 2. / (4. * self.kt))
 
             mask = (abs(xr) < 1) & (abs(yr) < 5 / self.de)
+
             this_W *= mask
 
             if theta > np.pi / 2 and theta < 3 * np.pi / 2:
