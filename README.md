@@ -6,10 +6,10 @@ landforms.
 
 It was designed with two main goals:
 
-* Allow contributors define their own template functions for other landforms or problem areas
+* Allow contributors to define their own template functions for other landforms or problem areas
 * Make it straightforward to deploy this method in parallel using multiprocessing, [dask](https://dask.readthedocs.io), or other tools
 
-<p align='center'><img src=https://github.com/rmsare/scarplet/raw/master/data/northcoast.png width="640px"></p>
+<p align='center'><img src=https://github.com/rmsare/scarplet/raw/master/data/northcoast.png width="600px"></p>
 
 **Signal-to-noise ratio of scarp-like landforms.** a) Swath of elevation data along the northern San Andreas Fault, CA, USA, b) Mapping from the USGS Quaternary faults and folds database, c) Successful and unsuccessful detections by the scarplet methodology.
 
