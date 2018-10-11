@@ -360,10 +360,12 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self._griddata[self._griddata == FLOAT32_MIN] = np.nan
             self.nodata_value = np.nan
             self.filename = filename.split('/')[-1]
+            self.shape = self._griddata.shape
             self.is_interpolated = False
         else:
             self.filename = None
             self.label = ''
+            self.shape = (0, 0)
             self._georef_info = _georef_info
             self._griddata = np.empty((0, 0))
             self.is_interpolated = False
