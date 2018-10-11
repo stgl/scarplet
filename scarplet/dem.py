@@ -10,7 +10,10 @@ import matplotlib.pyplot as plt
 
 from copy import copy
 from osgeo import gdal, gdalconst
+
 from rasterio.fill import fillnodata
+
+from utils import BoundingBox
 
 sys.path.append('/usr/bin')
 try:
@@ -18,8 +21,6 @@ try:
 except ImportError as e:
     print('ImportError: ' + str(e))
     print('Can\'t import gdal_merge. GDAL binaries may not be installed.')
-
-from utils import BoundingBox
 
 
 sys.setrecursionlimit(10000)
@@ -98,7 +99,7 @@ class CalculationMixin(object):
         d2z_dy2 = np.vstack([pad_y, d2z_dy2, pad_y])
 
         del2z = d2z_dx2 * np.cos(alpha) ** 2 - 2 * d2z_dxdy * np.sin(alpha) \
-                * np.cos(alpha) + d2z_dy2 * np.sin(alpha) ** 2
+            * np.cos(alpha) + d2z_dy2 * np.sin(alpha) ** 2
         del2z[nan_idx] = np.nan
 
         return del2z
@@ -209,20 +210,21 @@ class GeorefInfo(object):
 
 
 class BaseSpatialGrid(GDALMixin):
+    """Base class for spatial grid"""
 
-    dtype = gdalconst.GDT_Float32  # TODO: detect and set dtype
+    dtype = gdalconst.GDT_Float32
 
     def __init__(self, filename=None):
 
         _georef_info = GeorefInfo()
 
         if filename is not None:
-            self._georef_info = _georef_info  # TODO: fix reference...
+            self._georef_info = _georef_info
             self.load(filename)
             self.filename = filename
         else:
             self.filename = None
-            self._georef_info = _georef_info  # TODO: fix reference...
+            self._georef_info = _georef_info
             self._griddata = np.empty((0, 0))
 
     def is_contiguous(self, grid):
@@ -247,7 +249,7 @@ class BaseSpatialGrid(GDALMixin):
         """
 
         if not self.is_contiguous(grid):
-            raise ValueError("Grids are not contiguous")
+            raise ValueError("ValueError: Grids are not contiguous")
 
         # XXX: this is hacky, eventually implement as native GDAL
         sys.argv = ['', self.filename, grid.filename]
@@ -285,7 +287,7 @@ class BaseSpatialGrid(GDALMixin):
         out_raster.SetProjection(self._georef_info.projection)
         out_band.FlushCache()
 
-    def load(self, filename):  # TODO: make this a class method?
+    def load(self, filename):
         """Load grid from file
         """
 
@@ -313,17 +315,17 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.nx = nx
         self._georef_info.ny = ny
         self._georef_info.xllcenter = self._georef_info.geo_transform[0] \
-                + self._georef_info.dx
+            + self._georef_info.dx
         self._georef_info.yllcenter = self._georef_info.geo_transform[3] \
-                - (self._georef_info.ny+1) \
-                * np.abs(self._georef_info.dy)
+            - (self._georef_info.ny+1) \
+            * np.abs(self._georef_info.dy)
 
         self._georef_info.ulx = self._georef_info.geo_transform[0]
         self._georef_info.uly = self._georef_info.geo_transform[3]
         self._georef_info.lrx = self._georef_info.geo_transform[0] \
-                + self._georef_info.dx*self._georef_info.nx
+            + self._georef_info.dx*self._georef_info.nx
         self._georef_info.lry = self._georef_info.geo_transform[3] \
-                + self._georef_info.dy*self._georef_info.ny
+            + self._georef_info.dy*self._georef_info.ny
         self.bbox = BoundingBox((self._georef_info.lrx, self._georef_info.lry),
                                 (self._georef_info.ulx, self._georef_info.uly))
 
@@ -331,8 +333,6 @@ class BaseSpatialGrid(GDALMixin):
 class DEMGrid(CalculationMixin, BaseSpatialGrid):
     """Class representing grid of elevation values"""
 
-    # TODO: fix inheritance to use BaseSpatialGrid init
-    # XXX: This is here for Python 2.7 compatibility for now
     def __init__(self, filename=None):
 
         _georef_info = GeorefInfo()
@@ -380,6 +380,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
         self.is_interpolated = True
 
     def _fill_nodata_with_edge_values(self):
+        """Fill nodata values using swath edge values by row,"""
 
         if ~np.isnan(self.nodata_value):
             nodata_mask = self._griddata == self.nodata_value
@@ -396,6 +397,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
 
 
 class Hillshade(BaseSpatialGrid):
+    """Class representing hillshade of DEM"""
 
     def __init__(self, dem):
         """Load DEMGrid object as Hillshade
@@ -413,9 +415,9 @@ class Hillshade(BaseSpatialGrid):
             elev: elevation angle of light source
         """
 
+        ax = plt.gca()
         ls = matplotlib.colors.LightSource(azdeg=az, altdeg=elev)
         self._hillshade = ls.hillshade(self._griddata, vert_exag=1,
                                        dx=self._georef_info.dx,
                                        dy=self._georef_info.dy)
-        plt.imshow(self._hillshade, alpha=1, cmap='gray', origin='lower')
-        plt.show()
+        ax.imshow(self._hillshade, alpha=1, cmap='gray', origin='lower')
