@@ -63,7 +63,6 @@ def calculate_amplitude(dem, Template, scale, age, angle):
 def calculate_best_fit_parameters_serial(dem,
                                          Template,
                                          scale,
-                                         age,
                                          ang_max=np.pi / 2,
                                          ang_min=-np.pi / 2,
                                          **kwargs):
@@ -152,6 +151,8 @@ def calculate_best_fit_parameters(dem,
         Class representing template function
     scale : float
         Scale of template function in DEM cell units
+    age : float
+        Age parameter for template function
 
     Other Parameters
     ----------------
@@ -270,8 +271,12 @@ def match(data, Template, **kwargs):
         Array of best amplitudes, ages, orientations, and  signal-to-noise
         ratios for each DEM pixel. Dimensions of (4, height, width).
     """
+    
+    if 'age' in kwargs:
+        results = calculate_best_fit_parameters(data, Template, **kwargs)
+    else:
+        results = calculate_best_fit_parameters_serial(data, Template, **kwargs)
 
-    results = calculate_best_fit_parameters(data, Template, **kwargs)
 
     return results
 
