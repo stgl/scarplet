@@ -277,7 +277,6 @@ def match(data, Template, **kwargs):
     else:
         results = calculate_best_fit_parameters_serial(data, Template, **kwargs)
 
-
     return results
 
 
@@ -311,6 +310,15 @@ def match_template(data, Template, scale, age, angle, **kwargs):
         2-D array of orientations for each DEM pixel
     snr : np.array
         2-D array of signal-to-noise ratios for each DEM pixel
+
+    References
+    ----------
+    Modifies method described in 
+
+    _[0] Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, 
+         J.R., 2010. Morphologic dating of fault scarps using airborne 
+         laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4).
+         https://dx.doi.org/10.1029/2009GL042044
     """
 
     eps = np.spacing(1)
@@ -337,6 +345,7 @@ def match_template(data, Template, scale, age, angle, **kwargs):
 
     T1 = numexpr.evaluate("template_sum*(amp**2)")
     T3 = fftshift(ifft2(numexpr.evaluate("fc2*fm2")))
+
     # XXX: Epsilon factor is added to avoid small-magnitude dvision
     error = (1/n)*numexpr.evaluate("real(T1 - 2*amp*xcorr + T3)") + eps
     snr = numexpr.evaluate("abs(T1/error)")
