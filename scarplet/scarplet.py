@@ -310,8 +310,10 @@ def match_template(data, Template, scale, age, angle, **kwargs):
     -------
     amp : np.array
         2-D array of amplitudes for each DEM pixel
-    angle : np.array
-        2-D array of orientations for each DEM pixel
+    age : np.array
+        template age in m2
+    angle : np.array 
+        template orientation in radians 
     snr : np.array
         2-D array of signal-to-noise ratios for each DEM pixel
 
@@ -361,9 +363,6 @@ def match_template(data, Template, scale, age, angle, **kwargs):
     mask = template_obj.get_window_limits()
     amp[mask] = 0
     snr[mask] = 0
-
-    age = age * np.ones_like(amp)
-
 
     return amp, age, angle, snr
 
