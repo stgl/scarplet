@@ -371,6 +371,20 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self._griddata = np.empty((0, 0))
             self.is_interpolated = False
 
+    def plot(self, color=True, **kwargs):
+        fig, ax = plt.subplots(1, 1, **kwargs)
+
+        hs = Hillshade(self)
+        hs.plot()
+
+        if color:
+            im = ax.imshow(self._griddata, cmap='terrain')
+            plt.colorbar(im, ax=ax, shrink=0.75, label='Elevation')
+
+        ax.tick_params(direction='in')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+
     def _fill_nodata(self):
         """Fill nodata values in elevation grid by interpolation.
 
