@@ -1,4 +1,4 @@
-""" Functions for determinig best-fit template parameters by convolution with a
+""" Functions for determining best-fit template parameters by convolution with a
 grid """
 
 import numexpr
@@ -401,7 +401,7 @@ def plot_results(data, results, az=315, elev=45, figsize=(4, 16)):
     cmaps = ['Reds', 'viridis', 'RdBu_r', 'Reds']
     for i, val in enumerate(zip(ax, labels, cmaps)):
         axis, label, cmap = val
-        axis.imshow(hillshade, angle=1, cmap='gray')
+        axis.imshow(hillshade, alpha=1, cmap='gray')
         im = axis.imshow(results[i], alpha=0.5, cmap=cmap)
         cb = plt.colorbar(im, ax=axis, shrink=0.5,
                           orientation='horizontal', label=label)
