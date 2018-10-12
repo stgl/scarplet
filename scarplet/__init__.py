@@ -1,1 +1,1 @@
-name = "scarplet"
+from scarplet.core import *

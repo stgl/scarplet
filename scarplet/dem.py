@@ -13,7 +13,7 @@ from osgeo import gdal, gdalconst
 
 from rasterio.fill import fillnodata
 
-from utils import BoundingBox
+from scarplet.utils import BoundingBox
 
 sys.path.append('/usr/bin')
 try:
@@ -301,7 +301,8 @@ class BaseSpatialGrid(GDALMixin):
         out_band = out_raster.GetRasterBand(1)
         out_band.WriteArray(self._griddata)
 
-        out_raster.SetProjection(self._georef_info.projection)
+        proj = self._georef_info.projection.ExportToWkt()
+        out_raster.SetProjection(proj)
         out_band.FlushCache()
 
     def load(self, filename):

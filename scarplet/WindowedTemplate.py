@@ -42,7 +42,7 @@ class WindowedTemplate(object):
         self.alpha = None
         self.nx = None
         self.ny = None
-        self.c = None
+        self.c = self.nx / 2. 
         self.de = None
 
     def get_coordinates(self):
@@ -121,7 +121,7 @@ class Scarp(WindowedTemplate):
 
     _[1] Hanks, T.C., 2000. The age of scarplike landforms from 
          diffusion‐equation analysis. Quaternary geochronology, 4, pp.313-338.
-    
+
     and many references therein.
     """
 
