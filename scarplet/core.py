@@ -1,5 +1,5 @@
-""" Functions for determining best-fit template parameters by convolution with a
-grid """
+""" Functions for determining best-fit template parameters by convolution with
+a grid """
 
 import numexpr
 import numpy as np
@@ -408,4 +408,3 @@ def plot_results(data, results, az=315, elev=45, figsize=(4, 16)):
         ticks = matplotlib.ticker.MaxNLocator(nbins=3)
         cb.locater = ticks
         cb.update_ticks()
-        axis.invert_yaxis()

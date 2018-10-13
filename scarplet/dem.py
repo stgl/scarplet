@@ -378,7 +378,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
         hs.plot()
 
         if color:
-            im = ax.imshow(self._griddata, cmap='terrain')
+            im = ax.imshow(self._griddata, alpha=0.75, cmap='terrain')
             plt.colorbar(im, ax=ax, shrink=0.75, label='Elevation')
 
         ax.tick_params(direction='in')
