@@ -35,14 +35,10 @@ class TemplateMatchingTestCase(unittest.TestCase):
 
         amp, age, alpha, snr = sl.match(self.data, Scarp, **template_args)
         
-        with self.subTest(param_grid=amp):
-            self.assertTrue(np.allclose(param_grid, test_amp), "Amplitudes incorrect")
-        with self.subTest(param_grid=age):
-            self.assertTrue(np.allclose(param_grid, test_age), "Ages incorrect")
-        with self.subTest(param_grid=alpha):
-            self.assertTrue(np.allclose(param_grid, test_alpha), "Orientations incorrect")
-        with self.subTest(param_grid=snr):
-            self.assertTrue(np.allclose(param_grid, test_snr), "SNRs incorrect")
+        self.assertTrue(np.allclose(amp, test_amp), "Amplitudes incorrect")
+        self.assertTrue(np.allclose(age, test_age), "Ages incorrect")
+        self.assertTrue(np.allclose(alpha, test_alpha), "Orientations incorrect")
+        self.assertTrue(np.allclose(snr, test_snr), "SNRs incorrect")
 
     def test_match_single_age(self):
         
@@ -57,14 +53,10 @@ class TemplateMatchingTestCase(unittest.TestCase):
 
         amp, age, alpha, snr = sl.match(self.data, Scarp, **template_args)
         
-        with self.subTest(param_grid=amp):
-            self.assertTrue(np.allclose(param_grid, test_amp), "Amplitudes incorrect")
-        with self.subTest(param_grid=age):
-            self.assertTrue(np.allclose(param_grid, test_age), "Ages incorrect")
-        with self.subTest(param_grid=alpha):
-            self.assertTrue(np.allclose(param_grid, test_alpha), "Orientations incorrect")
-        with self.subTest(param_grid=snr):
-            self.assertTrue(np.allclose(param_grid, test_snr), "SNRs incorrect")
+        self.assertTrue(np.allclose(amp, test_amp), "Amplitudes incorrect")
+        self.assertTrue(np.allclose(age, test_age), "Ages incorrect")
+        self.assertTrue(np.allclose(alpha, test_alpha), "Orientations incorrect")
+        self.assertTrue(np.allclose(snr, test_snr), "SNRs incorrect")
 
     def test_match_template(self):
         
@@ -77,14 +69,10 @@ class TemplateMatchingTestCase(unittest.TestCase):
 
         amp, age, alpha, snr = sl.match_template(self.data, Scarp, **template_args)
         
-        with self.subTest(param_grid=amp):
-            self.assertTrue(np.allclose(param_grid, test_amp), "Amplitudes incorrect")
-        with self.subTest(param_grid=age):
-            self.assertTrue(np.allclose(param_grid, test_age), "Ages incorrect")
-        with self.subTest(param_grid=alpha):
-            self.assertTrue(np.allclose(param_grid, test_alpha), "Orientations incorrect")
-        with self.subTest(param_grid=snr):
-            self.assertTrue(np.allclose(param_grid, test_snr), "SNRs incorrect")
+        self.assertTrue(np.allclose(amp, test_amp), "Amplitudes incorrect")
+        self.assertTrue(np.allclose(age, test_age), "Ages incorrect")
+        self.assertTrue(np.allclose(alpha, test_alpha), "Orientations incorrect")
+        self.assertTrue(np.allclose(snr, test_snr), "SNRs incorrect")
 
 
 def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
@@ -104,6 +92,7 @@ def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
     z = z + sig2*np.random.randn(ny, nx)
 
     return set_up_grid(z, nx, ny, de) 
+
 
 def set_up_grid(data, nx, ny, de):
 
