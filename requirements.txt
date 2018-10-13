@@ -1,3 +1,10 @@
+numexpr
+numpy
+matplotlib
+osgeo
+pyfftw
+rasterio
+scipy
 nbsphinx
 numpydoc
 msmb_theme
