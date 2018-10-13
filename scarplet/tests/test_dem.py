@@ -41,12 +41,6 @@ class CalculationMethodsTestCase(unittest.TestCase):
         true_del2z_45 = np.load('data/big_basin_del2z_45.npy')
 
     @unittest.skip("")
-    def test_estimate_curvature_noiselevel(self):
-
-        # TODO: set up synthetic grid 
-        m, s = self.dem._estimate_curvature_noiselevel()
-
-    @unittest.skip("")
     def test_pad_boundary(self):
         
         dx = 5
