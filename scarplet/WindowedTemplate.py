@@ -477,7 +477,11 @@ class Ricker(WindowedTemplate):
         self.alpha = -alpha
         self.nx = nx
         self.ny = ny
+        self.c = nx
         self.de = de
+
+    def get_window_limits(self):
+        return np.zeros((self.ny, self.nx), dtype=bool)
 
     def template(self):
         """Template function for windowed Ricker wavelet 
@@ -492,18 +496,14 @@ class Ricker(WindowedTemplate):
         d = self.d
         f = self.f
 
-        x = self.de * np.linspace(1, self.nx, num=self.nx)
-        y = self.de * np.linspace(1, self.ny, num=self.ny)
-        x = x - np.mean(x)
-        y = y - np.mean(y)
-
-        x, y = np.meshgrid(x, y)
-        xr = numexpr.evaluate("x * cos(alpha) + y * sin(alpha)")
-        yr = numexpr.evaluate("-x * sin(alpha) + y * cos(alpha)")
+        xr, yr = self.get_coordinates() 
 
         pi = np.pi
         W = numexpr.evaluate("(1. - 2. * (pi * f * xr) ** 2.) * \
                              exp(-(pi * f * xr) ** 2.)")
+
+        mask = self.get_mask()
+        W = W * mask
 
         return W
 
