@@ -1,3 +1,4 @@
+apidoc
 ipython
 nbsphinx
 numpydoc
