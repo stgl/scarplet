@@ -64,7 +64,7 @@ def run_apidoc(_):
         "-o", "source/",
         os.path.join("../..", "scarplet"),
     ] + ignore_paths
-     try:
+    try:
         # Sphinx 1.7+
         from sphinx.ext import apidoc
         apidoc.main(argv)
