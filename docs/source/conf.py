@@ -54,15 +54,25 @@ nbsphinx_timeout = -1
 
 # Build API docs
 def run_apidoc(_):
-	from sphinx.apidoc import main
-	import os
-	import sys
-	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-	sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-	cur_dir = os.path.abspath(os.path.dirname(__file__))
-	module = os.path.join(cur_dir, "../..", "scarplet")
-	exclude = os.path.join(module, "tests")
-	main(['-e', '-o', cur_dir, module, exclude, '--force'])
+    ignore_paths = [
+        os.path.join('../..', 'scarplet', 'tests'),
+    ]
+     argv = [
+        "-f",
+        "-e",
+        "-M",
+        "-o", "source/",
+        os.path.join("../..", "scarplet"),
+    ] + ignore_paths
+     try:
+        # Sphinx 1.7+
+        from sphinx.ext import apidoc
+        apidoc.main(argv)
+    except ImportError:
+        # Sphinx 1.6 (and earlier)
+        from sphinx import apidoc
+        argv.insert(0, apidoc.__file__)
+        apidoc.main(argv)
 
 def setup(app):
 	app.connect('builder-inited', run_apidoc)
