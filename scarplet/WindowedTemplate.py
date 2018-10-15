@@ -447,6 +447,7 @@ class Ricker(WindowedTemplate):
         Number of rows in template array
     de : float
         Spacing of template grid cells in dat projection units
+
     Methods
     -------
     template():
