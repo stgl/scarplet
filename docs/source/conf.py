@@ -47,17 +47,17 @@ extensions = [
     'sphinx.ext.viewcode',
     'nbsphinx',
     'numpydoc',
-    'IPython.sphinxext.ipython_console_highlighting'
+    'IPython.sphinxext.ipython_console_highlighting',
+    'sphinxcontrib.apidoc'
 ]
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 nbsphinx_timeout = -1
 
-# Mock modules
-import mock
-
-MOCK_MODULES = ['numexpr', 'numpy', 'pyfftw', 'pyfftw.interfaces.numpy_fft', 'rasterio.fill', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'osgeo', 'scipy.special']
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = mock.Mock()
+# Build API docs
+apidoc_module_dir = '../scarplet'
+apidoc_output_dir = 'source'
+apidoc_excluded_paths = ['../scarplet/tests']
+apidoc_separate_modules = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
