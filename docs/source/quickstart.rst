@@ -15,8 +15,8 @@ you are ready to choose a template and fit it to your data. These are defined
 as classes in the WindowedTemplate submodule.
 
 For example, to use a vertical scarp template, you would import the appropiate 
-template and define a scale and orientation parameters. In this case, +/- 90
-degrees from vertical (*x* direction) caputres all scarp orientations.
+template and define a scale and the orientation parameters. In this case, +/- 90
+degrees from vertical (*x* direction) captures all scarp orientations.
 
 .. code-block:: python
 
