@@ -47,6 +47,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'nbsphinx',
     'numpydoc',
+    'IPython.sphinxext.ipython_console_highlighting'
 ]
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 nbsphinx_timeout = -1

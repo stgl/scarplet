@@ -1,0 +1,30 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+        "@id": "https://orcid.org/0000-0003-3711-6771",
+        "@type": "Person",
+        "email": "rmsare@stanford.edu",
+        "name": "Robert Sare",
+        "affiliation": "Department of Geological Sciences, Stanford University"
+    }, 
+    {
+        "@id": "https://orcid.org/0000-0002-1761-7547",
+        "@type": "Person",
+        "email": "hilley@stanford.edu",
+        "name": "George E. Hilley",
+        "affiliation": "Department of Geological Sciences, Stanford University"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/rmsare/scarplet",
+  "datePublished": "2018-10-15",
+  "dateModified": "2018-10-15",
+  "dateCreated": "2018-10-15",
+  "description": "scarplet is a Python package for topographic feature detection and diffusion dating using a template matching method.",
+  "keywords": "fault scarps, feature detection, signal processing, dem, geomorphology, template matching",
+  "license": "MIT",
+  "title": "scarplet",
+  "version": "0.1.0"
+}

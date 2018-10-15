@@ -1,3 +1,4 @@
+ipython
 nbsphinx
 numpydoc
 msmb_theme
