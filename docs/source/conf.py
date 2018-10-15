@@ -47,17 +47,24 @@ extensions = [
     'sphinx.ext.viewcode',
     'nbsphinx',
     'numpydoc',
-    'IPython.sphinxext.ipython_console_highlighting',
-    'sphinxcontrib.apidoc'
+    'IPython.sphinxext.ipython_console_highlighting'
 ]
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 nbsphinx_timeout = -1
 
 # Build API docs
-apidoc_module_dir = '../scarplet'
-apidoc_output_dir = 'source'
-apidoc_excluded_paths = ['../scarplet/tests']
-apidoc_separate_modules = True
+def run_apidoc(_):
+	from sphinx.apidoc import main
+	import os
+	import sys
+	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+	cur_dir = os.path.abspath(os.path.dirname(__file__))
+	module = os.path.join(cur_dir, "..", "scarplet")
+	exclude = os.path.join(module, "tests")
+	main(['-e', '-o', cur_dir, module, exclude, '--force'])
+
+def setup(app):
+	app.connect('builder-inited', run_apidoc)
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
