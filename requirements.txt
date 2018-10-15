@@ -1,4 +1,5 @@
 apidoc
+sphinxcontrib.apidoc
 ipython
 nbsphinx
 numpydoc
