@@ -42,7 +42,7 @@ res = sl.match(data, Scarp, **params)
 sl.plot_results(data, res)
 ```
 
-<img src="docs/img/carrizo_example.png" alt="Fault scarp results" height="600">
+<img src="docs/img/carrizo_example.png" alt="Fault scarp results" height="320">
 
 #### Extracting confined river channels
 
@@ -63,7 +63,7 @@ res = sl.match(data, Channel, **params)
 sl.plot_results(data, res)
 ```
 
-<img src="docs/img/rivers_example.png" alt="Channel results" height="600">
+<img src="docs/img/rivers_example.png" alt="Channel results" height="320">
 
 There are also [example notebooks](https://scarplet.readthedocs.io/en/latest/index.html) in the documentation.
 
