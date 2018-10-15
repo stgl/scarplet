@@ -59,7 +59,7 @@ def run_apidoc(_):
 	import sys
 	sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 	cur_dir = os.path.abspath(os.path.dirname(__file__))
-	module = os.path.join(cur_dir, "..", "scarplet")
+	module = os.path.join(cur_dir, "../..", "scarplet")
 	exclude = os.path.join(module, "tests")
 	main(['-e', '-o', cur_dir, module, exclude, '--force'])
 
