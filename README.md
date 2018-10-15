@@ -87,7 +87,7 @@ Feel free to [suggest new features](https://github.com/rmsare/scarplet/issues/ne
 
 Don't hestiate to file an issue; I would be happy to discuss extensions or help to build a new feature. 
 
-If you would like to add a feature or fix a bug, please fork the repository, create a feature branch, and [submit a PR](https://github.com/rmsare/scarplet/compare) and reference any relevant issues. Please check that the test suite passes (`pytest scarplet/tests`) before submitting.
+If you would like to add a feature or fix a bug, please fork the repository, create a feature branch, and [submit a PR](https://github.com/rmsare/scarplet/compare) and reference any relevant issues. Please include tests where appropriate and check that the test suite passes (`pytest scarplet/tests`) before submitting.
 
 ### Support and questions
 
