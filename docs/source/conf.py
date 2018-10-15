@@ -55,14 +55,14 @@ nbsphinx_timeout = -1
 # Build API docs
 def run_apidoc(_):
     ignore_paths = [
-        os.path.join('..', 'scarplet', 'tests'),
+        os.path.join('../..', 'scarplet', 'tests'),
     ]
     argv = [
         "-f",
         "-e",
         "-M",
-        "-o", "source",
-        os.path.join("..", "scarplet"),
+        "-o", ".",
+        os.path.join("../..", "scarplet"),
     ] + ignore_paths
     try:
         # Sphinx 1.7+
