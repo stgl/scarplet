@@ -57,7 +57,7 @@ def run_apidoc(_):
     ignore_paths = [
         os.path.join('../..', 'scarplet', 'tests'),
     ]
-     argv = [
+    argv = [
         "-f",
         "-e",
         "-M",
