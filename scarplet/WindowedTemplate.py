@@ -1,3 +1,4 @@
+# -*- coding: utf-8
 """ Class for windowed template matching over a spatial grid """
 
 import numexpr

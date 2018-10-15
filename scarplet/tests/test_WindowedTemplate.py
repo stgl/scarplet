@@ -30,7 +30,7 @@ class ScarpTestCase(unittest.TestCase):
 
     def test_template_numexpr(self):
 
-        true = np.load('results/scarp_template.npy')
+        true = np.load('results/scarp_template_numexpr.npy')
         test = self.obj.template_numexpr()
 
         self.assertTrue(np.allclose(test, true), "Scarp template function is \
@@ -48,14 +48,6 @@ class ChannelTestCase(unittest.TestCase):
 
         true = np.load('results/channel_template.npy')
         test = self.obj.template()
-
-        self.assertTrue(np.allclose(test, true), "Channel template function is \
-                        incorrect")
-
-    def test_template_numexpr(self):
-
-        true = np.load('results/channel_template.npy')
-        test = self.obj.template_numexpr()
 
         self.assertTrue(np.allclose(test, true), "Channel template function is \
                         incorrect")
