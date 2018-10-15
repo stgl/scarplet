@@ -1,3 +1,4 @@
+# -*- coding: utf-8
 """ Functions for determining best-fit template parameters by convolution with
 a grid """
 

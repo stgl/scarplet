@@ -1,3 +1,4 @@
+# -*- coding: utf-8
 """ Utility classes and funcitons for template matching framework. """
 
 

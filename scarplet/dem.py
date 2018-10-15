@@ -1,3 +1,4 @@
+# -*- coding: utf-8
 """ Classes for loading digital elevation models as numeric grids """
 
 import numexpr
