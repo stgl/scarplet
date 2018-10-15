@@ -55,7 +55,7 @@ nbsphinx_timeout = -1
 # Build API docs
 def run_apidoc(_):
     ignore_paths = [
-        os.path.join('../..', 'scarplet', 'tests'),
+        os.path.join('../..', 'scarplet', 'tests/*'),
     ]
     argv = [
         "-f",
