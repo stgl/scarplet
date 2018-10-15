@@ -52,6 +52,13 @@ extensions = [
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 nbsphinx_timeout = -1
 
+# Mock modules
+import mock
+
+MOCK_MODULES = ['numexpr', 'numpy', 'pyfftw', 'pyfftw.interfaces.numpy_fft', 'rasterio.fill', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'osgeo', 'scipy.special']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = mock.Mock()
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
 
