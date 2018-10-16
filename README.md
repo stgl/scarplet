@@ -20,6 +20,12 @@ It was designed with two main goals:
 `scarplet` can be installed from PyPI.
 
 ```
+pip install scarplet
+```
+
+or
+
+```
 $ virtualenv myenv
 $ source myenv/bin/activate
 (myenv) $ pip install scarplet
