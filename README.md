@@ -1,8 +1,9 @@
 # scarplet
 
+
 [![Build Status](https://travis-ci.com/rmsare/scarplet.svg?branch=master)](https://travis-ci.com/rmsare/scarplet)
 
-A Python package for applying template matching to digital elevation data, in
+A Python package for applying template matching techniques to digital elevation data, in
 particular for detecting and measuring the maturity of fault scarps and other
 landforms [[0, 1]](#references)
 
