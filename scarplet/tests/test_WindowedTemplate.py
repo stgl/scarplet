@@ -30,6 +30,7 @@ class ScarpTestCase(unittest.TestCase):
         self.assertTrue(np.allclose(test, true), "Scarp template function is \
                         incorrect")
 
+    @pytest.mark.xfail(reason='numexpr version differences')
     def test_template_numexpr(self):
 
         test = self.obj.template_numexpr()
