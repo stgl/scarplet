@@ -24,7 +24,6 @@ class CalculationMethodsTestCase(unittest.TestCase):
     def test_calculate_slope(self):
 
         sx, sy = self.dem._calculate_slope()
-        np.save('results/faultzone_sxsy.npy', [sx, sy])
         true_sx, true_sy = np.load('results/faultzone_sxsy.npy')
 
         self.assertEqual(sx.all(), true_sx.all(), "Slope (x direction) incorrect")
@@ -33,7 +32,6 @@ class CalculationMethodsTestCase(unittest.TestCase):
     def test_calculate_laplacian(self):
 
         del2z = self.dem._calculate_laplacian()
-        np.save('results/faultzone_del2z.npy', del2z)
         true_del2z = np.load('results/faultzone_del2z.npy')
         self.assertEqual(del2z.all(), true_del2z.all(), "Laplacian incorrect (y axis direction)")
     
@@ -43,7 +41,6 @@ class CalculationMethodsTestCase(unittest.TestCase):
         for alpha in alphas:
             del2z = self.dem._calculate_directional_laplacian(alpha)
             alpha *= 180 / np.pi
-            np.save('results/faultzone_del2z_{:.0f}.npy'.format(alpha), del2z)
             true_del2z = np.load('results/faultzone_del2z_{:.0f}.npy'.format(alpha))
             self.assertEqual(del2z.all(), true_del2z.all(), "Laplacian incorrect (+{:.0f} deg)".format(alpha))
 
