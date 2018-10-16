@@ -10,7 +10,7 @@ before_install:
     - sudo apt-get install -qq gdal-bin
     - sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
     - sudo apt-get update
-    - pip install GDAL==1.11.0 --global-option=build_ext --global-option="-I/usr/include/gdal" 
+    - pip install GDAL --global-option=build_ext --global-option="-I/usr/include/gdal" 
     - sudo apt-get install python-gdal
     - pip install numpy
 
