@@ -7,6 +7,7 @@ virtualenv:
 
 before_install:
     - sudo apt-get install -qq libgdal1h
+    - sudo apt-get install -qq gdal-bin
     - sudo apt-get install -qq python-gdal 
 
 
