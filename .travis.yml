@@ -11,7 +11,7 @@ before_install:
     - sudo apt-get install -qq gdal-bin
     - sudo apt-get install -qq python-gdal python3-gdal
     - sudo apt-get install fftw3 libfftw3-dev
-    - pip install numpy
+    - pip install --upgrade --force-reinstall numpy
 
 script:
     py.test scarplet/tests
