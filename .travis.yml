@@ -6,10 +6,13 @@ virtualenv:
   system_site_packages: true
 
 before_install:
-    - sudo apt-get install -qq libgdal1h
+    - sudo apt-get install -qq ligdal-dev libgdal1h
     - sudo apt-get install -qq gdal-bin
-    - sudo apt-get install -qq python-gdal 
-
+    - sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+    - sudo apt-get update
+    - sudo apt-get install python-gdal
+    - pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==\`gdal-config --version\`
+      
 
 script:
     py.test scarplet/tests
