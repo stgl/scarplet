@@ -8,7 +8,7 @@ virtualenv:
 before_install:
     - sudo apt-get install -qq libgdal-dev libgdal1h
     - sudo apt-get install -qq gdal-bin
-    - sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+    - sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
     - sudo apt-get update
     - sudo apt-get install python-gdal
     - pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==\`gdal-config --version\`
