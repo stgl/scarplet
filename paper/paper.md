@@ -23,8 +23,8 @@ bibliography: paper.bib
 # Summary
 
 Detection and analysis of landforms is a major problem in geoscience, including
-identifying and measuring the relative ages of earthquake fault scarps. Diffusion
-equation methods have been used to relatively date a wide range of landforms, 
+identifying and measuring the relative ages of earthquake fault scarps. Inverse 
+methods using the diffusion equation have been applied to relatively date a wide range of landforms, 
 including scarps (@hanks2000, @hilley2010), terraces (@avouac1993), 
 and impact craters (@fassett2014). Size (height) and relative age estimates from
 these techniques provide important contraints where instrumental or historic data
