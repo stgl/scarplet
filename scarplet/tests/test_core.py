@@ -2,6 +2,7 @@ import filecmp
 import numpy as np
 import os
 import sys
+import pytest
 import unittest
 
 from osgeo import gdal, osr
@@ -24,6 +25,7 @@ class TemplateMatchingTestCase(unittest.TestCase):
         
         self.data = sl.load(os.path.join(TEST_DIR, 'data/synthetic.tif'))
 
+    @pytest.mark.slow
     def test_match(self):
         
         template_args = {'scale': 100,
