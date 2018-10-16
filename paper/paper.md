@@ -29,9 +29,8 @@ including scarps (@hanks2000, @hilley2010), terraces (@avouac1993),
 and impact craters (@fassett2014). Size (height) and relative age estimates from
 these techniques provide important contraints where instrumental or historic data
 may be sparse: for example, in a fault zone with a limited record of historic 
-seismicity. As a feature extraction technique, similar wavelet-based methods 
-are widely used in geophysics and channel network analysis 
-(@lashermes2007; @passalacqua2010).
+seismicity. Similar wavelet-based methods are widely used in geophysics and 
+channel network analysis as feature extraction techniques (@lashermes2007; @passalacqua2010).
 
 The ``scarplet`` package provides a set of tools for performing feature
 detection and diffusion dating using user-defined landform templates.
@@ -45,7 +44,10 @@ The core algorithms of ``scarplet`` use standard signal processing
 tools in the scientific Python ecosystem, and the basic ``WindowedTemplate`` 
 classes used by these methods are easy to extend. The intent is to provide a 
 quick, scalable option for topographic data analysis and template function 
-prototyping which can be adapted by users familiar with NumPy and SciPy.
+prototyping which can be adapted by users familiar with NumPy and SciPy. As availability of
+digital topographic data from airborne and satellite sources grows, tools like this
+will help to enable quantitiative geomorphology on regional and global scales and
+complement Python-based modelling packages such as LandLab (@hobley2017).
 
 # References
 
