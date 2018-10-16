@@ -12,7 +12,9 @@ import scarplet as sl
 from scarplet import dem
 from scarplet.WindowedTemplate import Scarp
 
+
 DEFAULT_EPSG = 32610
+TEST_DIR = os.path.dirname(__file__)
 
 
 class TemplateMatchingTestCase(unittest.TestCase):
@@ -20,7 +22,7 @@ class TemplateMatchingTestCase(unittest.TestCase):
     
     def setUp(self):
         
-        self.data = sl.load('data/synthetic.tif')
+        self.data = sl.load(os.path.join(TEST_DIR, 'data/synthetic.tif'))
 
     def test_match(self):
         
@@ -29,8 +31,11 @@ class TemplateMatchingTestCase(unittest.TestCase):
                         'ang_min': -np.pi / 2
                         }
 
-        amp, age, alpha, snr = sl.match(self.data, Scarp, **template_args)
-        true_amp, true_age, true_alpha, true_snr = np.load('results/synthetic_match1.npy')
+        res = sl.match(self.data, Scarp, **template_args)
+        amp, age, alpha, snr = res
+
+        true = np.load(os.path.join(TEST_DIR, 'results/synthetic_match1.npy'))
+        true_amp, true_age, true_alpha, true_snr = true
         
         self.assertTrue(np.allclose(amp, true_amp), "Amplitudes incorrect")
         self.assertTrue(np.allclose(age, true_age), "Ages incorrect")
@@ -45,8 +50,11 @@ class TemplateMatchingTestCase(unittest.TestCase):
                         'ang_min': -np.pi / 2
                         }
 
-        amp, age, alpha, snr = sl.match(self.data, Scarp, **template_args)
-        true_amp, true_age, true_alpha, true_snr = np.load('results/synthetic_match2.npy')
+        res = sl.match(self.data, Scarp, **template_args)
+        amp, age, alpha, snr = res
+        
+        true = np.load(os.path.join(TEST_DIR, 'results/synthetic_match2.npy'))
+        true_amp, true_age, true_alpha, true_snr = true
         
         self.assertTrue(np.allclose(amp, true_amp), "Amplitudes incorrect")
         self.assertTrue(np.allclose(age, true_age), "Ages incorrect")
@@ -60,8 +68,11 @@ class TemplateMatchingTestCase(unittest.TestCase):
                          'angle': 0
                         }
 
-        amp, age, alpha, snr = sl.match_template(self.data, Scarp, **template_args)
-        true_amp, true_age, true_alpha, true_snr = np.load('results/synthetic_match3.npy')
+        res = sl.match_template(self.data, Scarp, **template_args)
+        amp, age, alpha, snr = res
+
+        true = np.load(os.path.join(TEST_DIR, 'results/synthetic_match3.npy'))
+        true_amp, true_age, true_alpha, true_snr = true
         
         self.assertTrue(np.allclose(amp, true_amp), "Amplitudes incorrect")
         self.assertTrue(np.allclose(age, true_age), "Ages incorrect")

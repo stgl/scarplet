@@ -11,7 +11,7 @@ from context import scarplet
 from scarplet import dem
 
 
-TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'data/faultzone.tif')
+TEST_DIR = os.path.dirname(__file__)
 
 
 class CalculationMethodsTestCase(unittest.TestCase):
@@ -19,12 +19,12 @@ class CalculationMethodsTestCase(unittest.TestCase):
     
     def setUp(self):
         
-        self.dem = dem.DEMGrid(TESTDATA_FILENAME)
+        self.dem = dem.DEMGrid(os.path.join(TEST_DIR, 'data/faultzone.tif'))
 
     def test_calculate_slope(self):
 
         sx, sy = self.dem._calculate_slope()
-        true_sx, true_sy = np.load('results/faultzone_sxsy.npy')
+        true_sx, true_sy = np.load(os.path.join(TEST_DIR, 'results/faultzone_sxsy.npy'))
 
         self.assertEqual(sx.all(), true_sx.all(), "Slope (x direction) incorrect")
         self.assertEqual(sy.all(), true_sy.all(), "Slope (y direction) incorrect")
@@ -32,7 +32,7 @@ class CalculationMethodsTestCase(unittest.TestCase):
     def test_calculate_laplacian(self):
 
         del2z = self.dem._calculate_laplacian()
-        true_del2z = np.load('results/faultzone_del2z.npy')
+        true_del2z = np.load(os.path.join(TEST_DIR, 'results/faultzone_del2z.npy'))
         self.assertEqual(del2z.all(), true_del2z.all(), "Laplacian incorrect (y axis direction)")
     
     def test_calculate_directional_laplacian(self):
@@ -41,7 +41,7 @@ class CalculationMethodsTestCase(unittest.TestCase):
         for alpha in alphas:
             del2z = self.dem._calculate_directional_laplacian(alpha)
             alpha *= 180 / np.pi
-            true_del2z = np.load('results/faultzone_del2z_{:.0f}.npy'.format(alpha))
+            true_del2z = np.load(os.path.join(TEST_DIR, 'results/faultzone_del2z_{:.0f}.npy'.format(alpha)))
             self.assertEqual(del2z.all(), true_del2z.all(), "Laplacian incorrect (+{:.0f} deg)".format(alpha))
 
     def test_pad_boundary(self):
@@ -55,7 +55,3 @@ class CalculationMethodsTestCase(unittest.TestCase):
         self.dem._pad_boundary(dx, dy)
         
         self.assertEqual(self.dem._griddata.all(), padded_grid.all(), "Grid padded incorrectly")
-
-
-if __name__ == "__main__":
-    unittest.main()

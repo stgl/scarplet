@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import numpy as np
@@ -9,7 +10,9 @@ from context import scarplet
 import scarplet as sl
 from scarplet.WindowedTemplate import Scarp, Channel
 
+
 DEFAULT_EPSG = 32610 # UTM 10N
+TEST_DIR = os.path.dirname(__file__)
 
 
 class ScarpTestCase(unittest.TestCase):
@@ -22,7 +25,7 @@ class ScarpTestCase(unittest.TestCase):
     def test_template(self):
 
         test = self.obj.template()
-        true = np.load('results/scarp_template.npy')
+        true = np.load(os.path.join(TEST_DIR, 'results/scarp_template.npy'))
 
         self.assertTrue(np.allclose(test, true), "Scarp template function is \
                         incorrect")
@@ -30,7 +33,7 @@ class ScarpTestCase(unittest.TestCase):
     def test_template_numexpr(self):
 
         test = self.obj.template_numexpr()
-        true = np.load('results/scarp_template_numexpr.npy')
+        true = np.load(os.path.join(TEST_DIR, 'results/scarp_template_numexpr.npy'))
 
         self.assertTrue(np.allclose(test, true), "Scarp template function is \
                         incorrect")
@@ -46,7 +49,7 @@ class ChannelTestCase(unittest.TestCase):
     def test_template(self):
 
         test = self.obj.template()
-        true = np.load('results/channel_template.npy')
+        true = np.load(os.path.join(TEST_DIR, 'results/channel_template.npy'))
 
         self.assertTrue(np.allclose(test, true), "Channel template function is \
                         incorrect")
