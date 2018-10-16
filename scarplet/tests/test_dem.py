@@ -26,14 +26,14 @@ class CalculationMethodsTestCase(unittest.TestCase):
         sx, sy = self.dem._calculate_slope()
         true_sx, true_sy = np.load(os.path.join(TEST_DIR, 'results/faultzone_sxsy.npy'))
 
-        self.assertEqual(sx.all(), true_sx.all(), "Slope (x direction) incorrect")
-        self.assertEqual(sy.all(), true_sy.all(), "Slope (y direction) incorrect")
+        self.assertTrue(np.allclose(sx, true_sx), "Slope (x direction) incorrect")
+        self.assertTrue(np.allclose(sy, true_sy), "Slope (y direction) incorrect")
 
     def test_calculate_laplacian(self):
 
         del2z = self.dem._calculate_laplacian()
         true_del2z = np.load(os.path.join(TEST_DIR, 'results/faultzone_del2z.npy'))
-        self.assertEqual(del2z.all(), true_del2z.all(), "Laplacian incorrect (y axis direction)")
+        self.assertTrue(np.allclose(del2z, true_del2z), "Laplacian incorrect (y axis direction)")
     
     def test_calculate_directional_laplacian(self):
         
@@ -42,7 +42,7 @@ class CalculationMethodsTestCase(unittest.TestCase):
             del2z = self.dem._calculate_directional_laplacian(alpha)
             alpha *= 180 / np.pi
             true_del2z = np.load(os.path.join(TEST_DIR, 'results/faultzone_del2z_{:.0f}.npy'.format(alpha)))
-            self.assertEqual(del2z.all(), true_del2z.all(), "Laplacian incorrect (+{:.0f} deg)".format(alpha))
+            self.assertTrue(np.allclose(del2z, true_del2z), "Laplacian incorrect (+{:.0f} deg)".format(alpha))
 
     def test_pad_boundary(self):
         
