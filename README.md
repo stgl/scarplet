@@ -20,8 +20,22 @@ It was designed with two main goals:
 `scarplet` can be installed from PyPI.
 
 ```
-pip install scarplet
+$ virtualenv myenv
+$ source myenv/bin/activate
+(myenv) $ pip install scarplet
 ```
+
+On some systems, GDAL will fail to install because headers are not found within
+the virtual environment. In this case, install GDAL first, then other packages.
+
+```
+$ virtualenv myenv
+$ source myenv/bin/activate
+(myenv) $ pip install gdal==<VERSION> --global-option=build_ext --global-option='-I/usr/include/gdal/'
+(myenv) $ pip install scarplet
+```
+
+where `<VERSION>` is your GDAL version (e.g., `1.11.2`, see `gdal-config --version`).
 
 ### Examples
 
