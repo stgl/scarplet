@@ -17,13 +17,13 @@ It was designed with two main goals:
 
 `scarplet` can be installed from PyPI.
 
-```
+```bash
 pip install scarplet
 ```
 
 or
 
-```
+```bash
 $ virtualenv myenv
 $ source myenv/bin/activate
 (myenv) $ pip install scarplet
@@ -32,7 +32,7 @@ $ source myenv/bin/activate
 On some systems, GDAL will fail to install because headers are not found within
 the virtual environment. In this case, install GDAL first, then other packages.
 
-```
+```bash
 $ virtualenv myenv
 $ source myenv/bin/activate
 (myenv) $ pip install gdal==<VERSION> --global-option=build_ext --global-option='-I/usr/include/gdal/'
