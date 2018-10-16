@@ -4,12 +4,12 @@
 
 A Python package for applying template matching to digital elevation data, in
 particular for detecting and measuring the maturity of fault scarps and other
-landforms.
+landforms [[0, 1]](#references)
 
 It was designed with two main goals:
 
-* Allow contributors to define their own template functions for other landforms or problem areas
-* Make it straightforward to deploy this method in parallel using multiprocessing, [dask](https://dask.readthedocs.io), or other tools
+* Allow contributors to define their own template functions for their problem area of interest
+* Make it straightforward to apply these methods to large datasets by parallelizing/distrbuting computation using multiprocessing, [dask](https://dask.readthedocs.io), or other tools [[2]](#references)
 
 ## Features
 
@@ -109,15 +109,18 @@ Feel free to [suggest new features](https://github.com/rmsare/scarplet/issues/ne
 
 Don't hestiate to file an issue; I would be happy to discuss extensions or help to build a new feature. 
 
-If you would like to add a feature or fix a bug, please fork the repository, create a feature branch, and [submit a PR](https://github.com/rmsare/scarplet/compare) and reference any relevant issues. There are nice guides to contributing with GitHub at [0](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) and [1](https://yourfirstpr.github.io/). Please include tests where appropriate and check that the test suite passes (`pytest scarplet/tests`) before submitting.
+If you would like to add a feature or fix a bug, please fork the repository, create a feature branch, and [submit a PR](https://github.com/rmsare/scarplet/compare) and reference any relevant issues. There are nice guides to contributing with GitHub [here](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) and [here](https://yourfirstpr.github.io/). Please include tests where appropriate and check that the test suite passes (`pytest scarplet/tests`) before submitting.
 
 ### Support and questions
 
 Please [open an issue](https://github.com/rmsare/scarplet/issues/new) with your question.
 
 ## References
-* Hanks, T.C., 2000. The age of scarplike landforms from diffusion‐equation analysis. Quaternary Geochronology, 4, pp. 313-338. [doi](https://doi.org/10.1029/RF004p0313)
-* Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, J.R., 2010. Morphologic dating of fault scarps using airborne laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4). [doi](https://doi.org/10.1029/2009GL042044)
+[0] Hanks, T.C., 2000. The age of scarplike landforms from diffusion‐equation analysis. Quaternary Geochronology, 4, pp. 313-338. [doi](https://doi.org/10.1029/RF004p0313)
+
+[1] Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, J.R., 2010. Morphologic dating of fault scarps using airborne laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4). [doi](https://doi.org/10.1029/2009GL042044)
+
+[2] Sare, R, Hilley, G. E., and DeLong, S. B., 2018, Regional scale detection of fault scarps and other tectonic landforms: Examples from Northern California, submitted to Journal of Geophysical Research: Solid Earth.
 
 ## License
 This work is licensed under the MIT License (see [LICENSE](LICENSE)).
