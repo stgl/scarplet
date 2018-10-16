@@ -6,12 +6,11 @@ virtualenv:
   system_site_packages: true
 
 before_install:
-    - sudo apt-get install -qq libgdal-dev libgdal1h
-    - sudo apt-get install -qq gdal-bin
     - sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
     - sudo apt-get update
-    - pip install GDAL --global-option=build_ext --global-option="-I/usr/include/gdal" 
-    - sudo apt-get install python-gdal
+    - sudo apt-get install -qq libgdal-dev libgdal1h
+    - sudo apt-get install -qq gdal-bin
+    - sudo apt-get install -qq python-gdal python3-gdal
     - pip install numpy
 
 script:
