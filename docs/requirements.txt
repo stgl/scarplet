@@ -1,0 +1,6 @@
+apidoc
+sphinxcontrib.apidoc
+ipython
+nbsphinx
+numpydoc
+msmb_theme

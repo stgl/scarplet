@@ -1,6 +1,7 @@
-apidoc
-sphinxcontrib.apidoc
-ipython
-nbsphinx
-numpydoc
-msmb_theme
+numexpr
+numpy
+matplotlib
+gdal
+pyfftw
+rasterio
+scipy
