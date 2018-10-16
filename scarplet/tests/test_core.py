@@ -7,7 +7,7 @@ import unittest
 from osgeo import gdal, osr
 from scipy.special import erf
 
-sys.path.append('../..')
+from context import scarplet
 import scarplet as sl
 from scarplet import dem
 from scarplet.WindowedTemplate import Scarp

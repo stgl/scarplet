@@ -1,11 +1,15 @@
-import os, sys
-import dem
+import os
+import sys
+import filecmp
+import numpy as np
 import unittest
+
 import matplotlib
 import matplotlib.pyplot as plt
-#from matplotlib.testing.decorators import image_comparison
-import numpy as np
-import filecmp
+
+from context import scarplet
+from scarplet import dem
+
 
 TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'data/big_basin.tif')
 
@@ -54,6 +58,7 @@ class CalculationMethodsTestCase(unittest.TestCase):
         self.dem._pad_boundary(dx, dy)
         
         self.assertEqual(self.dem._griddata.all(), padded_grid.all(), "Grid padded incorrectly")
+
 
 
 class BaseSpatialGridTestCase(unittest.TestCase):

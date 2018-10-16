@@ -5,8 +5,8 @@ from osgeo import gdal, osr, ogr
 
 from scipy.special import erf
 
+from context import scarplet
 import scarplet as sl
-
 from scarplet.WindowedTemplate import Scarp, Channel
 
 DEFAULT_EPSG = 32610 # UTM 10N
