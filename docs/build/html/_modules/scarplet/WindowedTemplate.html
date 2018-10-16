@@ -1,0 +1,819 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>scarplet.WindowedTemplate &mdash; Scarplet 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/msmb.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Scarplet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Getting started with scarplet</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/scarps.html">Finding fault scarps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/channels.html">Extracting channels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/multiprocessing_example.html">Multiprocessing and scarplet</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">scarplet</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Scarplet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>scarplet.WindowedTemplate</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for scarplet.WindowedTemplate</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8</span>
+<span class="sd">&quot;&quot;&quot; Class for windowed template matching over a spatial grid &quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numexpr</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="k">import</span> <span class="n">erf</span><span class="p">,</span> <span class="n">erfinv</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="WindowedTemplate"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.WindowedTemplate">[docs]</a><span class="k">class</span> <span class="nc">WindowedTemplate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for windowed template function</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : float</span>
+<span class="sd">        Scale of windowed template function in data projection units</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Orientation of windowed template function in radians</span>
+<span class="sd">    c : float</span>
+<span class="sd">        Curvature limit of template</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of columns in template array</span>
+<span class="sd">    ny : int</span>
+<span class="sd">        Number of rows in template array</span>
+<span class="sd">    de : float</span>
+<span class="sd">        Spacing of template grid cells in dat projection units</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    get_coordinates():</span>
+<span class="sd">        Get arrays of coordinates for template grid points</span>
+<span class="sd">    get_mask():</span>
+<span class="sd">        Get mask array giving curvature extent of template window</span>
+<span class="sd">    get_window_limits():</span>
+<span class="sd">        Get mask array giving window extent</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ny</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">/</span> <span class="mf">2.</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="WindowedTemplate.get_coordinates"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.WindowedTemplate.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">xr</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">yr</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">xr</span><span class="p">,</span> <span class="n">yr</span></div>
+
+<div class="viewcode-block" id="WindowedTemplate.get_mask"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.WindowedTemplate.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">xr</span><span class="p">,</span> <span class="n">yr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mask</span></div>
+
+<div class="viewcode-block" id="WindowedTemplate.get_window_limits"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.WindowedTemplate.get_window_limits">[docs]</a>    <span class="k">def</span> <span class="nf">get_window_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">x4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">y4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">an_y</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">x4</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">an_x</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">((</span><span class="n">X</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">an_x</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="n">X</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">an_x</span><span class="p">))</span>
+                <span class="o">|</span> <span class="p">(</span><span class="n">Y</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">an_y</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="n">Y</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">an_y</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">mask</span></div></div>
+
+
+<div class="viewcode-block" id="Scarp"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Scarp">[docs]</a><span class="k">class</span> <span class="nc">Scarp</span><span class="p">(</span><span class="n">WindowedTemplate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Curvature template for vertical scarp</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : float</span>
+<span class="sd">        Scale of windowed template function in data projection units</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Orientation of windowed template function in radians</span>
+<span class="sd">    kt : float</span>
+<span class="sd">        Morphologic age of template in m2</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of columns in template array</span>
+<span class="sd">    ny : int</span>
+<span class="sd">        Number of rows in template array</span>
+<span class="sd">    de : float</span>
+<span class="sd">        Spacing of template grid cells in dat projection units</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    template():</span>
+<span class="sd">        Returns array of windowed template function</span>
+<span class="sd">    template_numexpr():</span>
+<span class="sd">        Returns array of windowed template function optimized using numexpr</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Adapted from template derived in</span>
+
+<span class="sd">    _[0] Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, </span>
+<span class="sd">         J.R., 2010. Morphologic dating of fault scarps using airborne </span>
+<span class="sd">         laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4).</span>
+<span class="sd">         https://dx.doi.org/10.1029/2009GL042044</span>
+
+<span class="sd">    Based on solutions to the diffusion equation published in</span>
+
+<span class="sd">    _[1] Hanks, T.C., 2000. The age of scarplike landforms from </span>
+<span class="sd">         diffusion‐equation analysis. Quaternary geochronology, 4, pp.313-338.</span>
+
+<span class="sd">    and many references therein.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">kt</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">de</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method for scarp template</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        d : float</span>
+<span class="sd">            Scale of windowed template function in data projection units</span>
+<span class="sd">        kt : float</span>
+<span class="sd">            Morphologic age of template in m2</span>
+<span class="sd">        alpha : float</span>
+<span class="sd">            Orientation of windowed template function in radians</span>
+<span class="sd">        nx : int</span>
+<span class="sd">            Number of columns in template array</span>
+<span class="sd">        ny : int</span>
+<span class="sd">            Number of rows in template array</span>
+<span class="sd">        de : float</span>
+<span class="sd">            Spacing of template grid cells in dat projection units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kt</span> <span class="o">=</span> <span class="n">kt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="o">-</span><span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">=</span> <span class="n">nx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ny</span> <span class="o">=</span> <span class="n">ny</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">=</span> <span class="n">de</span>
+
+        <span class="n">frac</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kt</span><span class="p">)</span> <span class="o">*</span> <span class="n">erfinv</span><span class="p">(</span><span class="n">frac</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Scarp.template"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Scarp.template">[docs]</a>    <span class="k">def</span> <span class="nf">template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return template function</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Windowed template function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">xr</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">yr</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="n">W</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">xr</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">kt</span> <span class="o">**</span> <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)))</span> \
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">xr</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">kt</span><span class="p">))</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">*</span> <span class="n">mask</span>
+
+        <span class="k">return</span> <span class="n">W</span></div>
+
+<div class="viewcode-block" id="Scarp.template_numexpr"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Scarp.template_numexpr">[docs]</a>    <span class="k">def</span> <span class="nf">template_numexpr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return template function (uses numexpr where possible)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Windowed template function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="n">kt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kt</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">xr</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;x * cos(alpha) + y * sin(alpha)&quot;</span><span class="p">)</span>
+        <span class="n">yr</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;-x * sin(alpha) + y * cos(alpha)&quot;</span><span class="p">)</span>
+
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(-xr / (2 * kt ** (3/2) * sqrt(pi))) * </span><span class="se">\</span>
+<span class="s2">                             exp(-xr ** 2 / (4 * kt))&quot;</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(abs(xr) &lt; c) &amp; (abs(yr) &lt; d)&quot;</span><span class="p">)</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;W * mask&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">W</span></div></div>
+
+
+<div class="viewcode-block" id="RightFacingUpperBreakScarp"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.RightFacingUpperBreakScarp">[docs]</a><span class="k">class</span> <span class="nc">RightFacingUpperBreakScarp</span><span class="p">(</span><span class="n">Scarp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Template for upper slope break of vertical scarp (right-facting)</span>
+
+<span class="sd">    Overrides template function to correct facign direction</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : float</span>
+<span class="sd">        Scale of windowed template function in data projection units</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Orientation of windowed template function in radians</span>
+<span class="sd">    kt : float</span>
+<span class="sd">        Morphologic age of template in m2</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of columns in template array</span>
+<span class="sd">    ny : int</span>
+<span class="sd">        Number of rows in template array</span>
+<span class="sd">    de : float</span>
+<span class="sd">        Spacing of template grid cells in dat projection units</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    get_error_mask():</span>
+<span class="sd">        Return mask array that masks the lower slope break of scarp</span>
+<span class="sd">    template():</span>
+<span class="sd">        Returns array of windowed template function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RightFacingUpperBreakScarp.template"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.RightFacingUpperBreakScarp.template">[docs]</a>    <span class="k">def</span> <span class="nf">template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return template function (uses numexpr where possible)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Windowed template function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">template_numexpr</span><span class="p">()</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">W</span></div>
+
+<div class="viewcode-block" id="RightFacingUpperBreakScarp.get_err_mask"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.RightFacingUpperBreakScarp.get_err_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_err_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return mask array masking the lower half of scarp</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mask : numpy array</span>
+<span class="sd">            Mask array for lower half of scarp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xr</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">xr</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">mask</span></div></div>
+
+
+<div class="viewcode-block" id="LeftFacingUpperBreakScarp"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.LeftFacingUpperBreakScarp">[docs]</a><span class="k">class</span> <span class="nc">LeftFacingUpperBreakScarp</span><span class="p">(</span><span class="n">Scarp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Template for upper slope break of vertical scarp (left-facting)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : float</span>
+<span class="sd">        Scale of windowed template function in data projection units</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Orientation of windowed template function in radians</span>
+<span class="sd">    kt : float</span>
+<span class="sd">        Morphologic age of template in m2</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of columns in template array</span>
+<span class="sd">    ny : int</span>
+<span class="sd">        Number of rows in template array</span>
+<span class="sd">    de : float</span>
+<span class="sd">        Spacing of template grid cells in dat projection units</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    get_error_mask():</span>
+<span class="sd">        Return mask array that masks the lower slope break of scarp</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LeftFacingUpperBreakScarp.get_err_mask"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.LeftFacingUpperBreakScarp.get_err_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_err_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return mask array masking the lower half of scarp</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mask : numpy array</span>
+<span class="sd">            Mask array for lower hald of scarp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xr</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">xr</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">mask</span></div></div>
+
+
+<div class="viewcode-block" id="ShiftedTemplateMixin"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.ShiftedTemplateMixin">[docs]</a><span class="k">class</span> <span class="nc">ShiftedTemplateMixin</span><span class="p">(</span><span class="n">WindowedTemplate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mix-in for template that is offset from the window center</span>
+
+<span class="sd">    Overrides template function to shift template</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : float</span>
+<span class="sd">        Scale of windowed template function in data projection units</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Orientation of windowed template function in radians</span>
+<span class="sd">    kt : float</span>
+<span class="sd">        Morphologic age of template in m2</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of columns in template array</span>
+<span class="sd">    ny : int</span>
+<span class="sd">        Number of rows in template array</span>
+<span class="sd">    de : float</span>
+<span class="sd">        Spacing of template grid cells in dat projection units</span>
+<span class="sd">    dx : float</span>
+<span class="sd">        X Offset of template center in data projection units</span>
+<span class="sd">    dy : float</span>
+<span class="sd">        Y Offset of template center data projection units</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    set_offset(dx, dy):</span>
+<span class="sd">        Set offset attrivutes t odx and dy</span>
+<span class="sd">    shift_template(W, dx, dy):</span>
+<span class="sd">        Shift template array W by dx and dy</span>
+<span class="sd">    template():</span>
+<span class="sd">        Returns array of windowed template function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for shifted template</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dx : float</span>
+<span class="sd">            X Offset of template center in data projection units</span>
+<span class="sd">        dy : float</span>
+<span class="sd">            Y Offset of template center data projection units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_offset</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dx&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dy&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="ShiftedTemplateMixin.set_offset"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.ShiftedTemplateMixin.set_offset">[docs]</a>    <span class="k">def</span> <span class="nf">set_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set offset values</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dx : float</span>
+<span class="sd">            X Offset of template center in data projection units</span>
+<span class="sd">        dy : float</span>
+<span class="sd">            Y Offset of template center data projection units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span></div>
+
+<div class="viewcode-block" id="ShiftedTemplateMixin.shift_template"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.ShiftedTemplateMixin.shift_template">[docs]</a>    <span class="k">def</span> <span class="nf">shift_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shift template</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Windowed template function</span>
+<span class="sd">        dx : float</span>
+<span class="sd">            X Offset of template center in data projection units</span>
+<span class="sd">        dy : float</span>
+<span class="sd">            Y Offset of template center data projection units</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Shifted windowed template function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="n">dx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ny</span><span class="p">,</span> <span class="n">dx</span><span class="p">))</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="n">dx</span><span class="p">]</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">left</span><span class="p">,</span> <span class="n">W</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ny</span><span class="p">,</span> <span class="n">dx</span><span class="p">))</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="n">dx</span><span class="p">:]</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">W</span><span class="p">,</span> <span class="n">right</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">dy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bottom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dy</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="n">dy</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">W</span><span class="p">,</span> <span class="n">bottom</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dy</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[</span><span class="n">dy</span><span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">top</span><span class="p">,</span> <span class="n">W</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">W</span></div>
+
+<div class="viewcode-block" id="ShiftedTemplateMixin.template"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.ShiftedTemplateMixin.template">[docs]</a>    <span class="k">def</span> <span class="nf">template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Template function for shifted template</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Shifted windowed template function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">W</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">template</span><span class="p">()</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift_template</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">W</span></div></div>
+
+
+<div class="viewcode-block" id="ShiftedLeftFacingUpperBreakScarp"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.ShiftedLeftFacingUpperBreakScarp">[docs]</a><span class="k">class</span> <span class="nc">ShiftedLeftFacingUpperBreakScarp</span><span class="p">(</span><span class="n">ShiftedTemplateMixin</span><span class="p">,</span>
+                                       <span class="n">LeftFacingUpperBreakScarp</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="ShiftedRightFacingUpperBreakScarp"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.ShiftedRightFacingUpperBreakScarp">[docs]</a><span class="k">class</span> <span class="nc">ShiftedRightFacingUpperBreakScarp</span><span class="p">(</span><span class="n">ShiftedTemplateMixin</span><span class="p">,</span>
+                                        <span class="n">RightFacingUpperBreakScarp</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Ricker"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Ricker">[docs]</a><span class="k">class</span> <span class="nc">Ricker</span><span class="p">(</span><span class="n">WindowedTemplate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Template using 2D Ricker wavelet</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : float</span>
+<span class="sd">        Scale of windowed template function in data projection units</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        Orientation of windowed template function in radians</span>
+<span class="sd">    kt : float</span>
+<span class="sd">        Morphologic age of template in m2</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of columns in template array</span>
+<span class="sd">    ny : int</span>
+<span class="sd">        Number of rows in template array</span>
+<span class="sd">    de : float</span>
+<span class="sd">        Spacing of template grid cells in dat projection units</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    template():</span>
+<span class="sd">        Returns array of windowed template function</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">de</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method for Ricker template</span>
+
+<span class="sd">        Paramters</span>
+<span class="sd">        ---------</span>
+<span class="sd">        d : float</span>
+<span class="sd">            Scale of windowed template function in data projection units</span>
+<span class="sd">        kt : float</span>
+<span class="sd">            Morphologic age of template in m2</span>
+<span class="sd">        alpha : float</span>
+<span class="sd">            Orientation of windowed template function in radians</span>
+<span class="sd">        nx : int</span>
+<span class="sd">            Number of columns in template array</span>
+<span class="sd">        ny : int</span>
+<span class="sd">            Number of rows in template array</span>
+<span class="sd">        de : float</span>
+<span class="sd">            Spacing of template grid cells in dat projection units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="o">-</span><span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">=</span> <span class="n">nx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ny</span> <span class="o">=</span> <span class="n">ny</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">nx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">=</span> <span class="n">de</span>
+
+<div class="viewcode-block" id="Ricker.get_window_limits"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Ricker.get_window_limits">[docs]</a>    <span class="k">def</span> <span class="nf">get_window_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ricker.template"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Ricker.template">[docs]</a>    <span class="k">def</span> <span class="nf">template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Template function for windowed Ricker wavelet </span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Windowed template function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span>
+
+        <span class="n">xr</span><span class="p">,</span> <span class="n">yr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()</span> 
+
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;(1. - 2. * (pi * f * xr) ** 2.) * </span><span class="se">\</span>
+<span class="s2">                             exp(-(pi * f * xr) ** 2.)&quot;</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">W</span> <span class="o">*</span> <span class="n">mask</span>
+
+        <span class="k">return</span> <span class="n">W</span></div></div>
+
+
+<div class="viewcode-block" id="Channel"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Channel">[docs]</a><span class="k">class</span> <span class="nc">Channel</span><span class="p">(</span><span class="n">Ricker</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Duplicate class for Ricker wavelet used for fluvial channels&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Crater"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Crater">[docs]</a><span class="k">class</span> <span class="nc">Crater</span><span class="p">(</span><span class="n">WindowedTemplate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Template for radially symmetric crater</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        Radius of crater in pixels</span>
+<span class="sd">    kt : float</span>
+<span class="sd">        Morphologic age of template crater rim in m2</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of columns in template array</span>
+<span class="sd">    ny : int</span>
+<span class="sd">        Number of rows in template array</span>
+<span class="sd">    de : float</span>
+<span class="sd">        Spacing of template grid cells in dat projection units</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">kt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">de</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor methodfor radially symmetric crater</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        r : float</span>
+<span class="sd">            Radius of crater in pixels</span>
+<span class="sd">        kt : float</span>
+<span class="sd">            Morphologic age of template crater rim in m2</span>
+<span class="sd">        nx : int</span>
+<span class="sd">            Number of columns in template array</span>
+<span class="sd">        ny : int</span>
+<span class="sd">            Number of rows in template array</span>
+<span class="sd">        de : float</span>
+<span class="sd">            Spacing of template grid cells in dat projection units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">/</span> <span class="n">de</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kt</span> <span class="o">=</span> <span class="n">kt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nx</span> <span class="o">=</span> <span class="n">nx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ny</span> <span class="o">=</span> <span class="n">ny</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">=</span> <span class="n">de</span>
+
+<div class="viewcode-block" id="Crater.template"><a class="viewcode-back" href="../../scarplet.WindowedTemplate.html#scarplet.WindowedTemplate.Crater.template">[docs]</a>    <span class="k">def</span> <span class="nf">template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Template function for radially symmetric crater</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W : numpy array</span>
+<span class="sd">            Windowed template function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ny</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">thetas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">359</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">theta</span> <span class="ow">in</span> <span class="n">thetas</span><span class="p">:</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="o">-</span><span class="n">theta</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">xr</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">dx</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+            <span class="n">yr</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">dx</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+            <span class="n">this_W</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">xr</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">kt</span> <span class="o">**</span> <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)))</span> \
+                    <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">xr</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">kt</span><span class="p">))</span>
+
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">yr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span><span class="p">)</span>
+
+            <span class="n">this_W</span> <span class="o">*=</span> <span class="n">mask</span>
+
+            <span class="k">if</span> <span class="n">theta</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">theta</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">this_W</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="n">W</span> <span class="o">+=</span> <span class="n">this_W</span>
+
+        <span class="k">return</span> <span class="n">W</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robert Sare, George Hilley
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <script>
+    var versions_json_url = ''
+</script>
+
+<div class="rst-versions" data-toggle="rst-versions" role="note"
+     aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"></span>
+        0.1.0
+      <span class="fa fa-caret-down"></span>
+    </span>
+
+    <div class="rst-other-versions">
+        <dl id="versionselector">
+            <dt>Other Versions</dt>
+        </dl>
+
+    </div>
+</div>
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../_static/js/versions.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

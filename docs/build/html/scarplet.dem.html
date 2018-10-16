@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>scarplet.dem module &mdash; Scarplet 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/msmb.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Scarplet
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started with scarplet</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/scarps.html">Finding fault scarps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/channels.html">Extracting channels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/multiprocessing_example.html">Multiprocessing and scarplet</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">scarplet</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Scarplet</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>scarplet.dem module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/scarplet.dem.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-scarplet.dem">
+<span id="scarplet-dem-module"></span><h1>scarplet.dem module<a class="headerlink" href="#module-scarplet.dem" title="Permalink to this headline">¶</a></h1>
+<p>Classes for loading digital elevation models as numeric grids</p>
+<dl class="class">
+<dt id="scarplet.dem.BaseSpatialGrid">
+<em class="property">class </em><code class="descclassname">scarplet.dem.</code><code class="descname">BaseSpatialGrid</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#BaseSpatialGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.BaseSpatialGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#scarplet.dem.GDALMixin" title="scarplet.dem.GDALMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">scarplet.dem.GDALMixin</span></code></a></p>
+<p>Base class for spatial grid</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#scarplet.dem.BaseSpatialGrid.is_contiguous" title="scarplet.dem.BaseSpatialGrid.is_contiguous"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_contiguous</span></code></a>(grid)</td>
+<td>Returns true if grids are contiguous or overlap</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#scarplet.dem.BaseSpatialGrid.load" title="scarplet.dem.BaseSpatialGrid.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(filename)</td>
+<td>Load grid from file</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#scarplet.dem.BaseSpatialGrid.merge" title="scarplet.dem.BaseSpatialGrid.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(grid)</td>
+<td>Merge this grid with another BaseSpatialGrid.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#scarplet.dem.BaseSpatialGrid.plot" title="scarplet.dem.BaseSpatialGrid.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>(**kwargs)</td>
+<td>Plot grid data</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#scarplet.dem.BaseSpatialGrid.save" title="scarplet.dem.BaseSpatialGrid.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(filename)</td>
+<td>Save grid as georeferenced TIFF</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="scarplet.dem.BaseSpatialGrid.dtype">
+<code class="descname">dtype</code><em class="property"> = 6</em><a class="headerlink" href="#scarplet.dem.BaseSpatialGrid.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scarplet.dem.BaseSpatialGrid.is_contiguous">
+<code class="descname">is_contiguous</code><span class="sig-paren">(</span><em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#BaseSpatialGrid.is_contiguous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.BaseSpatialGrid.is_contiguous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if grids are contiguous or overlap</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>grid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BaseSpatialGrid</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scarplet.dem.BaseSpatialGrid.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#BaseSpatialGrid.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.BaseSpatialGrid.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load grid from file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scarplet.dem.BaseSpatialGrid.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#BaseSpatialGrid.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.BaseSpatialGrid.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge this grid with another BaseSpatialGrid.</p>
+<p>Wrapper argound gdal_merge.py.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>grid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BaseSpatialGrid</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>merged_grid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BaseSpatialGrid</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scarplet.dem.BaseSpatialGrid.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#BaseSpatialGrid.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.BaseSpatialGrid.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot grid data</p>
+<dl class="docutils">
+<dt>Keyword args:</dt>
+<dd>Any valid keyword argument for matplotlib.pyplot.imshow</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scarplet.dem.BaseSpatialGrid.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#BaseSpatialGrid.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.BaseSpatialGrid.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save grid as georeferenced TIFF</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="scarplet.dem.CalculationMixin">
+<em class="property">class </em><code class="descclassname">scarplet.dem.</code><code class="descname">CalculationMixin</code><a class="reference internal" href="_modules/scarplet/dem.html#CalculationMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.CalculationMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Mix-in class for grid calculations</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="scarplet.dem.DEMGrid">
+<em class="property">class </em><code class="descclassname">scarplet.dem.</code><code class="descname">DEMGrid</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#DEMGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.DEMGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#scarplet.dem.CalculationMixin" title="scarplet.dem.CalculationMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">scarplet.dem.CalculationMixin</span></code></a>, <a class="reference internal" href="#scarplet.dem.BaseSpatialGrid" title="scarplet.dem.BaseSpatialGrid"><code class="xref py py-class docutils literal notranslate"><span class="pre">scarplet.dem.BaseSpatialGrid</span></code></a></p>
+<p>Class representing grid of elevation values</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_contiguous</span></code>(grid)</td>
+<td>Returns true if grids are contiguous or overlap</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>(filename)</td>
+<td>Load grid from file</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(grid)</td>
+<td>Merge this grid with another BaseSpatialGrid.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filename)</td>
+<td>Save grid as georeferenced TIFF</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="44%" />
+<col width="56%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>plot</strong></td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="scarplet.dem.DEMGrid.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>color=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#DEMGrid.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.DEMGrid.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot grid data</p>
+<dl class="docutils">
+<dt>Keyword args:</dt>
+<dd>Any valid keyword argument for matplotlib.pyplot.imshow</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="scarplet.dem.GDALMixin">
+<em class="property">class </em><code class="descclassname">scarplet.dem.</code><code class="descname">GDALMixin</code><a class="reference internal" href="_modules/scarplet/dem.html#GDALMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.GDALMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="scarplet.dem.GeorefInfo">
+<em class="property">class </em><code class="descclassname">scarplet.dem.</code><code class="descname">GeorefInfo</code><a class="reference internal" href="_modules/scarplet/dem.html#GeorefInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.GeorefInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="scarplet.dem.Hillshade">
+<em class="property">class </em><code class="descclassname">scarplet.dem.</code><code class="descname">Hillshade</code><span class="sig-paren">(</span><em>dem</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#Hillshade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.Hillshade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#scarplet.dem.BaseSpatialGrid" title="scarplet.dem.BaseSpatialGrid"><code class="xref py py-class docutils literal notranslate"><span class="pre">scarplet.dem.BaseSpatialGrid</span></code></a></p>
+<p>Class representing hillshade of DEM</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_contiguous</span></code>(grid)</td>
+<td>Returns true if grids are contiguous or overlap</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>(filename)</td>
+<td>Load grid from file</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(grid)</td>
+<td>Merge this grid with another BaseSpatialGrid.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#scarplet.dem.Hillshade.plot" title="scarplet.dem.Hillshade.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([az,&nbsp;elev])</td>
+<td>Plot hillshade</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filename)</td>
+<td>Save grid as georeferenced TIFF</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="scarplet.dem.Hillshade.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>az=315</em>, <em>elev=45</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scarplet/dem.html#Hillshade.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scarplet.dem.Hillshade.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot hillshade</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Robert Sare, George Hilley
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <script>
+    var versions_json_url = ''
+</script>
+
+<div class="rst-versions" data-toggle="rst-versions" role="note"
+     aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"></span>
+        0.1.0
+      <span class="fa fa-caret-down"></span>
+    </span>
+
+    <div class="rst-other-versions">
+        <dl id="versionselector">
+            <dt>Other Versions</dt>
+        </dl>
+
+    </div>
+</div>
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/js/versions.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

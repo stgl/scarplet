@@ -1,0 +1,148 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Multiprocessing and scarplet\n",
+    "\n",
+    "This simple example shows how to use the `match_template` and `compare` methods with a multiprocessing worker pool."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "from functools import partial\n",
+    "from multiprocessing import Pool\n",
+    "\n",
+    "import scarplet as sl\n",
+    "from scarplet.WindowedTemplate import Scarp"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data = sl.load('data/synthetic.tif')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Define parmaters for search\n",
+    "scale = 10\n",
+    "age = 10.\n",
+    "angles = np.linspace(-np.pi / 2, np.pi / 2, 181)\n",
+    "nprocs = 3"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For each set of input parameters, we can start a separate masking task. These can be run in parallel, which is what `scarplet` does by default."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Start separate search tasks\n",
+    "pool = Pool(processes=nprocs)\n",
+    "wrapper = partial(sl.match_template, data, Scarp, scale, age)\n",
+    "results = pool.imap(wrapper, angles, chunksize=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU times: user 720 ms, sys: 296 ms, total: 1.02 s\n",
+      "Wall time: 2.48 s\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%time\n",
+    "# Reduce the final results as they are completed\n",
+    "ny, nx = data.shape\n",
+    "best = sl.compare(results, nx, ny)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To compare, we can a loop to fit the templates sequentially."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CPU times: user 3.76 s, sys: 708 ms, total: 4.47 s\n",
+      "Wall time: 3.62 s\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%time\n",
+    "best = np.zeros((4, ny, nx))\n",
+    "for angle in angles:\n",
+    "    results = sl.match_template(data, Scarp, scale, age, angle)\n",
+    "    best = sl.compare([best, results], nx, ny)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We get a fairly good speed up just using three processes on this small test case. Distributing tasks and reducing results using a cluster can make processing large datasets feasible. For example, [dask](https://dask.readthedocs.io) provides nice distributed task management in Python."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.4.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
