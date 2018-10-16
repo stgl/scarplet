@@ -2,8 +2,13 @@ language: python
 python:
     - "3.6"
 
-script:
-    py.test scarplet/tests
-
 virtualenv:
   system_site_packages: true
+
+before_install:
+    - sudo apt-get install -qq libgdal1h
+    - sudo apt-get install -qq python-gdal 
+
+
+script:
+    py.test scarplet/tests
