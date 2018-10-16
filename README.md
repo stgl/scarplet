@@ -8,10 +8,8 @@ landforms [[0, 1]](#references)
 
 It was designed with two main goals:
 
-* Allow contributors to define their own template functions for their problem area of interest
+* Allow contributors to define template functions for their problem area of interest
 * Make it straightforward to apply these methods to large datasets by parallelizing/distrbuting computation using multiprocessing, [dask](https://dask.readthedocs.io), or other tools [[2]](#references)
-
-## Features
 
 ## Getting started
 
@@ -43,9 +41,9 @@ $ source myenv/bin/activate
 
 where `<VERSION>` is your GDAL version (e.g., `1.11.2`, see `gdal-config --version`).
 
-### Examples
+## Examples
 
-#### Detecting fault scarps
+### Detecting fault scarps
 
 ```python
 import numpy as np
@@ -66,7 +64,7 @@ sl.plot_results(data, res)
 
 <img src="docs/img/carrizo_example.png" alt="Fault scarp results" height="320">
 
-#### Extracting confined river channels
+### Extracting confined river channels
 
 ```python
 import numpy as np
@@ -109,7 +107,8 @@ Feel free to [suggest new features](https://github.com/rmsare/scarplet/issues/ne
 
 Don't hestiate to file an issue; I would be happy to discuss extensions or help to build a new feature. 
 
-If you would like to add a feature or fix a bug, please fork the repository, create a feature branch, and [submit a PR](https://github.com/rmsare/scarplet/compare) and reference any relevant issues. There are nice guides to contributing with GitHub [here](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) and [here](https://yourfirstpr.github.io/). Please include tests where appropriate and check that the test suite passes (`pytest scarplet/tests`) before submitting.
+If you would like to add a feature or fix a bug, please fork the repository, create a feature branch, and [submit a PR](https://github.com/rmsare/scarplet/compare) and reference any relevant issues. There are nice guides to contributing with GitHub [here](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) and [here](https://yourfirstpr.github.io/). Please include tests where appropriate and check that the test suite passes (a Travis build or `pytest scarplet/tests`) before submitting.
+
 
 ### Support and questions
 
