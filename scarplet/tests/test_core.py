@@ -22,57 +22,51 @@ class TemplateMatchingTestCase(unittest.TestCase):
         
         self.data = sl.load('data/synthetic.tif')
 
-
     def test_match(self):
         
-        test_amp, test_age, test_alpha, test_snr = np.load('results/synthetic_match1.npy')
-
         template_args = {'scale': 100,
                         'ang_max': np.pi / 2,
                         'ang_min': -np.pi / 2
                         }
 
-
         amp, age, alpha, snr = sl.match(self.data, Scarp, **template_args)
+        true_amp, true_age, true_alpha, true_snr = np.load('results/synthetic_match1.npy')
         
-        self.assertTrue(np.allclose(amp, test_amp), "Amplitudes incorrect")
-        self.assertTrue(np.allclose(age, test_age), "Ages incorrect")
-        self.assertTrue(np.allclose(alpha, test_alpha), "Orientations incorrect")
-        self.assertTrue(np.allclose(snr, test_snr), "SNRs incorrect")
+        self.assertTrue(np.allclose(amp, true_amp), "Amplitudes incorrect")
+        self.assertTrue(np.allclose(age, true_age), "Ages incorrect")
+        self.assertTrue(np.allclose(alpha, true_alpha), "Orientations incorrect")
+        self.assertTrue(np.allclose(snr, true_snr), "SNRs incorrect")
 
     def test_match_single_age(self):
         
-        test_amp, test_age, test_alpha, test_snr = np.load('results/synthetic_match2.npy')
-
         template_args = {'scale': 100,
                          'age': 10,
                         'ang_max': np.pi / 2,
                         'ang_min': -np.pi / 2
                         }
 
-
         amp, age, alpha, snr = sl.match(self.data, Scarp, **template_args)
+        true_amp, true_age, true_alpha, true_snr = np.load('results/synthetic_match2.npy')
         
-        self.assertTrue(np.allclose(amp, test_amp), "Amplitudes incorrect")
-        self.assertTrue(np.allclose(age, test_age), "Ages incorrect")
-        self.assertTrue(np.allclose(alpha, test_alpha), "Orientations incorrect")
-        self.assertTrue(np.allclose(snr, test_snr), "SNRs incorrect")
+        self.assertTrue(np.allclose(amp, true_amp), "Amplitudes incorrect")
+        self.assertTrue(np.allclose(age, true_age), "Ages incorrect")
+        self.assertTrue(np.allclose(alpha, true_alpha), "Orientations incorrect")
+        self.assertTrue(np.allclose(snr, true_snr), "SNRs incorrect")
 
     def test_match_template(self):
         
-        test_amp, test_age, test_alpha, test_snr = np.load('results/synthetic_match3.npy')
-
         template_args = {'scale': 100,
                          'age': 10,
                          'angle': 0
                         }
 
         amp, age, alpha, snr = sl.match_template(self.data, Scarp, **template_args)
+        true_amp, true_age, true_alpha, true_snr = np.load('results/synthetic_match3.npy')
         
-        self.assertTrue(np.allclose(amp, test_amp), "Amplitudes incorrect")
-        self.assertTrue(np.allclose(age, test_age), "Ages incorrect")
-        self.assertTrue(np.allclose(alpha, test_alpha), "Orientations incorrect")
-        self.assertTrue(np.allclose(snr, test_snr), "SNRs incorrect")
+        self.assertTrue(np.allclose(amp, true_amp), "Amplitudes incorrect")
+        self.assertTrue(np.allclose(age, true_age), "Ages incorrect")
+        self.assertTrue(np.allclose(alpha, true_alpha), "Orientations incorrect")
+        self.assertTrue(np.allclose(snr, true_snr), "SNRs incorrect")
 
 
 def generate_synthetic_scarp(a, b, kt, x_max, y_max, de=1, sig2=0, theta=0):
