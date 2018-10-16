@@ -11,8 +11,6 @@ before_install:
     - sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
     - sudo apt-get update
     - sudo apt-get install python-gdal
-    - pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==\`gdal-config --version\`
-      
 
 script:
     py.test scarplet/tests
