@@ -18,7 +18,7 @@ The main dependencies are:
 Installing GDAL
 ===============
 
-GDAL and `python-gdal` are notoriously tricky to install. Hopefully your system
+GDAL and ``python-gdal`` are notoriously tricky to install. Hopefully your system
 has GDAL installed already; if not, you can install using your OS' package
 manager.
 
@@ -60,3 +60,9 @@ In my case, with GDAL 1.11.2, this is
 .. code-block:: bash
 
    pip install gdal==1.11.2 --global-option=build_ext --global-option="-I/usr/include/gdal/"
+
+Once GDAL is installed, you can go ahead and install the package as usual
+
+.. code-block:: bash
+
+   pip install scarplet 
