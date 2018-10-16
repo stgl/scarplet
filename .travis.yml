@@ -8,7 +8,6 @@ virtualenv:
 before_install:
     - sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
     - sudo apt-get update
-    - sudo apt-get install -qq libgdal-dev libgdal1h
     - sudo apt-get install -qq gdal-bin
     - sudo apt-get install -qq python-gdal python3-gdal
     - pip install numpy
