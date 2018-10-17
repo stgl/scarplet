@@ -16,7 +16,7 @@ The main dependencies are:
 * SciPy
 
 Installing GDAL
-===============
+---------------
 
 GDAL and ``python-gdal`` are notoriously tricky to install. Hopefully your system
 has GDAL installed already; if not, you can install using your OS' package
