@@ -43,8 +43,8 @@ to unpack the results and manipulate them as NumPy arrays
    amp, age, angle, snr = res
 
    fig, ax = plt.subplots(2, 1)
-   ax[0].hist(np.log10(age), bins=10)
+   ax[0].hist(np.log10(age.reshape((-1,))), bins=10)
    ax[0].set_xlabel('Morphologic age [m$^2$]')
    
-   ax[1].hist(angle * 180 / np.pi, nbins=19)
+   ax[1].hist(angle.reshape((-1,)) * 180 / np.pi, nbins=19)
    ax[1].set_xlabel('Orientation [deg.]')
