@@ -77,17 +77,6 @@ def run_apidoc(_):
 def setup(app):
 	app.connect('builder-inited', run_apidoc)
 
-# Mock modules
-from unittest.mock import MagicMock
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-MOCK_MODULES = ['pyfftw', 'rasterio', 'osgeo', 'numpy', 'numpy.core.multiarray']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
 

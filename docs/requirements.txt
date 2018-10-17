@@ -4,3 +4,10 @@ ipython
 nbsphinx
 numpydoc
 msmb_theme
+matplotlib
+numexpr
+numpy
+gdal
+pyfftw
+rasterio
+scipy
