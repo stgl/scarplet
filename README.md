@@ -22,7 +22,7 @@ and [example notebooks](https://scarplet.readthedocs.io/en/latest/examples/scarp
 
 ### Installation
 
-`scarplet` can be installed from PyPI.
+`scarplet` can be installed from PyPI. It is developed for Python 3.4+.
 
 ```bash
 pip install scarplet
@@ -35,6 +35,9 @@ $ virtualenv myenv
 $ source myenv/bin/activate
 (myenv) $ pip install scarplet
 ```
+
+The main dependencies are numpy, scipy, numexpr, pyfftw (which requires LibFFTW3)
+and rasterio/GDAL.
 
 On some systems, GDAL will fail to install because headers are not found within
 the virtual environment. In this case, install GDAL first, then other packages.
