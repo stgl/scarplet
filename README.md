@@ -2,6 +2,7 @@
 
 
 [![Build Status](https://travis-ci.com/rmsare/scarplet.svg?branch=master)](https://travis-ci.com/rmsare/scarplet)
+[![Documentation Status](https://readthedocs.org/projects/scarplet/badge/?version=latest)](https://scarplet.readthedocs.io/en/latest/?badge=latest)
 
 A Python package for applying template matching techniques to digital elevation data, in
 particular for detecting and measuring the maturity of fault scarps and other
@@ -91,7 +92,7 @@ sl.plot_results(data, res)
 
 <img src="docs/img/rivers_example.png" alt="Channel results" height="320">
 
-There are also [example notebooks](https://scarplet.readthedocs.io/en/latest/index.html) in the documentation.
+There are also [example notebooks](https://scarplet.readthedocs.io/en/latest/index.html) and [an API reference](https://scarplet.readthedocs.io/en/latest/api.html) in the documentation.
 
 ## Documentation
 
