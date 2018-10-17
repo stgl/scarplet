@@ -12,6 +12,11 @@ It was designed with two main goals:
 * Allow contributors to define template functions for their problem area of interest
 * Make it straightforward to apply these methods to large datasets by parallelizing/distrbuting computation using multiprocessing, [dask](https://dask.readthedocs.io), or other tools [[2]](#references)
 
+The current version implements a variety of curvature-based landform templates,
+and `match` and `compare` functions that can be used to distribute matching 
+tasks and reduce results using multiple cores or a cluster. See the [quick start](https://scarplet.readthedocs.io/en/latest/quickstart.html) 
+and [example notebooks](https://scarplet.readthedocs.io/en/latest/examples/scarps.html) for more.
+
 ## Getting started
 
 ### Installation
