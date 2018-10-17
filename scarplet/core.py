@@ -415,6 +415,7 @@ def plot_results(data, results, az=315, elev=45, figsize=(4, 16)):
 
 
 def print_available_templates():
+    """Prints available templates implemented in WindowedTemplate classes"""
     for name, obj in inspect.getmembers(WindowedTemplate):
         doc = obj.__doc__
         if inspect.isclass(obj) and doc is not None:
