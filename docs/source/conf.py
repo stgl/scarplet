@@ -85,7 +85,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['pyfftw', 'rasterio', 'osgeo', 'numpy']
+MOCK_MODULES = ['pyfftw', 'rasterio', 'osgeo', 'numpy', 'numpy.core.multiarray']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # Add any paths that contain templates here, relative to this directory.
