@@ -18,8 +18,8 @@ as classes in the WindowedTemplate submodule:
 Class                                 Landform                         Use
 ===================================== ================================ ===
 ``Scarp``                             Fault scarps, topographic steps  Detecting and morphologic dating of scarp-like landforms
-``Channel``                           Confined channels                Extracting channel orientations, valley depths
-``Crater``                            Radially symmetric craters       Measuring crater depths and diffusion dating
+``Channel``                           Confined channels                Extracting channel orientations, valley relief 
+``Crater``                            Radially symmetric craters       Measuring crater depth and diffusion dating
 ``Ricker``                            Channels, ridges                 Extracting ridge and channel orientations
 ``(Left/Right)FacingUpperBreakScarp`` Fault scarps (upper slope break) Diffusion dating of scarp crests
 ===================================== ================================ ===
