@@ -2,6 +2,7 @@
 """ Functions for determining best-fit template parameters by convolution with
 a grid """
 
+import inspect
 import numexpr
 import numpy as np
 import multiprocessing as mp
@@ -14,7 +15,9 @@ from pyfftw.interfaces.numpy_fft import fft2, ifft2, fftshift
 
 from functools import partial
 
+from scarplet import WindowedTemplate
 from scarplet.dem import DEMGrid
+
 
 
 np.seterr(divide='ignore', invalid='ignore')
@@ -409,3 +412,11 @@ def plot_results(data, results, az=315, elev=45, figsize=(4, 16)):
         ticks = matplotlib.ticker.MaxNLocator(nbins=3)
         cb.locater = ticks
         cb.update_ticks()
+
+
+def print_available_templates():
+    for name, obj in inspect.getmembers(WindowedTemplate):
+        doc = obj.__doc__
+        if inspect.isclass(obj) and doc is not None:
+            doc = doc.split('\n')[0]
+            print(name + ':  ' + doc)
