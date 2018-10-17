@@ -113,15 +113,15 @@ class Scarp(WindowedTemplate):
     ----------
     Adapted from template derived in
 
-    _[0] Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, 
-         J.R., 2010. Morphologic dating of fault scarps using airborne 
-         laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4).
-         https://dx.doi.org/10.1029/2009GL042044
+    Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, 
+    J.R., 2010. Morphologic dating of fault scarps using airborne 
+    laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4).
+    https://dx.doi.org/10.1029/2009GL042044
 
     Based on solutions to the diffusion equation published in
 
-    _[1] Hanks, T.C., 2000. The age of scarplike landforms from 
-         diffusion‐equation analysis. Quaternary geochronology, 4, pp.313-338.
+    Hanks, T.C., 2000. The age of scarplike landforms from 
+    diffusion‐equation analysis. Quaternary geochronology, 4, pp.313-338.
 
     and many references therein.
     """

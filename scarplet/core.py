@@ -2,7 +2,6 @@
 """ Functions for determining best-fit template parameters by convolution with
 a grid """
 
-import inspect
 import numexpr
 import numpy as np
 import multiprocessing as mp
@@ -213,6 +212,8 @@ def compare(results, ny, nx):
     -------
     best_amp : np.array
         2-D array of best-fitting amplitudes
+    best_age : np.array
+        2-D array of best-fitting morphologic ages 
     best_angle : np.array
         2-D array of best-fitting orientations
     best_snr : np.array
@@ -412,12 +413,3 @@ def plot_results(data, results, az=315, elev=45, figsize=(4, 16)):
         ticks = matplotlib.ticker.MaxNLocator(nbins=3)
         cb.locater = ticks
         cb.update_ticks()
-
-
-def print_available_templates():
-    """Prints available templates implemented in WindowedTemplate classes"""
-    for name, obj in inspect.getmembers(WindowedTemplate):
-        doc = obj.__doc__
-        if inspect.isclass(obj) and doc is not None:
-            doc = doc.split('\n')[0]
-            print(name + ':  ' + doc)
