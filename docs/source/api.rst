@@ -1,9 +1,10 @@
 API Reference
 =============
 
-.. automodule:: scarplet
-
-.. currentmodule:: scarplet
+This package is structured so that most functions are implemented in a `core`
+submodule and templates are defined as subclasses of `WindowedTemplate` in the
+`WindowedTemplate` submodule. Spatial data and I/O is handled by classes 
+defined in `dem`.
 
 Core functionality
 ------------------
@@ -21,10 +22,10 @@ Templates
 
    scarplet.WindowedTemplate
 
-Spatial data
-------------
+Data and IO
+-----------
 
 .. toctree::
    :maxdepth: 2
 
-   scarplet.WindowedTemplate
+   scarplet.dem

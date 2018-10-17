@@ -44,5 +44,5 @@ Contents
    :maxdepth: 1
    :caption: API documentation
 
-    api 
+   api 
 
