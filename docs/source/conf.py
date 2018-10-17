@@ -78,7 +78,6 @@ def setup(app):
 	app.connect('builder-inited', run_apidoc)
 
 # Mock modules
-mport sys
 from unittest.mock import MagicMock
 
 class Mock(MagicMock):
@@ -122,8 +121,8 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'msmb_theme'
 import msmb_theme
+html_theme = 'msmb_theme'
 html_theme_path = [msmb_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
