@@ -18,7 +18,6 @@ from scarplet import WindowedTemplate
 from scarplet.dem import DEMGrid
 
 
-
 np.seterr(divide='ignore', invalid='ignore')
 
 pyfftw.interfaces.cache.enable()
@@ -326,10 +325,10 @@ def match_template(data, Template, scale, age, angle, **kwargs):
     ----------
     Modifies method described in 
 
-    _[0] Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, 
-         J.R., 2010. Morphologic dating of fault scarps using airborne 
-         laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4).
-         https://dx.doi.org/10.1029/2009GL042044
+    Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, 
+    J.R., 2010. Morphologic dating of fault scarps using airborne 
+    laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4).
+    https://dx.doi.org/10.1029/2009GL042044
     """
 
     eps = np.spacing(1)
