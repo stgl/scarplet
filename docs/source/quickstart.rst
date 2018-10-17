@@ -41,7 +41,7 @@ degrees from vertical (*y* direction) captures all scarp orientations.
    params = {'scale': 100,
              'ang_min': -np.pi / 2,
              'ang_max': np.pi / 2
-            }
+             }
 
 
 Then, ``scarplet``'s ``match`` function will search over all parameters and return
@@ -55,7 +55,7 @@ the best-fitting height, relative age, and orientation at each DEM pixel.
 Viewing matching results
 ------------------------
 
-All results are returned as *4* x *n* x *m* arrays of height/amplitude, relative age,
+All results are returned as *4* x *height* x *width* arrays of height/amplitude, relative age,
 orientation, and signal-to-noise-ratio. The easiest way to work with these is 
 to unpack the results and manipulate them as NumPy arrays
 
