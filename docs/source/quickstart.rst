@@ -12,9 +12,7 @@ elevation data as a GeoTiff, and you can load it as
 
 If you have gaps in your DEM, no data values will automatically be filled. Then
 you are ready to choose a template and fit it to your data. These are defined
-as classes in the WindowedTemplate submodule.
-
-Currently, several templates are available:
+as classes in the WindowedTemplate submodule:
 
 ===================================== ================================ ===
 Class                                 Landform                         Use
@@ -22,7 +20,7 @@ Class                                 Landform                         Use
 ``Scarp``                             Fault scarps, topographic steps  Detecting and morphologic dating of scarp-like landforms
 ``Channel``                           Confined channels                Extracting channel orientations, valley depths
 ``Crater``                            Radially symmetric craters       Measuring crater depths and diffusion dating
-``Ricker``                            Channels,rRidges                 Extracting ridge and channel orientations
+``Ricker``                            Channels, ridges                 Extracting ridge and channel orientations
 ``(Left/Right)FacingUpperBreakScarp`` Fault scarps (upper slope break) Diffusion dating of scarp crests
 ===================================== ================================ ===
 
