@@ -1,6 +1,9 @@
 Getting started with scarplet
 =============================
 
+Input data
+----------
+
 Currently ``scarplet`` handles input data in GeoTiff format. Get a copy of your
 elevation data as a GeoTiff, and you can load it as
 
@@ -9,6 +12,9 @@ elevation data as a GeoTiff, and you can load it as
    import scarplet as sl
    data = sl.load('mydem.tif')
 
+
+Choosing a template
+-------------------
 
 If you have gaps in your DEM, no data values will automatically be filled. Then
 you are ready to choose a template and fit it to your data. These are defined
@@ -42,6 +48,9 @@ the best-fitting height, relative age, and orientation at each DEM pixel.
 
    res = sl.match(data, Scarp, **params)
    sl.plot_results(data, res)
+
+Viewing matching results
+------------------------
 
 All results are returned as *4* x *n* x *m* arrays of height/amplitude, relative age,
 orientation, and signal-to-noise-ratio. The easiest way to work with these is 
