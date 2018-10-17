@@ -38,7 +38,10 @@ degrees from vertical (*y* direction) captures all scarp orientations.
 
    import numpy as np
    from scarplet.WindowedTemplate import Scarp
-   params = {'scale': 100, 'ang_min': -np.pi / 2, 'ang_max': np.pi / 2}
+   params = {'scale': 100,
+             'ang_min': -np.pi / 2,
+             'ang_max': np.pi / 2
+            }
 
 
 Then, ``scarplet``'s ``match`` function will search over all parameters and return
