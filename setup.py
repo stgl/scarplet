@@ -14,6 +14,7 @@ setuptools.setup(
     license="MIT",
     url="https://github.com/rmsare/scarplet",
     packages=setuptools.find_packages(),
+    include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -22,7 +23,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_require=">=2.7, <3.7",
+    python_require=">=3.4",
     install_requires=[
         "numexpr",
         "numpy",

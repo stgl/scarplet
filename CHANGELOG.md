@@ -2,6 +2,7 @@
 
 Date            | Description
 --------------- | -----------
+October 2018    | Packaging for alpha realease via PyPI
 6 October 2017  | EarthScope NorCal dataset processed and available on S3 
 22 September 2017 | Tests with EarthScope data complete
 12 September 2017 | Synthetic testing, Carrizo testing, benchmarking complete
@@ -33,8 +34,8 @@ where "scale" is 100, 500, or 1000 (meters), and "xxx", "yyyy" refer to the most
 #### Extra
 - [ ] Add cleaned-up script for post-processing to remove artifacts
 - [ ] Non-maximum supression
-- [ ] More templates!
+- [x] More templates!
 
 #### Tests
 - [ ] Increase test coverage for WindowedTemplate
-- [ ] Stop skipping tests, add small testing data to repo
+- [x] Stop skipping tests, add small testing data to repo
