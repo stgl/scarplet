@@ -69,7 +69,7 @@ res = sl.match(data, Scarp, **params)
 sl.plot_results(data, res)
 ```
 
-<img src="docs/img/carrizo_example.png" alt="Fault scarp results" height="320">
+<img src="docs/img/carrizo_example.png" alt="Fault scarp results" height="340">
 
 ### Extracting confined river channels
 
@@ -79,7 +79,7 @@ import scarplet as sl
 from scarplet.WindowedTemplate import Channel 
 
 params = {'scale': 10,
-          'age': 10,
+          'age': 0.1,
           'ang_min': -np.pi / 2,
           'ang_max': np.pi / 2
          }
@@ -90,7 +90,7 @@ res = sl.match(data, Channel, **params)
 sl.plot_results(data, res)
 ```
 
-<img src="docs/img/rivers_example.png" alt="Channel results" height="320">
+<img src="docs/img/rivers_example.png" alt="Channel results" height="340">
 
 There are also [example notebooks](https://scarplet.readthedocs.io/en/latest/index.html) and [an API reference](https://scarplet.readthedocs.io/en/latest/api.html) in the documentation.
 
