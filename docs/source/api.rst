@@ -1,10 +1,10 @@
 API Reference
 =============
 
-This package is structured so that most functions are implemented in a `core`
-submodule and templates are defined as subclasses of `WindowedTemplate` in the
-`WindowedTemplate` submodule. Spatial data and I/O is handled by classes 
-defined in `dem`.
+This package is structured so that most functions are implemented in a ``core``
+submodule and templates are defined as subclasses of ``WindowedTemplate`` in the
+``WindowedTemplate`` submodule. Spatial data and I/O is handled by classes 
+defined in ``dem``.
 
 Core functionality
 ------------------
