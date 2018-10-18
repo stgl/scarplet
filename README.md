@@ -121,7 +121,7 @@ Please [open an issue](https://github.com/rmsare/scarplet/issues/new) with your 
 
 [1] Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, J.R., 2010. Morphologic dating of fault scarps using airborne laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4). [doi](https://doi.org/10.1029/2009GL042044)
 
-[2] Sare, R, Hilley, G. E., and DeLong, S. B., 2018, Regional scale detection of fault scarps and other tectonic landforms: Examples from Northern California, submitted to Journal of Geophysical Research: Solid Earth.
+[2] Sare, R, Hilley, G. E., and DeLong, S. B., 2018, Regional scale detection of fault scarps and other tectonic landforms: Examples from Northern California, in review, Journal of Geophysical Research: Solid Earth.
 
 ## License
 This work is licensed under the MIT License (see [LICENSE](LICENSE)).
