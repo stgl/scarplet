@@ -15,6 +15,34 @@ The main dependencies are:
 * PyFFTW
 * SciPy
 
+Installing FFTW3 and pyFFTW
+---------------------------
+
+The Fast Fourier Transform library `FFTW <http://www.fftw.org/>` is a 
+requirement of the ``pyfftw`` module used by this package. On Ubuntu or Debian,
+it can be installed with the package manager
+
+.. code-block:: bash
+
+    sudo apt-get install libfftw3-3 libfftw3-bin libfftw3-dev
+
+On Mac OS X, you can use Homebrew 
+
+.. code-block:: bash
+
+   brew install fftw
+
+Then pyFFTW can be install via pip
+
+.. code-block:: bash
+
+   pip install pyfftw
+
+There are some known issues with pyFFTW on OS X. It may be necessary to export 
+link paths as environment variable prior to calling pip. See
+`their installation instructions <https://github.com/pyFFTW/pyFFTW#mac-osx>`
+for more details
+
 Installing GDAL
 ---------------
 
