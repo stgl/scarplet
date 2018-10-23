@@ -41,7 +41,7 @@ parallelism, it can be efficiently applied to large datasets in a distributed
 manner.
 
 The core algorithms of ``scarplet`` use standard signal processing 
-tools in the scientific Python ecosystem, and the basic ``WindowedTemplate`` 
+tools in the scientific Python ecosystem, and the ``WindowedTemplate`` base 
 classes used by these methods are easy to extend. The intent is to provide a 
 quick, scalable option for topographic data analysis and template function 
 prototyping which can be adapted by users familiar with NumPy and SciPy. As availability of
