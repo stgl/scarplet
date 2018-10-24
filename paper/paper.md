@@ -46,7 +46,7 @@ classes used by these methods are easy to extend. The intent is to provide a
 quick, scalable option for topographic data analysis and template function 
 prototyping which can be adapted by users familiar with NumPy and SciPy. As availability of
 digital topographic data from airborne and satellite sources grows, tools like this
-will help to enable quantitiative geomorphology on regional and global scales and
+will help to enable quantitative geomorphology on regional and global scales and
 complement Python-based modelling packages such as LandLab (@hobley2017).
 
 # References
