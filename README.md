@@ -135,9 +135,9 @@ Please [open an issue](https://github.com/rmsare/scarplet/issues/new) with your 
 
 [3] Lashermes, B., Foufoula‐Georgiou, E., and Dietrich, W. E., 2007, Channel network extraction from high resolution topography using wavelets. Geophysical Research Letters, 34(23). [doi](https://doi.org/10.1029/2007GL031140)
 
-[4] Passalacqua, P., Tarolli, P., and Foufoula‐Georgiou, E., 2010, Testing space‐scale methodologies for automatic geomorphic feature extraction from lidar in a complex mountainous landscape. Water resources research, 46(11). [doi](https://doi.org/10.1029/2009WR008812)
+[4] Passalacqua, P., Tarolli, P., and Foufoula‐Georgiou, E., 2010, Testing space‐scale methodologies for automatic geomorphic feature extraction from lidar in a complex mountainous landscape. Water Resources Research, 46(11). [doi](https://doi.org/10.1029/2009WR008812)
 
-[5] Clubb, F. J., Mudd, S. M., Milodowski, D. T., Hurst, M. D., and Slater, L. J., 2014, Objective extraction of channel heads from high‐resolution topographic data. Water Resources Research, 50(5), 4283-4304. [doi](https://doi.org/10.1002/2013WR015167)
+[5] Clubb, F. J., Mudd, S. M., Milodowski, D. T., Hurst, M. D., and Slater, L. J., 2014, Objective extraction of channel heads from high‐resolution topographic data. Water Resources Research, 50(5). [doi](https://doi.org/10.1002/2013WR015167)
 
 ## License
 This work is licensed under the MIT License (see [LICENSE](LICENSE)).
