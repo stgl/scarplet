@@ -27,7 +27,7 @@ Class                                 Landform                         Use
 ``Channel``                           Confined channels                Extracting channel orientations, valley relief 
 ``Crater``                            Radially symmetric craters       Measuring crater depth and diffusion dating
 ``Ricker``                            Channels, ridges                 Extracting ridge and channel orientations
-``(Left/Right)FacingUpperBreakScarp`` Fault scarps (upper slope break) Diffusion dating of scarp crests
+.. ``(Left/Right)FacingUpperBreakScarp`` Fault scarps (upper slope break) Diffusion dating of scarp crests
 ===================================== ================================ ===
 
 For example, to use a vertical scarp template, you would import the appropiate 
