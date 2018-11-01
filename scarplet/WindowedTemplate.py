@@ -111,6 +111,7 @@ class Scarp(WindowedTemplate):
 
     References
     ----------
+
     Adapted from template derived in
 
     Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, 
@@ -453,6 +454,15 @@ class Ricker(WindowedTemplate):
     template():
         Returns array of windowed template function
 
+    References
+    ----------
+
+    This implements a Ricker wavelet similar to thet used in the following work
+
+    Lashermes, B., Foufoula‐Georgiou, E., and Dietrich, W. E., 2007, Channel 
+    network extraction from high resolution topography using wavelets. 
+    Geophysical Research Letters, 34(23).
+    https://doi.org/10.1029/2007GL031140
     """
 
     def __init__(self, d, f, alpha, nx, ny, de):
