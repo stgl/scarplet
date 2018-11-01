@@ -47,6 +47,10 @@ cause issues.
 
 ### Detecting fault scarps
 
+This example uses a scarp template based on a diffusion model of scarp degradation
+[[0]](#references) to identify scarp-like landforms along the San Andreas Fault near
+Wallace Creek, CA.
+
 ```python
 import numpy as np
 import scarplet as sl
@@ -67,6 +71,12 @@ sl.plot_results(data, res)
 <img src="docs/img/carrizo_example.png" alt="Fault scarp results" height="340">
 
 ### Extracting confined river channels
+
+To illustrate template function flexibility, this example uses a Channel
+template similar to the Ricker wavelet [3] to extract part of a channel network.
+This is example uses a moderative resolution SRTM data tile. In general, for 
+high resolution data like lidar, there are more robust alternatives for 
+channel network extraction or channel head identification [[4, 5]](#references).
 
 ```python
 import numpy as np
@@ -122,6 +132,12 @@ Please [open an issue](https://github.com/rmsare/scarplet/issues/new) with your 
 [1] Hilley, G.E., DeLong, S., Prentice, C., Blisniuk, K. and Arrowsmith, J.R., 2010. Morphologic dating of fault scarps using airborne laser swath mapping (ALSM) data. Geophysical Research Letters, 37(4). [doi](https://doi.org/10.1029/2009GL042044)
 
 [2] Sare, R, Hilley, G. E., and DeLong, S. B., 2018, Regional scale detection of fault scarps and other tectonic landforms: Examples from Northern California, in review, Journal of Geophysical Research: Solid Earth.
+
+[3] Lashermes, B., Foufoula‐Georgiou, E., and Dietrich, W. E., 2007, Channel network extraction from high resolution topography using wavelets. Geophysical Research Letters, 34(23). [doi](https://doi.org/10.1029/2007GL031140)
+
+[4] Passalacqua, P., Tarolli, P., and Foufoula‐Georgiou, E., 2010, Testing space‐scale methodologies for automatic geomorphic feature extraction from lidar in a complex mountainous landscape. Water resources research, 46(11). [doi](https://doi.org/10.1029/2009WR008812)
+
+[5] Clubb, F. J., Mudd, S. M., Milodowski, D. T., Hurst, M. D., and Slater, L. J., 2014, Objective extraction of channel heads from high‐resolution topographic data. Water Resources Research, 50(5), 4283-4304. [doi](https://doi.org/10.1002/2013WR015167)
 
 ## License
 This work is licensed under the MIT License (see [LICENSE](LICENSE)).
