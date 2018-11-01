@@ -74,7 +74,7 @@ sl.plot_results(data, res)
 
 To illustrate template function flexibility, this example uses a Channel
 template similar to the Ricker wavelet [[3]](#references) to extract part of a channel network.
-This is example uses a moderative resolution SRTM data tile. In general, for 
+This is example uses a moderate resolution SRTM data tile. In general, for 
 high resolution data like lidar, there are more robust alternatives for 
 channel network extraction or channel head identification [[4, 5]](#references).
 
