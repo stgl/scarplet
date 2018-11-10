@@ -52,6 +52,8 @@ cause issues.
 
 ## Examples
 
+[Example notebooks](docs/source/examples/) and [sample data](docs/source/examples/data) can be found in the docs folder.
+
 ### Detecting fault scarps
 
 This example uses a scarp template based on a diffusion model of scarp degradation
