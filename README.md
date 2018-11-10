@@ -22,18 +22,25 @@ and [example notebooks](https://scarplet.readthedocs.io/en/latest/examples/scarp
 
 ### Installation
 
-`scarplet` can be installed from PyPI. It is developed for Python 3.4+.
+`scarplet` can be installed using `pip` or `conda`. It is developed for Python 3.4+.
 
 ```bash
-pip install scarplet
+conda install scarplet -c conda-forge
 ```
 
 or
 
 ```bash
-$ virtualenv myenv
-$ source myenv/bin/activate
-(myenv) $ pip install scarplet
+pip install scarplet
+```
+
+Or, to manually install the latest version from github: 
+
+```bash
+git clone https://github.com/rmsare/scarplet
+cd scarplet
+conda install --file=requirements.txt -c conda-forge
+python setup.py develop
 ```
 
 The main dependencies are numpy, scipy, numexpr, pyfftw (which requires LibFFTW3)
