@@ -71,7 +71,7 @@ params = {'scale': 100,
           'ang_max': 10 * np.pi / 2
          }
 
-data = sl.load('data/faultzone.tif')
+data = sl.datasets.load_carrizo()
 res = sl.match(data, Scarp, **params)
 
 sl.plot_results(data, res)
@@ -98,7 +98,7 @@ params = {'scale': 10,
           'ang_max': np.pi / 2
          }
 
-data = sl.load('data/channelnetwork.tif')
+data = sl.datasets.load_grandcanyon()
 res = sl.match(data, Channel, **params)
 
 sl.plot_results(data, res)
