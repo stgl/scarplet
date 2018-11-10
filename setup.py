@@ -29,7 +29,6 @@ setuptools.setup(
         "numpy",
         "matplotlib",
         "gdal",
-        "osr",
         "pyfftw",
         "rasterio",
         "scipy"
