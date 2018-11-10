@@ -52,7 +52,7 @@ cause issues.
 
 ## Examples
 
-[Example notebooks](blob/master/docs/source/examples/) and [sample data](blob/master/docs/source/examples/data) can be found in the docs folder.
+[Example notebooks](docs/source/examples/) and [sample data](docs/source/examples/data) can be found in the docs folder.
 
 ### Detecting fault scarps
 
