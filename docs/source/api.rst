@@ -29,3 +29,4 @@ Data and IO
    :maxdepth: 2
 
    scarplet.dem
+   scarplet.datasets
