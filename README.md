@@ -116,7 +116,7 @@ Feel free to [suggest new features](https://github.com/rmsare/scarplet/issues/ne
 
 ### Pull requests
 
-Don't hestiate to file an issue; I would be happy to discuss extensions or help to build a new feature. 
+Don't hestitate to file an issue; I would be happy to discuss extensions or help to build a new feature. 
 
 If you would like to add a feature or fix a bug, please fork the repository, create a feature branch, and [submit a PR](https://github.com/rmsare/scarplet/compare) and reference any relevant issues. There are nice guides to contributing with GitHub [here](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) and [here](https://yourfirstpr.github.io/). Please include tests where appropriate and check that the test suite passes (a Travis build or `pytest scarplet/tests`) before submitting.
 
