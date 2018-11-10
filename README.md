@@ -22,16 +22,10 @@ and [example notebooks](https://scarplet.readthedocs.io/en/latest/examples/scarp
 
 ### Installation
 
-`scarplet` can be installed using `pip` or `conda`. It is developed for Python 3.4+ and currently works on Linux and Mac OS X.
+`scarplet` can be installed using `conda` or `pip`. It is developed for Python 3.4+ and currently works on Linux and Mac OS X.
 
 ```bash
 conda install scarplet -c conda-forge
-```
-
-or
-
-```bash
-pip install scarplet
 ```
 
 Or, to manually install the latest version from github: 
@@ -45,10 +39,6 @@ python setup.py develop
 
 The main dependencies are numpy, scipy, numexpr, pyfftw (which requires LibFFTW3)
 and rasterio/GDAL.
-
-See the [installation page](https://scarplet.readthedocs.io/en/latest/installation.html)
-for details on how to install GDAL and FFTW/pyFFTW, two dependencies that sometimes
-cause issues.
 
 ## Examples
 
