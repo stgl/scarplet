@@ -4,19 +4,19 @@
 [![Build Status](https://travis-ci.com/rmsare/scarplet.svg?branch=master)](https://travis-ci.com/rmsare/scarplet)
 [![Documentation Status](https://readthedocs.org/projects/scarplet/badge/?version=latest)](https://scarplet.readthedocs.io/en/latest/?badge=latest)
 
-A Python package for applying template matching techniques to digital elevation data, in
+scarplet is a Python package for applying template matching techniques to digital elevation data, in
 particular for detecting and measuring the maturity of fault scarps and other
-landforms [[0, 1]](#references)
+landforms [[0, 1]](#references). 
+
+It is intended for earth scientists who want to apply diffusion dating methods
+to or extract landforms from large datasets. The scarplet API can be used to
+estimate the height and relative age of a landform or identify DEM pixels 
+based on their fit to a landform template.
 
 It was designed with two main goals:
 
 * Allow contributors to define template functions for their problem area of interest
 * Make it straightforward to apply these methods to large datasets by parallelizing/distrbuting computation using multiprocessing, [dask](https://dask.readthedocs.io), or other tools [[2]](#references)
-
-The current version implements a variety of curvature-based landform templates,
-and `match` and `compare` functions that can be used to distribute matching 
-tasks and reduce results using multiple cores or a cluster. See the [quick start](https://scarplet.readthedocs.io/en/latest/quickstart.html) 
-and [example notebooks](https://scarplet.readthedocs.io/en/latest/examples/scarps.html) for more.
 
 ## Getting started
 
@@ -42,7 +42,7 @@ and rasterio/GDAL.
 
 ## Examples
 
-[Example notebooks](docs/source/examples/) can be found in the docs folder and sample datasets can be loaded using the [datasets submodule](https://scarplet.readthedocs.io/en/latest/scarplet.datasets.html).
+Example notebooks can be found in the [docs folder](docs/source/examples/) or [website](https://scarplet.readthedocs.io/en/latest/examples/scarps.html) and sample datasets can be loaded using the [datasets submodule](https://scarplet.readthedocs.io/en/latest/scarplet.datasets.html).
 
 ### Detecting fault scarps
 
