@@ -1,7 +1,13 @@
 Installation
 ============
 
-``scarplet`` is on PyPI. You can install it with
+``scarplet`` is on PyPI and conda-forge. You can install it with
+
+.. code-block:: bash
+
+   conda install scarplet -c conda-forge
+
+or, using ``pip``,
 
 .. code-block:: bash
 
@@ -14,6 +20,9 @@ The main dependencies are:
 * GDAL and Rasterio
 * PyFFTW
 * SciPy
+
+A conda installation will install the Python GDAL bindings and PyFFTW. For 
+instructions on manually installing LibFFTW and GDAL, see below.
 
 Installing FFTW3 and pyFFTW
 ---------------------------
