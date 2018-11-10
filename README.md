@@ -22,7 +22,7 @@ and [example notebooks](https://scarplet.readthedocs.io/en/latest/examples/scarp
 
 ### Installation
 
-`scarplet` can be installed using `pip` or `conda`. It is developed for Python 3.4+.
+`scarplet` can be installed using `pip` or `conda`. It is developed for Python 3.4+ and currently works on Linux and Mac OS X.
 
 ```bash
 conda install scarplet -c conda-forge
@@ -52,7 +52,7 @@ cause issues.
 
 ## Examples
 
-[Example notebooks](docs/source/examples/) and [sample data](docs/source/examples/data) can be found in the docs folder. Datasets can also be loaded within the package using the [datasets submodule](https://scarplet.readthedocs.io/en/latest/scarplet.datasets.html).
+[Example notebooks](docs/source/examples/) can be found in the docs folder and sample datasets can be loaded using the [datasets submodule](https://scarplet.readthedocs.io/en/latest/scarplet.datasets.html).
 
 ### Detecting fault scarps
 
