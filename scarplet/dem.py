@@ -4,6 +4,7 @@
 import numexpr
 import numpy as np
 import os
+import subprocess
 import sys
 
 import matplotlib
@@ -15,13 +16,6 @@ from osgeo import gdal, gdalconst
 from rasterio.fill import fillnodata
 
 from scarplet.utils import BoundingBox
-
-sys.path.append('/usr/bin')
-try:
-    import gdal_merge
-except ImportError as e:
-    print('ImportError: ' + str(e))
-    print('Can\'t import gdal_merge. GDAL binaries may not be installed.')
 
 
 sys.setrecursionlimit(10000)
@@ -270,8 +264,13 @@ class BaseSpatialGrid(GDALMixin):
             raise ValueError("ValueError: Grids are not contiguous")
 
         # XXX: this is hacky, eventually implement as native GDAL
-        sys.argv = ['', self.filename, grid.filename]
-        gdal_merge.main()
+        try:
+            command = ['gdal_merge.py', self.filename, grid.filename]
+            subprocess.check_output(command, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            print("Failed to merge grids. gdal_merge may not be installed.")
+            raise e
+
         merged_grid = BaseSpatialGrid('out.tif')
         merged_grid._griddata[merged_grid._griddata == FLOAT32_MIN] = np.nan
         os.remove('out.tif')
@@ -342,9 +341,9 @@ class BaseSpatialGrid(GDALMixin):
         self._georef_info.ulx = self._georef_info.geo_transform[0]
         self._georef_info.uly = self._georef_info.geo_transform[3]
         self._georef_info.lrx = self._georef_info.geo_transform[0] \
-            + self._georef_info.dx*self._georef_info.nx
+            + self._georef_info.dx * self._georef_info.nx
         self._georef_info.lry = self._georef_info.geo_transform[3] \
-            + self._georef_info.dy*self._georef_info.ny
+            + self._georef_info.dy * self._georef_info.ny
         self.bbox = BoundingBox((self._georef_info.lrx, self._georef_info.lry),
                                 (self._georef_info.ulx, self._georef_info.uly))
 
@@ -361,7 +360,7 @@ class DEMGrid(CalculationMixin, BaseSpatialGrid):
             self.load(filename)
             self._griddata[self._griddata == FLOAT32_MIN] = np.nan
             self.nodata_value = np.nan
-            self.filename = filename.split('/')[-1]
+            self.filename = filename
             self.shape = self._griddata.shape
             self.is_interpolated = False
         else:
