@@ -42,7 +42,7 @@ and rasterio/GDAL.
 
 ## Examples
 
-Example notebooks can be found in the [docs folder](docs/source/examples/) or [website](https://scarplet.readthedocs.io/en/latest/examples/scarps.html) and sample datasets can be loaded using the [datasets submodule](https://scarplet.readthedocs.io/en/latest/scarplet.datasets.html).
+Example notebooks can be found in the [docs folder](docs/source/examples/) or [website](https://scarplet.readthedocs.io/en/latest/examples/scarps.html) and sample datasets can be loaded using the [datasets submodule](https://scarplet.readthedocs.io/en/latest/scarplet.datasets.base.html).
 
 ### Detecting fault scarps
 
