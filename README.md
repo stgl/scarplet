@@ -52,7 +52,7 @@ cause issues.
 
 ## Examples
 
-[Example notebooks](docs/source/examples/) and [sample data](docs/source/examples/data) can be found in the docs folder.
+[Example notebooks](docs/source/examples/) and [sample data](docs/source/examples/data) can be found in the docs folder. Datasets can also be loaded within the package using the [datasets submodule](https://scarplet.readthedocs.io/en/latest/scarplet.datasets.html).
 
 ### Detecting fault scarps
 
