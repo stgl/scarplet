@@ -269,7 +269,7 @@ class BaseSpatialGrid(GDALMixin):
             subprocess.check_output(command, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             print("Failed to merge grids. gdal_merge may not be installed.")
-            raise(e)
+            raise e
 
         merged_grid = BaseSpatialGrid('out.tif')
         merged_grid._griddata[merged_grid._griddata == FLOAT32_MIN] = np.nan
