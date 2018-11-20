@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="scarplet",
-    version="0.1.2",
+    version="0.1.3",
     author=["Robert Sare", "George Hilley"],
     author_email="rmsare@stanford.edu",
     description="A Python package for topographic template matching",
