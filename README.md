@@ -53,6 +53,7 @@ Wallace Creek, CA.
 ```python
 import numpy as np
 import scarplet as sl
+from scarplet.datasets import load_carrizo
 from scarplet.WindowedTemplate import Scarp
 
 params = {'scale': 100,
@@ -61,7 +62,7 @@ params = {'scale': 100,
           'ang_max': 10 * np.pi / 2
          }
 
-data = sl.datasets.load_carrizo()
+data = load_carrizo()
 res = sl.match(data, Scarp, **params)
 
 sl.plot_results(data, res)
@@ -80,6 +81,7 @@ channel network extraction or channel head identification [[4, 5]](#references).
 ```python
 import numpy as np
 import scarplet as sl
+from scarplet.datasets import load_grandcanyon
 from scarplet.WindowedTemplate import Channel 
 
 params = {'scale': 10,
@@ -88,7 +90,7 @@ params = {'scale': 10,
           'ang_max': np.pi / 2
          }
 
-data = sl.datasets.load_grandcanyon()
+data = load_grandcanyon()
 res = sl.match(data, Channel, **params)
 
 sl.plot_results(data, res)
