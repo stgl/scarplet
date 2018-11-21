@@ -26,5 +26,5 @@
   "keywords": "fault scarps, feature detection, signal processing, dem, geomorphology, template matching",
   "license": "MIT",
   "title": "scarplet",
-  "version": "0.1.0"
+  "version": "0.1.3"
 }
