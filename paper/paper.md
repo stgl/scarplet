@@ -25,12 +25,12 @@ bibliography: paper.bib
 Detection and analysis of landforms is a major problem in geoscience, including
 identifying and measuring the relative ages of earthquake fault scarps. Inverse 
 methods using the diffusion equation have been applied to relatively date a wide range of landforms, 
-including scarps (@hanks2000, @hilley2010), terraces (@avouac1993), 
-and impact craters (@fassett2014). Size (height) and relative age estimates from
+including scarps [@hanks2000, @hilley2010], terraces [@avouac1993], 
+and impact craters [@fassett2014]. Size (height) and relative age estimates from
 these techniques provide important contraints where instrumental or historic data
 may be sparse: for example, in a fault zone with a limited record of historic 
 seismicity. Similar wavelet-based methods are widely used in geophysics and 
-channel network analysis as feature extraction techniques (@lashermes2007; @passalacqua2010).
+channel network analysis as feature extraction techniques [@lashermes2007; @passalacqua2010].
 
 The ``scarplet`` package provides a set of tools for performing feature
 detection and diffusion dating using user-defined landform templates.
@@ -47,7 +47,7 @@ quick, scalable option for topographic data analysis and template function
 prototyping which can be adapted by users familiar with NumPy and SciPy. As availability of
 digital topographic data from airborne and satellite sources grows, tools like this
 will help to enable quantitative geomorphology on regional and global scales and
-complement Python-based modelling packages such as LandLab (@hobley2017).
+complement Python-based modelling packages such as LandLab [@hobley2017].
 
 # References
 
