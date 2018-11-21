@@ -49,5 +49,15 @@ digital topographic data from airborne and satellite sources grows, tools like t
 will help to enable quantitative geomorphology on regional and global scales and
 complement Python-based modelling packages such as LandLab [@hobley2017].
 
+# Acknowledgements
+
+We would like to thank Fiona Clubb and Eric Hutton for constructive reviews of
+this package, and Sam Johnstone and Stephen DeLong for helpeful discussions of
+scarp dating. Development was supported by a grant from the National
+Earthquake Hazards Reduction Program (award number G17AP00010). Example data is
+accessed using data services provided by the OpenTopography facility with 
+support from the National Science Foundation under NSF award numbers 1557484, 
+1557319, and 1557330.
+
 # References
 
