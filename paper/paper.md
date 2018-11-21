@@ -51,7 +51,7 @@ complement Python-based modelling packages such as LandLab [@hobley2017].
 
 # Acknowledgements
 
-We would like to thank Fiona Clubb and Eric Hutton for constructive reviews of
+We would like to thank edtor Kristen Thyng, Fiona Clubb and Eric Hutton for constructive reviews of
 this package, and Sam Johnstone and Stephen DeLong for helpeful discussions of
 scarp dating. Development was supported by a grant from the National
 Earthquake Hazards Reduction Program (award number G17AP00010). Example data is
