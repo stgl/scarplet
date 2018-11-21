@@ -27,7 +27,7 @@ identifying and measuring the relative ages of earthquake fault scarps. Inverse
 methods using the diffusion equation have been applied to relatively date a wide range of landforms, 
 including scarps [@hanks2000; @hilley2010], terraces [@avouac1993], 
 and impact craters [@fassett2014]. Size (height) and relative age estimates from
-these techniques provide important contraints where instrumental or historic data
+these techniques provide important constraints where instrumental or historic data
 may be sparse: for example, in a fault zone with a limited record of historic 
 seismicity. Similar wavelet-based methods are widely used in geophysics and 
 channel network analysis as feature extraction techniques [@lashermes2007; @passalacqua2010].
