@@ -10,7 +10,7 @@ authors:
   - name: Robert Sare
     orcid: 0000-0003-3711-6771
     affiliation: 1
-  - name: George Hilley
+  - name: George E. Hilley
     orcid: 0000-0002-1761-7547
     affiliation: 1
 affiliations:
