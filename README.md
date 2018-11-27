@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.com/rmsare/scarplet.svg?branch=master)](https://travis-ci.com/rmsare/scarplet)
 [![Documentation Status](https://readthedocs.org/projects/scarplet/badge/?version=latest)](https://scarplet.readthedocs.io/en/latest/?badge=latest)
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.01066/status.svg)](https://doi.org/10.21105/joss.01066)
 
 scarplet is a Python package for applying template matching techniques to digital elevation data, in
 particular for detecting and measuring the maturity of fault scarps and other
