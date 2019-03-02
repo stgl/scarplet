@@ -25,19 +25,13 @@ It was designed with two main goals:
 
 `scarplet` can be installed using `conda` or `pip`. It is developed for Python 3.4+ and currently works on Linux and Mac OS X.
 
+It is best to [use a virtual environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) for the install because the GDAL dependency can be tricky:
+
 ```bash
+conda create -n scarplet_env
+conda activate scarplet_env
 conda install scarplet -c conda-forge
 ```
-
-Or, to manually install the latest version from github: 
-
-```bash
-git clone https://github.com/rmsare/scarplet
-cd scarplet
-conda install --file=requirements.txt -c conda-forge
-python setup.py develop
-```
-
 The main dependencies are numpy, scipy, numexpr, pyfftw (which requires LibFFTW3)
 and rasterio/GDAL.
 
