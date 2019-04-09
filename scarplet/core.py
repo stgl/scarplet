@@ -115,11 +115,11 @@ def calculate_best_fit_parameters_serial(dem,
     for this_angle in orientations:
         for this_age in ages:
             this_amp, this_age, this_angle, this_snr = match_template(dem,
-                                                                      Template,
-                                                                      scale,
-                                                                      this_age,
-                                                                      this_angle,
-                                                                      **kwargs)
+                                                                    Template,
+                                                                    scale,
+                                                                    this_age,
+                                                                    this_angle,
+                                                                    **kwargs)
 
             best_amp = numexpr.evaluate("(best_snr > this_snr)*best_amp + \
                                         (best_snr < this_snr)*this_amp")
@@ -283,7 +283,13 @@ def match(data, Template, **kwargs):
     if 'age' in kwargs:
         results = calculate_best_fit_parameters(data, Template, **kwargs)
     else:
-        results = calculate_best_fit_parameters_serial(data, Template, **kwargs)
+        ages = 10 ** np.arange(0, 3.5, 0.1)
+        ny, nx = data._griddata.shape
+        results = [calculate_best_fit_parameters(data,
+                                                 Template,
+                                                 age=age, 
+                                                 **kwargs) for age in ages]
+        results = compare(results, ny, nx)
 
     return results
 
