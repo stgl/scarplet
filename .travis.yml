@@ -1,6 +1,6 @@
 language: python
 python:
-    - "3.5"
+    - "3.5_with_system_site_packages"
 
 virtualenv:
   system_site_packages: true
