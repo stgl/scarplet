@@ -13,8 +13,8 @@ before_install:
     - sudo apt-get install -qq python-gdal python3-gdal
     - sudo apt-get install fftw3 libfftw3-dev
     - sudo apt-get install python3-tk
-    - pip install --upgrade Cython 
-    - pip install --upgrade --force-reinstall numpy
+    - pip3 install --upgrade Cython 
+    - pip3 install --upgrade --force-reinstall numpy
 
 script:
     py.test scarplet/tests
