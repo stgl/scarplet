@@ -1,9 +1,9 @@
 language: python
 python:
-    - "3.4"
+    - 3.4
 
-virtualenv:
-  system_site_packages: true
+#virtualenv:
+    #system_site_packages: true
 
 before_install:
     - sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
